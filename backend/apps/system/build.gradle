@@ -1,0 +1,13 @@
+plugins {
+    id 'org.springframework.boot'
+}
+
+dependencies {
+    implementation project(':core:domain')
+    implementation project(':core:database')
+
+    implementation project(':libs:common')
+    implementation project(':libs:infrastructure')
+    implementation project(':libs:utils')
+    implementation project(':libs:constant')
+}
