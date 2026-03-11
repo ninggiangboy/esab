@@ -1,0 +1,40 @@
+package dev.ngb.infrastructure.jdbc.notification.entity;
+
+import dev.ngb.domain.notification.model.notification.NotificationEntityType;
+import dev.ngb.domain.notification.model.notification.NotificationType;
+import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.util.Set;
+
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@Table("ntf_notifications")
+public class NotificationJdbcEntity extends JdbcEntity<Long> {
+
+    private Long recipientProfileId;
+    private Long actorProfileId;
+    private NotificationType type;
+    private NotificationEntityType entityType;
+    private Long entityId;
+    private Boolean isRead;
+    private String groupKey;
+    private Long actorCount;
+    private Long lastActorProfileId;
+
+    @MappedCollection(idColumn = "notification_id")
+    private Set<NotificationActorJdbcEntity> actors;
+
+    @MappedCollection(idColumn = "notification_id")
+    private Set<NotificationObjectJdbcEntity> objects;
+
+    @MappedCollection(idColumn = "notification_id")
+    private Set<NotificationDeliveryJdbcEntity> deliveries;
+}

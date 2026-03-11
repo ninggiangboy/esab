@@ -29,6 +29,8 @@ public interface Repository<T extends DomainEntity<ID>, ID> {
      */
     Optional<T> findById(ID id);
 
+    Optional<T> findByUuid(String uuid);
+
     /**
      * Retrieves multiple entities by their identifiers.
      *
@@ -36,6 +38,8 @@ public interface Repository<T extends DomainEntity<ID>, ID> {
      * @return a list of entities matching the given identifiers
      */
     List<T> findByIds(List<ID> ids);
+
+    List<T> findByUuids(List<String> uuids);
 
     /**
      * Checks whether an entity with the given identifier exists.

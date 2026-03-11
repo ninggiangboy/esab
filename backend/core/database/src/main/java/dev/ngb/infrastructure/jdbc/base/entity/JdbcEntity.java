@@ -28,7 +28,7 @@ public abstract class JdbcEntity<ID> {
     @Id
     protected ID id;
 
-    protected String uuid = UUID.randomUUID().toString();
+    protected String uuid;
 
     @CreatedBy
     protected Long createdBy;

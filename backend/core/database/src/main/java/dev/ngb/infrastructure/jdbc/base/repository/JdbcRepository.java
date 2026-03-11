@@ -22,6 +22,7 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
         implements Repository<D, ID> {
 
     protected final String ID_COLUMN = "id";
+    protected final String UUID_COLUMN = "uuid";
     protected final String IS_DELETED_COLUMN = "is_deleted";
 
     protected final JdbcClient jdbcClient;
@@ -135,12 +136,27 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
     }
 
     @Override
+    public Optional<D> findByUuid(String uuid) {
+        Criteria findByUuidCriteria = Criteria.where(UUID_COLUMN).is(uuid);
+        return findOneBy(findByUuidCriteria);
+    }
+
+    @Override
     public List<D> findByIds(List<ID> ids) {
         if (ids == null || ids.isEmpty()) {
             return List.of();
         }
         Criteria findByIdsCriteria = Criteria.where(ID_COLUMN).in(ids);
         return findAllBy(findByIdsCriteria);
+    }
+
+    @Override
+    public List<D> findByUuids(List<String> uuids) {
+        if (uuids == null || uuids.isEmpty()) {
+            return List.of();
+        }
+        Criteria findByUuidsCriteria = Criteria.where(UUID_COLUMN).in(uuids);
+        return findAllBy(findByUuidsCriteria);
     }
 
     @Override

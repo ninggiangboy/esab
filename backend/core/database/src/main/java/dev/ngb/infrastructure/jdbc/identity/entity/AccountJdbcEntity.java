@@ -1,0 +1,37 @@
+package dev.ngb.infrastructure.jdbc.identity.entity;
+
+import dev.ngb.domain.identity.model.account.AccountStatus;
+import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.time.Instant;
+import java.util.Set;
+
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@Table("iam_accounts")
+public class AccountJdbcEntity extends JdbcEntity<Long> {
+
+    private String email;
+    private String phoneNumber;
+    private String passwordHash;
+    private AccountStatus status;
+    private Boolean emailVerified;
+    private Boolean phoneVerified;
+    private Boolean twoFactorEnabled;
+    private Instant lastLoginAt;
+    private String lastLoginIp;
+
+    @MappedCollection(idColumn = "account_id")
+    private Set<AccountCredentialJdbcEntity> credentials;
+
+    @MappedCollection(idColumn = "account_id")
+    private Set<AccountDeviceJdbcEntity> devices;
+}
