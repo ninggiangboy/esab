@@ -328,13 +328,13 @@ DTO phải **scoped per use case**.
 Structure:
 
 ```
-usecase/<usecase>/dto
+usecase/<feature-group>/<usecase>/dto
 ```
 
 Example:
 
 ```
-create_account/dto/CreateAccountRequest
+registration/register_account/dto/RegisterAccountRequest
 ```
 
 ---

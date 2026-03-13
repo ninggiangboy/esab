@@ -414,18 +414,46 @@ But **does not contain domain rules**.
 
 ## Package Structure
 
+Use cases are grouped by **feature group**, then by individual use case:
+
 ```
-application/usecase/<usecase-name>/
+application/usecase/<feature-group>/<usecase-name>/
 ```
+
+Feature groups:
+
+| Group              | Purpose                         |
+| ------------------ | ------------------------------- |
+| `authentication`   | Login flows (credentials, OAuth, 2FA) |
+| `registration`     | Signup and email verification   |
+| `password`         | Password reset and recovery     |
+| `session`          | Token refresh and logout        |
 
 Example:
 
 ```
-application/usecase/create_account/
-├── CreateAccountUseCase.java
-└── dto/
-    └── CreateAccountRequest.java
+application/usecase/
+├── authentication/
+│   ├── login_account/
+│   │   ├── LoginAccountUseCase.java
+│   │   └── dto/
+│   ├── verify_login/
+│   └── oauth_login/
+├── registration/
+│   ├── register_account/
+│   │   ├── RegisterAccountUseCase.java
+│   │   └── dto/
+│   ├── verify_email/
+│   └── resend_verification/
+├── password/
+│   ├── forgot_password/
+│   └── reset_password/
+└── session/
+    ├── refresh_token/
+    └── logout_account/
 ```
+
+When adding a new use case, place it in the appropriate feature group. If no existing group fits, create a new group.
 
 ---
 
@@ -623,8 +651,13 @@ Update mapping if entity changed.
 
 ### Step 5 — Create Use Case
 
+Place in the appropriate feature group:
+
 ```
-ActivateAccountUseCase
+application/usecase/<feature-group>/activate_account/
+├── ActivateAccountUseCase.java
+└── dto/
+    └── ActivateAccountRequest.java
 ```
 
 ---
