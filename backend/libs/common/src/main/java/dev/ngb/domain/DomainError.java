@@ -7,6 +7,10 @@ public interface DomainError {
 
     String getMessage();
 
+    default DomainErrorType getType() {
+        return DomainErrorType.CLIENT;
+    }
+
     default DomainException exception() {
         return new DomainException(this);
     }

@@ -601,6 +601,12 @@ Account.activate()
 INVALID_ACCOUNT_STATUS
 ```
 
+Each error enum variant must include a `DomainErrorType`:
+
+```
+INVALID_ACCOUNT_STATUS("Account status is invalid", DomainErrorType.CLIENT)
+```
+
 ---
 
 ### Step 3 — Update Repository
@@ -629,11 +635,97 @@ ActivateAccountUseCase
 PATCH /api/accounts/{id}/activate
 ```
 
+Add Swagger annotations to the API interface method:
+
+```
+@Operation(summary = "...", description = "...")
+@ApiResponses({
+    @ApiResponse(responseCode = "200", description = "..."),
+    @ApiResponse(responseCode = "4xx", description = "...",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+})
+```
+
 ---
 
 ### Step 7 — Implement Controller
 
 Delegate to use case.
+
+---
+
+### Step 8 — Update API Documentation
+
+After finishing the API implementation, **always** create or update the corresponding
+documentation file under `docs/`.
+
+#### Documentation structure
+
+```
+docs/<bounded-context>/
+├── overview.md
+└── <flow-name>-flow.md
+```
+
+#### Rules
+
+| Rule | Detail |
+| --- | --- |
+| Location | `docs/<bounded-context>/` (e.g. `docs/auth/`, `docs/billing/`) |
+| Overview file | Each context must have an `overview.md` with an endpoint table and a high-level Mermaid flowchart |
+| Flow files | One file per logical flow (e.g. `registration-flow.md`, `login-flow.md`) |
+| New endpoint in existing flow | Update the existing flow file |
+| New endpoint in new flow | Create a new flow file and add the flow to `overview.md` |
+| Endpoint removed | Remove from docs |
+
+#### Each flow file must contain
+
+1. **Endpoint section** per endpoint in the flow:
+   * Method + path
+   * Short description
+   * Sample request JSON
+   * Sample success response JSON
+   * Error table (HTTP code, error name, when it occurs)
+2. **Mermaid sequence diagram** showing the full flow including error branches
+
+#### Example overview endpoint table row
+
+```markdown
+| POST | `/api/accounts/{id}/activate` | Activate a pending account | 200 | 400, 404 |
+```
+
+#### Example flow file structure
+
+```markdown
+# <Flow Name> Flow
+
+## `POST /api/<path>`
+
+Description.
+
+**Request:**
+json body
+
+**Response (200):**
+json body
+
+**Errors:**
+| Code | Error | When |
+| ...  | ...   | ...  |
+
+---
+
+## Sequence Diagram
+
+mermaid sequence diagram
+```
+
+#### When to update vs create
+
+* **Adding an endpoint to an existing flow** → update the flow file + update `overview.md` table
+* **Adding a new flow** → create a new `<flow-name>-flow.md` + add to `overview.md` table and flowchart
+* **Changing request/response shape** → update the affected flow file
+* **Removing an endpoint** → remove from flow file and `overview.md`
 
 ---
 
