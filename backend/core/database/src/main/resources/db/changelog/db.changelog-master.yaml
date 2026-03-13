@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/migrations/001-create-identity-tables.sql
+  - include:
+      file: db/changelog/migrations/002-create-hashtag-tables.sql
+  - include:
+      file: db/changelog/migrations/003-create-profile-tables.sql
+  - include:
+      file: db/changelog/migrations/004-create-thread-tables.sql
+  - include:
+      file: db/changelog/migrations/005-create-chat-tables.sql
+  - include:
+      file: db/changelog/migrations/006-create-notification-tables.sql

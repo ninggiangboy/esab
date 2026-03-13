@@ -17,6 +17,7 @@ ext {
     set('sentryVersion', "8.27.0")
     set('springAiVersion', "1.1.0")
     set('springModulithVersion', "2.0.0")
+    set('springCloudVersion', "2025.1.1")
 }
 
 allprojects {
@@ -34,6 +35,7 @@ subprojects {
 
         dependencyManagement {
             imports {
+                mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
                 mavenBom "org.springframework.modulith:spring-modulith-bom:$springModulithVersion"
                 mavenBom "io.sentry:sentry-bom:$sentryVersion"
                 mavenBom "org.springframework.ai:spring-ai-bom:$springAiVersion"
