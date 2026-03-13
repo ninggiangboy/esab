@@ -1,0 +1,111 @@
+# esab
+
+A social/thread-style platform backend built with **Java 25** and **Spring Boot 4**. The system follows domain-driven design and is organized as a Gradle multi-module project with bounded contexts for identity, profiles, threads, chat, hashtags, and notifications.
+
+## Tech Stack
+
+| Layer | Technologies |
+|---|---|
+| Language | Java 25 (preview features) |
+| Framework | Spring Boot 4.0.0, Spring Cloud 2025.1.1 |
+| Database | PostgreSQL, Spring Data JDBC, Liquibase |
+| Cache | Redis, Caffeine |
+| Messaging | Kafka |
+| Security | Spring Security, OAuth2, JWT (RSA) |
+| API | REST, GraphQL, SpringDoc OpenAPI |
+| Observability | Actuator, OpenTelemetry, Sentry |
+| Quality | Checkstyle (Google style), JUnit 5, Mockito, AssertJ |
+
+## Project Structure
+
+```
+backend/
+├── apps/
+│   └── app                  # Main Spring Boot application
+├── core/
+│   ├── domain               # Domain models (framework-independent)
+│   └── database             # JDBC persistence layer
+├── libs/
+│   ├── common               # Shared base classes and interfaces
+│   ├── utils                # Utility helpers
+│   ├── constant             # Shared constants
+│   └── infrastructure       # Web, security, caching, messaging infra
+├── platform/
+│   ├── config               # Spring Cloud Config Server
+│   ├── gateway              # API Gateway (planned)
+│   └── discovery            # Service Discovery (planned)
+└── services/
+    ├── notification          # Notification service (planned)
+    ├── realtime              # Real-time/WebSocket service (planned)
+    ├── worker                # Background workers (planned)
+    ├── scheduler             # Scheduled jobs (planned)
+    └── media                 # Media/upload service (planned)
+```
+
+### Domain Contexts
+
+- **Identity** — accounts, credentials, sessions, devices, OTP, login history
+- **Profile** — user profiles, follows, blocks, mutes
+- **Thread** — threads, likes, reposts, bookmarks, polls, moderation
+- **Chat** — conversations, messages, participants
+- **Hashtag** — hashtags, relations, usage analytics
+- **Notification** — notifications, settings, counters
+
+## Getting Started
+
+### Prerequisites
+
+- Java 25+
+- PostgreSQL
+- Redis
+
+### Configuration
+
+The application uses Spring Cloud Config. Key environment variables:
+
+| Variable | Description | Default |
+|---|---|---|
+| `DB_URL` | PostgreSQL JDBC URL | — |
+| `DB_USERNAME` | Database username | — |
+| `DB_PASSWORD` | Database password | — |
+| `REDIS_HOST` | Redis host | `localhost` |
+| `REDIS_PORT` | Redis port | `6379` |
+| `CONFIG_SERVER_URI` | Config Server URL | — |
+| `APP_PORT` | Application port | `8080` |
+
+### Build & Run
+
+```bash
+cd backend
+
+# Build all modules
+./gradlew build
+
+# Run the Config Server
+./gradlew :platform:config:bootRun
+
+# Run the main application
+./gradlew :apps:app:bootRun
+
+# Run tests
+./gradlew check
+```
+
+## API
+
+The authentication API is currently implemented. Full endpoint documentation is available in [`docs/auth/`](docs/auth/overview.md).
+
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/auth/register` | Register a new account |
+| POST | `/api/auth/verify-email` | Verify email with OTP |
+| POST | `/api/auth/login` | Login with email & password |
+| POST | `/api/auth/oauth` | Login via OAuth provider |
+| POST | `/api/auth/token/refresh` | Refresh access token |
+| POST | `/api/auth/logout` | Revoke session |
+| POST | `/api/auth/forgot-password` | Request password reset |
+| POST | `/api/auth/reset-password` | Reset password with OTP |
+
+## License
+
+All rights reserved.
