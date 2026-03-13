@@ -1,7 +1,6 @@
 package dev.ngb.infrastructure.jdbc.identity.repository;
 
 import dev.ngb.domain.identity.model.session.AccountLoginHistory;
-import dev.ngb.domain.identity.model.session.LoginResult;
 import dev.ngb.domain.identity.repository.AccountLoginHistoryRepository;
 import dev.ngb.infrastructure.jdbc.base.helper.JdbcMetadataHelper;
 import dev.ngb.infrastructure.jdbc.base.repository.JdbcRepository;

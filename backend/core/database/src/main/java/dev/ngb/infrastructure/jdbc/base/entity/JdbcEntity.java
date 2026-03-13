@@ -1,6 +1,5 @@
 package dev.ngb.infrastructure.jdbc.base.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +8,6 @@ import org.springframework.data.annotation.*;
 
 import java.time.Instant;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Base class for JDBC persistence entities.

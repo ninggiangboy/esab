@@ -3,7 +3,6 @@ package dev.ngb.app.identity.application.usecase.logout_account;
 import dev.ngb.app.identity.application.port.TokenProvider;
 import dev.ngb.app.identity.application.usecase.logout_account.dto.LogoutAccountRequest;
 import dev.ngb.application.UseCaseService;
-import dev.ngb.domain.identity.model.session.AccountSession;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
 

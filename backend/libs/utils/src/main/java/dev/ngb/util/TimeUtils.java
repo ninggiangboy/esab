@@ -2,9 +2,7 @@ package dev.ngb.util;
 
 import lombok.experimental.UtilityClass;
 
-import java.time.*;
-import java.util.function.LongConsumer;
-import java.util.function.Supplier;
+import java.time.Duration;
 
 @UtilityClass
 public final class TimeUtils {

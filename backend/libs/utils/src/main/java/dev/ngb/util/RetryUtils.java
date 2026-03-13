@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 
 @UtilityClass
 public final class RetryUtils {
