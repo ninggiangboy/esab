@@ -10,6 +10,7 @@ import org.springframework.data.relational.core.mapping.RelationalPersistentEnti
 import org.springframework.data.relational.core.mapping.RelationalPersistentProperty;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.data.relational.core.sql.IdentifierProcessing;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
@@ -21,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.stream.StreamSupport;
 
+@Component
 @RequiredArgsConstructor
 public class JdbcMetadataHelper {
 

@@ -10,8 +10,23 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
-
 management:
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    metrics:
+      export:
+        url: ${METRICS_OTLP_URL:http://localhost:14318/v1/metrics}
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${TRACES_OTLP_URL:http://localhost:14318/v1/traces}
+    logging:
+      export:
+        otlp:
+          endpoint: ${LOGS_OTLP_URL:http://localhost:14318/v1/logs}
   endpoints:
     web:
       exposure:
