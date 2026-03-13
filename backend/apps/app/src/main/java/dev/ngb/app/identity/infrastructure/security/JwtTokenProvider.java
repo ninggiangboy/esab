@@ -2,7 +2,7 @@ package dev.ngb.app.identity.infrastructure.security;
 
 import dev.ngb.app.identity.application.port.TokenProvider;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -49,7 +49,7 @@ public class JwtTokenProvider implements TokenProvider {
                 .claim("email", email)
                 .build();
 
-        JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
+        JwsHeader header = JwsHeader.with(SignatureAlgorithm.RS256).build();
         return jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
     }
 
@@ -71,7 +71,7 @@ public class JwtTokenProvider implements TokenProvider {
                 .claim("device_id", deviceId)
                 .build();
 
-        JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
+        JwsHeader header = JwsHeader.with(SignatureAlgorithm.RS256).build();
         return jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
     }
 
