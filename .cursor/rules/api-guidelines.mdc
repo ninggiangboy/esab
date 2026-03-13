@@ -1,0 +1,783 @@
+---
+alwaysApply: false
+---
+# Request Lifecycle
+
+Example request:
+
+```
+POST /api/accounts
+```
+
+Flow:
+
+```
+HTTP Request
+     |
+     v
+AccountResource (Controller)
+     |
+     v
+CreateAccountUseCase
+     |
+     v
+AccountRepository (interface)
+     |
+     v
+AccountJdbcRepository
+     |
+     v
+Database
+```
+
+Sequence:
+
+1. Controller receives HTTP request
+2. Controller converts input → DTO
+3. Controller calls UseCase
+4. UseCase validates business rules
+5. UseCase uses Repository
+6. Repository persists entity
+7. Domain entity enforces invariants
+8. Response returned
+
+---
+
+# 1. Domain Layer (`core/domain`)
+
+The **domain layer contains the business rules of the system**.
+
+It must be:
+
+* framework independent
+* persistence independent
+* HTTP independent
+
+### Package Structure
+
+```
+domain/<bounded-context>/
+├── model/
+├── repository/
+└── error/
+```
+
+Example:
+
+```
+domain/iam/
+├── model/
+│   ├── Account.java
+│   └── AccountStatus.java
+│
+├── repository/
+│   └── AccountRepository.java
+│
+└── error/
+    └── AccountError.java
+```
+
+---
+
+# Domain Entity Design
+
+Entities represent **business concepts with identity**.
+
+### Rules
+
+Entities must:
+
+* encapsulate behavior
+* protect invariants
+* avoid public constructors
+* use factory methods
+
+### Base Class
+
+All entities extend:
+
+```
+DomainEntity<ID>
+```
+
+Provides:
+
+```
+id
+uuid
+createdBy
+updatedBy
+createdAt
+updatedAt
+clock
+```
+
+---
+
+# Entity Lifecycle
+
+Entities should support **two creation paths**
+
+### 1. Create (new entity)
+
+Used by business logic.
+
+```
+Account.create(email)
+```
+
+Characteristics:
+
+* id = null
+* uuid auto-generated
+* createdAt auto-set
+* status default
+
+---
+
+### 2. Reconstruct (from database)
+
+Used by repository mapping.
+
+```
+Account.reconstruct(...)
+```
+
+Characteristics:
+
+* id already exists
+* audit fields loaded
+* used only by repository
+
+---
+
+# Domain Behavior
+
+Domain entities should contain **business operations**.
+
+Example:
+
+```
+activate()
+suspend()
+changeEmail()
+resetPassword()
+```
+
+Rules:
+
+* Validate state transitions
+* Throw domain errors when invalid
+
+Example:
+
+```
+public void activate() {
+    if (this.status != AccountStatus.PENDING) {
+        throw AccountError.NOT_IN_PENDING_STATUS.exception();
+    }
+
+    this.status = AccountStatus.ACTIVE;
+}
+```
+
+This ensures:
+
+```
+invalid state cannot exist
+```
+
+---
+
+# Domain Errors
+
+Domain errors are defined as enums.
+
+Purpose:
+
+* centralize business error messages
+* ensure consistent error codes
+
+Example:
+
+```
+ACCOUNT_NOT_FOUND
+EMAIL_ALREADY_EXISTS
+NOT_IN_PENDING_STATUS
+```
+
+Throwing error:
+
+```
+throw AccountError.ACCOUNT_NOT_FOUND.exception();
+```
+
+or
+
+```
+throw AccountError.INVALID_STATUS.exception(Map.of("status", status));
+```
+
+---
+
+# Repository Interface
+
+Repository defines **data access contract**.
+
+Example:
+
+```
+public interface AccountRepository extends Repository<Account, Long>
+```
+
+Base repository provides:
+
+```
+findAll()
+findById()
+findByUuid()
+save()
+saveAll()
+delete()
+existsById()
+```
+
+Custom queries should be defined here.
+
+Example:
+
+```
+boolean existsByEmail(String email);
+```
+
+Domain layer **only depends on interface**.
+
+---
+
+# 2. Infrastructure Layer (`core/database`)
+
+Infrastructure implements repository contracts.
+
+```
+core/database
+```
+
+Structure:
+
+```
+jdbc/<context>/
+├── entity/
+└── repository/
+```
+
+Example:
+
+```
+jdbc/iam/
+├── entity/
+│   └── AccountJdbcEntity.java
+└── repository/
+    └── AccountJdbcRepository.java
+```
+
+---
+
+# JDBC Entity
+
+JDBC entities map database tables.
+
+They represent **persistence structure**, not business logic.
+
+Example:
+
+```
+@Table("iam_accounts")
+```
+
+Guidelines:
+
+| Rule              | Reason                          |
+| ----------------- | ------------------------------- |
+| No business logic | Entities are persistence models |
+| Use Lombok        | reduce boilerplate              |
+| Use enum type     | avoid string mapping errors     |
+
+Example:
+
+```
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@Table("iam_accounts")
+public class AccountJdbcEntity extends JdbcEntity<Long> {
+
+    private String email;
+
+    private AccountStatus status;
+}
+```
+
+---
+
+# Mapping Strategy
+
+Mapping converts between:
+
+```
+Domain <-> JDBC Entity
+```
+
+Two methods:
+
+```
+mapToDomain()
+mapToJdbc()
+```
+
+Example:
+
+```
+protected Account mapToDomain(AccountJdbcEntity entity)
+```
+
+```
+protected AccountJdbcEntity mapToJdbc(Account domain)
+```
+
+Rules:
+
+| Rule                                 | Reason             |
+| ------------------------------------ | ------------------ |
+| Mapping must be explicit             | Avoid hidden logic |
+| Domain entity immutable from outside | Protect invariants |
+| Repositories reconstruct entities    | Maintain lifecycle |
+
+---
+
+# JDBC Repository
+
+Repository implements domain interface.
+
+Example:
+
+```
+@Repository
+public class AccountJdbcRepository
+```
+
+Base class:
+
+```
+JdbcRepository<Domain, JdbcEntity, ID>
+```
+
+Provides query helpers:
+
+```
+findAllBy()
+findOneBy()
+existsBy()
+countBy()
+```
+
+Example:
+
+```
+existsBy("email", email)
+```
+
+Custom SQL also supported:
+
+```
+findOneBySql()
+findAllBySql()
+```
+
+---
+
+# 3. Application Layer (Use Cases)
+
+Application layer orchestrates **business operations**.
+
+It coordinates:
+
+```
+entities
+repositories
+domain services
+```
+
+But **does not contain domain rules**.
+
+---
+
+## Package Structure
+
+```
+application/usecase/<usecase-name>/
+```
+
+Example:
+
+```
+application/usecase/create_account/
+├── CreateAccountUseCase.java
+└── dto/
+    └── CreateAccountRequest.java
+```
+
+---
+
+# Use Case Responsibilities
+
+Use case should:
+
+1. Validate business conditions
+2. Load entities
+3. Execute domain behavior
+4. Persist results
+
+Example flow:
+
+```
+check email exists
+create account
+save account
+```
+
+Example code:
+
+```
+public void execute(CreateAccountRequest request) {
+
+    if (accountRepository.existsByEmail(request.email())) {
+        throw AccountError.EMAIL_ALREADY_EXISTS.exception();
+    }
+
+    Account account = Account.create(request.email());
+
+    accountRepository.save(account);
+}
+```
+
+---
+
+# DTO Design
+
+DTOs are **simple transport objects**.
+
+Use Java records.
+
+Example:
+
+```
+public record CreateAccountRequest(
+        String email,
+        String password
+) {}
+```
+
+Rules:
+
+| Rule                      | Reason                         |
+| ------------------------- | ------------------------------ |
+| No validation annotations | validation handled in use case |
+| Scoped per use case       | avoid shared DTO coupling      |
+| Use record                | immutable data                 |
+
+---
+
+# 4. Web Layer
+
+Web layer handles **HTTP protocol**.
+
+Responsibilities:
+
+```
+request mapping
+serialization
+status codes
+```
+
+But **no business logic**.
+
+---
+
+# API Interface Pattern
+
+Controller API defined as interface.
+
+Example:
+
+```
+AccountApi
+```
+
+Benefits:
+
+* separates contract from implementation
+* easy API documentation
+* easier testing
+
+Example:
+
+```
+@RequestMapping("/api/accounts")
+public interface AccountApi
+```
+
+---
+
+# Resource Implementation
+
+Controller implements API interface.
+
+Example:
+
+```
+@RestController
+public class AccountResource implements AccountApi
+```
+
+Responsibilities:
+
+```
+receive request
+call use case
+return response
+```
+
+Example:
+
+```
+@Override
+public void create(CreateAccountRequest request) {
+    createAccountUseCase.execute(request);
+}
+```
+
+Controller must **not contain business logic**.
+
+---
+
+# Transaction Management
+
+Transactions handled at **repository layer**.
+
+```
+JdbcRepository
+```
+
+Therefore:
+
+```
+UseCase does NOT use @Transactional
+```
+
+Benefits:
+
+* centralized transaction handling
+* less annotation noise
+* simpler use case code
+
+---
+
+# Adding a New Feature
+
+Example: `Activate Account`
+
+### Step 1 — Update Domain
+
+```
+Account.activate()
+```
+
+---
+
+### Step 2 — Add Domain Error
+
+```
+INVALID_ACCOUNT_STATUS
+```
+
+---
+
+### Step 3 — Update Repository
+
+Add query if needed.
+
+---
+
+### Step 4 — Implement JDBC mapping
+
+Update mapping if entity changed.
+
+---
+
+### Step 5 — Create Use Case
+
+```
+ActivateAccountUseCase
+```
+
+---
+
+### Step 6 — Add API endpoint
+
+```
+PATCH /api/accounts/{id}/activate
+```
+
+---
+
+### Step 7 — Implement Controller
+
+Delegate to use case.
+
+---
+
+# Coding Conventions
+
+### IDs
+
+Primary key:
+
+```
+Long id
+```
+
+Public identifier:
+
+```
+String uuid
+```
+
+Reason:
+
+```
+internal id → DB
+uuid → external API
+```
+
+---
+
+### Enums
+
+Stored directly as enum.
+
+Example:
+
+```
+AccountStatus.ACTIVE
+```
+
+Avoid:
+
+```
+String status
+```
+
+---
+
+### Lombok Usage
+
+Allowed:
+
+```
+@Getter
+@RequiredArgsConstructor
+@SuperBuilder
+```
+
+Avoid:
+
+```
+@Data
+```
+
+because:
+
+```
+@Data generates setters
+which breaks immutability
+```
+
+---
+
+# Best Practices
+
+### 1. Domain is king
+
+Never place business rules in:
+
+```
+controller
+repository
+dto
+```
+
+---
+
+### 2. One Use Case = One business action
+
+Examples:
+
+```
+CreateAccount
+ActivateAccount
+SuspendAccount
+ChangePassword
+```
+
+---
+
+### 3. Avoid Anemic Domain Model
+
+Bad:
+
+```
+AccountService.activate(account)
+```
+
+Good:
+
+```
+account.activate()
+```
+
+---
+
+### 4. Use bounded contexts
+
+Example contexts:
+
+```
+iam
+billing
+notification
+media
+```
+
+Each context has its own:
+
+```
+model
+repository
+errors
+```
+
+---
+
+### 5. Use explicit mapping
+
+Avoid auto mappers.
+
+Explicit mapping:
+
+```
+mapToDomain
+mapToJdbc
+```
+
+is easier to maintain and debug.
