@@ -50,7 +50,7 @@ class RefreshTokenUseCaseTest {
                 10L, "acc-uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.ACTIVE,
                 true, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         var request = new RefreshTokenRequest("old-refresh-token");
 
@@ -148,7 +148,7 @@ class RefreshTokenUseCaseTest {
                 10L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.SUSPENDED,
                 true, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         var request = new RefreshTokenRequest("token");
 

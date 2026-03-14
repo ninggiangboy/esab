@@ -73,6 +73,7 @@ class LoginAccountUseCaseTest {
         when(accountDeviceRepository.findByAccountIdAndFingerprint(1L, "fp-known")).thenReturn(Optional.of(device));
         when(passwordEncoder.matches("password", "hashed-pw")).thenReturn(true);
         when(accountRepository.save(any(Account.class))).thenReturn(account);
+        when(accountDeviceRepository.save(any(AccountDevice.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(tokenProvider.generateRefreshToken()).thenReturn("refresh-token");
         when(tokenProvider.hashToken("refresh-token")).thenReturn("hashed-refresh");
         when(tokenProvider.generateAccessToken(any(), any(), any())).thenReturn("access-token");
@@ -122,7 +123,7 @@ class LoginAccountUseCaseTest {
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hashed-pw", AccountStatus.PENDING,
                 false, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         var request = new LoginAccountRequest("user@test.com", "password",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp"));
@@ -142,7 +143,7 @@ class LoginAccountUseCaseTest {
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hashed-pw", AccountStatus.SUSPENDED,
                 true, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         var request = new LoginAccountRequest("user@test.com", "password",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp"));
@@ -162,7 +163,7 @@ class LoginAccountUseCaseTest {
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hashed-pw", AccountStatus.BANNED,
                 true, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         var request = new LoginAccountRequest("user@test.com", "password",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp"));
@@ -225,7 +226,7 @@ class LoginAccountUseCaseTest {
                 1L, "uuid-123", null, Instant.now(), null, null,
                 "user@test.com", null, "hashed-pw", AccountStatus.ACTIVE,
                 true, false, twoFactorEnabled, null, null,
-                new HashSet<>(), new HashSet<>(devices)
+                new HashSet<>()
         );
     }
 }

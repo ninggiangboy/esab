@@ -20,7 +20,6 @@ class AccountTest {
         assertThat(account.getPhoneVerified()).isFalse();
         assertThat(account.getTwoFactorEnabled()).isFalse();
         assertThat(account.getCredentials()).isEmpty();
-        assertThat(account.getDevices()).isEmpty();
         assertThat(account.getCreatedAt()).isNotNull();
         assertThat(account.getUuid()).isNotNull();
     }
@@ -36,7 +35,6 @@ class AccountTest {
         assertThat(account.getPhoneVerified()).isFalse();
         assertThat(account.getTwoFactorEnabled()).isFalse();
         assertThat(account.getCredentials()).isEmpty();
-        assertThat(account.getDevices()).isEmpty();
         assertThat(account.getCreatedAt()).isNotNull();
     }
 
@@ -104,7 +102,7 @@ class AccountTest {
                 1L, "uuid-123", 1L, null, null, null,
                 "user@test.com", "+1234567890", "hash", AccountStatus.ACTIVE,
                 true, false, false, null, null,
-                new java.util.HashSet<>(), new java.util.HashSet<>()
+                new java.util.HashSet<>()
         );
 
         assertThat(account.getId()).isEqualTo(1L);

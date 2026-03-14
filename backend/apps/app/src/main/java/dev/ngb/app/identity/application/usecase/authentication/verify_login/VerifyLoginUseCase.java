@@ -11,7 +11,6 @@ import dev.ngb.domain.identity.model.otp.AccountOtp;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
 import dev.ngb.domain.identity.model.session.AccountLoginHistory;
 import dev.ngb.domain.identity.model.session.AccountSession;
-import dev.ngb.domain.identity.model.session.LoginResult;
 import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountLoginHistoryRepository;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;

@@ -49,7 +49,7 @@ class ResetPasswordUseCaseTest {
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "old-hash", AccountStatus.ACTIVE,
                 true, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         AccountOtp otp = AccountOtp.create(1L, "123456", OtpPurpose.PASSWORD_RESET, OtpChannel.EMAIL);
         AccountSession session = AccountSession.reconstruct(
@@ -89,7 +89,7 @@ class ResetPasswordUseCaseTest {
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.ACTIVE,
                 true, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         var request = new ResetPasswordRequest("user@test.com", "123456", "newPassword");
 
@@ -109,7 +109,7 @@ class ResetPasswordUseCaseTest {
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "old-hash", AccountStatus.ACTIVE,
                 true, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         AccountOtp otp = AccountOtp.create(1L, "111111", OtpPurpose.PASSWORD_RESET, OtpChannel.EMAIL);
         AccountSession session1 = AccountSession.reconstruct(

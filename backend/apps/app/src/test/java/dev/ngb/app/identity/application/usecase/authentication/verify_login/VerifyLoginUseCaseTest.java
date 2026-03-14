@@ -26,7 +26,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -68,9 +67,11 @@ class VerifyLoginUseCaseTest {
         when(tokenProvider.parseVerificationToken("ver-token"))
                 .thenReturn(new TokenProvider.VerificationClaims(1L, 5L));
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(accountOtpRepository.findLatestActiveByAccountIdAndPurpose(1L, OtpPurpose.LOGIN))
                 .thenReturn(Optional.of(otp));
         when(accountDeviceRepository.findById(5L)).thenReturn(Optional.of(device));
+        when(accountDeviceRepository.save(any(AccountDevice.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(tokenProvider.generateRefreshToken()).thenReturn("refresh");
         when(tokenProvider.hashToken("refresh")).thenReturn("hashed");
         when(tokenProvider.generateAccessToken(any(), any(), any())).thenReturn("access");
@@ -154,7 +155,7 @@ class VerifyLoginUseCaseTest {
                 1L, "uuid-123", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.ACTIVE,
                 true, false, true, null, null,
-                new HashSet<>(), new HashSet<>(Set.of(device))
+                new HashSet<>()
         );
     }
 }

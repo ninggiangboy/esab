@@ -93,7 +93,7 @@ class VerifyEmailUseCaseTest {
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.ACTIVE,
                 true, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         var request = new VerifyEmailRequest("user@test.com", "123456",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp"));
@@ -126,7 +126,7 @@ class VerifyEmailUseCaseTest {
                 1L, "uuid-pending", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.PENDING,
                 false, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
     }
 }

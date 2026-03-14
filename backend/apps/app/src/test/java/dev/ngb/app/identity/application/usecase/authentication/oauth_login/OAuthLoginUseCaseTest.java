@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -60,7 +59,7 @@ class OAuthLoginUseCaseTest {
                     1L, saved.getUuid(), null, Instant.now(), null, null,
                     saved.getEmail(), null, null, AccountStatus.ACTIVE,
                     true, false, false, null, null,
-                    new HashSet<>(saved.getCredentials()), new HashSet<>()
+                    new HashSet<>(saved.getCredentials())
             );
         });
         when(accountDeviceRepository.findByAccountIdAndFingerprint(1L, "fp-new")).thenReturn(Optional.empty());
@@ -89,7 +88,7 @@ class OAuthLoginUseCaseTest {
                 1L, "uuid", null, Instant.now(), null, null,
                 "existing@test.com", null, null, AccountStatus.ACTIVE,
                 true, false, false, null, null,
-                new HashSet<>(), new HashSet<>(Set.of(device))
+                new HashSet<>()
         );
         var request = new OAuthLoginRequest(AuthProvider.GOOGLE, "provider-token",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp-known"));
@@ -131,7 +130,7 @@ class OAuthLoginUseCaseTest {
                 1L, "uuid", null, Instant.now(), null, null,
                 "suspended@test.com", null, null, AccountStatus.SUSPENDED,
                 true, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         var request = new OAuthLoginRequest(AuthProvider.GOOGLE, "token",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp"));

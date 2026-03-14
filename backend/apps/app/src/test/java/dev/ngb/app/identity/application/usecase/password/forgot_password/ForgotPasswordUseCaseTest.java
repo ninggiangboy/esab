@@ -43,7 +43,7 @@ class ForgotPasswordUseCaseTest {
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.ACTIVE,
                 true, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         var request = new ForgotPasswordRequest("user@test.com");
 
@@ -73,7 +73,7 @@ class ForgotPasswordUseCaseTest {
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.PENDING,
                 false, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
+                new HashSet<>()
         );
         var request = new ForgotPasswordRequest("user@test.com");
         when(accountRepository.findByEmail("user@test.com")).thenReturn(Optional.of(pendingAccount));
