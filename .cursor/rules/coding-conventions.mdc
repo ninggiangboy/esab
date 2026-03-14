@@ -522,24 +522,66 @@ Trong domain logic.
 
 # 11. Logging Conventions
 
+## 11.1 Logger in Use Cases
+
+Dùng Lombok `@Slf4j` cho use case. Không khai báo logger thủ công.
+
+Good:
+
+```java
+@Slf4j
+@RequiredArgsConstructor
+public class LoginAccountUseCase implements UseCaseService {
+```
+
+Bad:
+
+```java
+private static final Logger log = LoggerFactory.getLogger(LoginAccountUseCase.class);
+```
+
+---
+
+## 11.2 When to Log
+
 Use logging cho:
 
-* errors
-* integration events
-* external calls
+* entry/success của use case
+* errors và business rule violations (trước khi throw)
+* integration events, external calls
 
 Avoid logging:
 
-* domain logic
-* internal operations
+* domain logic thuần
+* internal operations không cần trace
 
 ---
+
+## 11.3 Log Levels
+
+| Level  | Dùng cho                                              |
+| ------ | ----------------------------------------------------- |
+| **INFO**  | Bắt đầu use case (entry), kết thúc thành công (success) |
+| **DEBUG** | Chi tiết luồng (verify, parse token, gửi OTP, v.v.)   |
+| **WARN**  | Vi phạm nghiệp vụ trước khi throw (invalid credentials, not found, v.v.) |
+| **ERROR** | Exception từ integration / external (khi catch rồi rethrow) |
 
 Example:
 
 ```java
-log.error("Failed to process payment {}", paymentId);
+log.info("Login attempt for email={}", maskEmail(request.email()));
+log.debug("Password verified for accountId={}", account.getId());
+log.warn("Login failed: invalid password for accountId={}", account.getId());
+log.info("Login successful for accountId={}, accountUuid={}", account.getId(), account.getUuid());
 ```
+
+---
+
+## 11.4 Security
+
+* Không log password, refresh token, access token.
+* Mask email khi log (tránh enumeration, ví dụ: `ab***@domain.com`).
+* Chỉ log identifier an toàn: `accountId`, `accountUuid`, `sessionId`.
 
 ---
 

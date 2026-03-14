@@ -20,15 +20,28 @@ public class AccountLoginHistory extends DomainEntity<Long> {
     private LoginResult result;
     private String failureReason;
 
-    public static AccountLoginHistory create(Long accountId, Long deviceId, String ipAddress,
-                                             String userAgent, LoginResult result, String failureReason) {
+    public static AccountLoginHistory createSuccess(Long accountId, Long deviceId, String ipAddress,
+                                                    String userAgent) {
         AccountLoginHistory obj = new AccountLoginHistory();
         obj.createdAt = Instant.now(obj.clock);
         obj.accountId = accountId;
         obj.deviceId = deviceId;
         obj.ipAddress = ipAddress;
         obj.userAgent = userAgent;
-        obj.result = result;
+        obj.result = LoginResult.SUCCESS;
+        obj.failureReason = null;
+        return obj;
+    }
+
+    public static AccountLoginHistory createFailure(Long accountId, Long deviceId, String ipAddress,
+                                                    String userAgent, String failureReason) {
+        AccountLoginHistory obj = new AccountLoginHistory();
+        obj.createdAt = Instant.now(obj.clock);
+        obj.accountId = accountId;
+        obj.deviceId = deviceId;
+        obj.ipAddress = ipAddress;
+        obj.userAgent = userAgent;
+        obj.result = LoginResult.FAILED;
         obj.failureReason = failureReason;
         return obj;
     }

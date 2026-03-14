@@ -21,7 +21,9 @@ import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class LoginAccountUseCase implements UseCaseService {
 
@@ -35,26 +37,31 @@ public class LoginAccountUseCase implements UseCaseService {
     private final OtpSender otpSender;
 
     public LoginAccountResponse execute(LoginAccountRequest request, String ipAddress) {
+        log.info("Login attempt for email={}", maskEmail(request.email()));
+
         Account account = accountRepository.findByEmail(request.email())
-                .orElseThrow(AccountError.INVALID_CREDENTIALS::exception);
+                .orElseThrow(() -> {
+                    log.warn("Login failed: account not found for email={}", maskEmail(request.email()));
+                    return AccountError.INVALID_CREDENTIALS.exception();
+                });
 
         if (!passwordEncoder.matches(request.password(), account.getPasswordHash())) {
+            log.warn("Login failed: invalid password for accountId={}", account.getId());
             accountLoginHistoryRepository.save(
-                    AccountLoginHistory.create(account.getId(), null, ipAddress, null, LoginResult.FAILED, "Invalid password")
+                    AccountLoginHistory.createFailure(account.getId(), null, ipAddress, null, "Invalid password")
             );
             throw AccountError.INVALID_CREDENTIALS.exception();
         }
 
+        log.debug("Password verified for accountId={}", account.getId());
         validateAccountStatus(account);
 
         String fingerprint = request.deviceInfo().fingerprint();
-        AccountDevice existingDevice = account.getDevices().stream()
-                .filter(d -> fingerprint.equals(d.getFingerprint()))
-                .findFirst()
-                .orElse(null);
+        AccountDevice existingDevice = account.findDeviceByFingerprint(fingerprint).orElse(null);
 
         boolean isNewDevice = existingDevice == null;
         boolean needs2FA = Boolean.TRUE.equals(account.getTwoFactorEnabled());
+        log.debug("accountId={}, isNewDevice={}, needs2FA={}", account.getId(), isNewDevice, needs2FA);
 
         if (isNewDevice) {
             AccountDevice newDevice = AccountDevice.create(
@@ -63,14 +70,11 @@ public class LoginAccountUseCase implements UseCaseService {
                     request.deviceInfo().deviceName(),
                     fingerprint
             );
-            account.getDevices().add(newDevice);
+            account.addDevice(newDevice);
             account = accountRepository.save(account);
 
-            AccountDevice savedDevice = account.getDevices().stream()
-                    .filter(d -> fingerprint.equals(d.getFingerprint()))
-                    .findFirst()
-                    .orElseThrow();
-
+            AccountDevice savedDevice = account.findDeviceByFingerprint(fingerprint).orElseThrow();
+            log.info("New device login for accountId={}, deviceId={}, OTP required", account.getId(), savedDevice.getId());
             return sendVerificationAndRespond(account, savedDevice);
         }
 
@@ -78,11 +82,8 @@ public class LoginAccountUseCase implements UseCaseService {
             existingDevice.touch();
             account = accountRepository.save(account);
 
-            AccountDevice savedDevice = account.getDevices().stream()
-                    .filter(d -> fingerprint.equals(d.getFingerprint()))
-                    .findFirst()
-                    .orElseThrow();
-
+            AccountDevice savedDevice = account.findDeviceByFingerprint(fingerprint).orElseThrow();
+            log.info("2FA required for accountId={}, deviceId={}", account.getId(), savedDevice.getId());
             return sendVerificationAndRespond(account, savedDevice);
         }
 
@@ -90,13 +91,10 @@ public class LoginAccountUseCase implements UseCaseService {
         account.recordLogin(ipAddress);
         account = accountRepository.save(account);
 
-        AccountDevice savedDevice = account.getDevices().stream()
-                .filter(d -> fingerprint.equals(d.getFingerprint()))
-                .findFirst()
-                .orElseThrow();
+        AccountDevice savedDevice = account.findDeviceByFingerprint(fingerprint).orElseThrow();
 
         accountLoginHistoryRepository.save(
-                AccountLoginHistory.create(account.getId(), savedDevice.getId(), ipAddress, null, LoginResult.SUCCESS, null)
+                AccountLoginHistory.createSuccess(account.getId(), savedDevice.getId(), ipAddress, null)
         );
 
         String refreshToken = tokenProvider.generateRefreshToken();
@@ -110,6 +108,7 @@ public class LoginAccountUseCase implements UseCaseService {
                 account.getId(), account.getUuid(), account.getEmail()
         );
 
+        log.info("Login successful for accountId={}, accountUuid={}", account.getId(), account.getUuid());
         return LoginAccountResponse.authenticated(
                 accessToken, refreshToken,
                 tokenProvider.getAccessTokenExpiresInSeconds(),
@@ -119,15 +118,35 @@ public class LoginAccountUseCase implements UseCaseService {
 
     private void validateAccountStatus(Account account) {
         switch (account.getStatus()) {
-            case PENDING -> throw AccountError.ACCOUNT_PENDING.exception();
-            case SUSPENDED -> throw AccountError.ACCOUNT_SUSPENDED.exception();
-            case BANNED -> throw AccountError.ACCOUNT_BANNED.exception();
-            case DEACTIVATED -> throw AccountError.ACCOUNT_NOT_ACTIVE.exception();
+            case PENDING -> {
+                log.warn("Login rejected: account pending for accountId={}", account.getId());
+                throw AccountError.ACCOUNT_PENDING.exception();
+            }
+            case SUSPENDED -> {
+                log.warn("Login rejected: account suspended for accountId={}", account.getId());
+                throw AccountError.ACCOUNT_SUSPENDED.exception();
+            }
+            case BANNED -> {
+                log.warn("Login rejected: account banned for accountId={}", account.getId());
+                throw AccountError.ACCOUNT_BANNED.exception();
+            }
+            case DEACTIVATED -> {
+                log.warn("Login rejected: account deactivated for accountId={}", account.getId());
+                throw AccountError.ACCOUNT_NOT_ACTIVE.exception();
+            }
             case ACTIVE -> { }
         }
     }
 
+    private static String maskEmail(String email) {
+        if (email == null || email.length() < 3) return "***";
+        int at = email.indexOf('@');
+        if (at <= 0) return "***";
+        return email.substring(0, Math.min(2, at)) + "***" + email.substring(at);
+    }
+
     private LoginAccountResponse sendVerificationAndRespond(Account account, AccountDevice device) {
+        log.debug("Sending login OTP for accountId={}", account.getId());
         String code = otpCodeGenerator.generate();
         AccountOtp otp = AccountOtp.create(account.getId(), code, OtpPurpose.LOGIN, OtpChannel.EMAIL);
         accountOtpRepository.save(otp);

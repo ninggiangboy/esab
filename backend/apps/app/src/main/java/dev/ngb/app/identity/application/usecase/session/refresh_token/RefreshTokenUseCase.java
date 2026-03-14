@@ -10,7 +10,9 @@ import dev.ngb.domain.identity.model.session.AccountSession;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class RefreshTokenUseCase implements UseCaseService {
 
@@ -19,19 +21,29 @@ public class RefreshTokenUseCase implements UseCaseService {
     private final TokenProvider tokenProvider;
 
     public AuthTokenResponse execute(RefreshTokenRequest request) {
+        log.debug("Refresh token attempt");
+
         String tokenHash = tokenProvider.hashToken(request.refreshToken());
 
         AccountSession session = accountSessionRepository.findByTokenHash(tokenHash)
-                .orElseThrow(AccountError.INVALID_REFRESH_TOKEN::exception);
+                .orElseThrow(() -> {
+                    log.warn("Refresh token failed: session not found or invalid");
+                    return AccountError.INVALID_REFRESH_TOKEN.exception();
+                });
 
         if (!session.isValid()) {
+            log.warn("Refresh token failed: session revoked or expired sessionId={}", session.getId());
             throw AccountError.INVALID_REFRESH_TOKEN.exception();
         }
 
         Account account = accountRepository.findById(session.getAccountId())
-                .orElseThrow(AccountError.ACCOUNT_NOT_FOUND::exception);
+                .orElseThrow(() -> {
+                    log.warn("Refresh token failed: account not found accountId={}", session.getAccountId());
+                    return AccountError.ACCOUNT_NOT_FOUND.exception();
+                });
 
         if (!account.isActive()) {
+            log.warn("Refresh token failed: account not active accountId={}", account.getId());
             throw AccountError.ACCOUNT_NOT_ACTIVE.exception();
         }
 
@@ -49,6 +61,7 @@ public class RefreshTokenUseCase implements UseCaseService {
                 account.getId(), account.getUuid(), account.getEmail()
         );
 
+        log.info("Refresh token successful accountId={}, accountUuid={}", account.getId(), account.getUuid());
         return new AuthTokenResponse(
                 accessToken, newRefreshToken,
                 tokenProvider.getAccessTokenExpiresInSeconds(),

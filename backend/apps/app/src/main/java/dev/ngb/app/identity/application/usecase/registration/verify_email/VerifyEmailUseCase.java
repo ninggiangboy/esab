@@ -14,7 +14,9 @@ import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class VerifyEmailUseCase implements UseCaseService {
 
@@ -24,19 +26,29 @@ public class VerifyEmailUseCase implements UseCaseService {
     private final TokenProvider tokenProvider;
 
     public AuthTokenResponse execute(VerifyEmailRequest request, String ipAddress) {
+        log.info("Verify email attempt for email={}", request.email() != null ? request.email().replaceAll("(?<=.).(?=.*@)", "*") : "***");
+
         Account account = accountRepository.findByEmail(request.email())
-                .orElseThrow(AccountError.ACCOUNT_NOT_FOUND::exception);
+                .orElseThrow(() -> {
+                    log.warn("Verify email failed: account not found");
+                    return AccountError.ACCOUNT_NOT_FOUND.exception();
+                });
 
         if (!account.isPending()) {
+            log.warn("Verify email failed: email already verified accountId={}", account.getId());
             throw AccountError.EMAIL_ALREADY_VERIFIED.exception();
         }
 
         AccountOtp otp = accountOtpRepository
                 .findLatestActiveByAccountIdAndPurpose(account.getId(), OtpPurpose.REGISTRATION)
-                .orElseThrow(AccountError.INVALID_OTP::exception);
+                .orElseThrow(() -> {
+                    log.warn("Verify email failed: no active OTP for accountId={}", account.getId());
+                    return AccountError.INVALID_OTP.exception();
+                });
 
         otp.verify(request.otpCode());
         accountOtpRepository.save(otp);
+        log.debug("Registration OTP verified for accountId={}", account.getId());
 
         account.activate();
 
@@ -47,13 +59,10 @@ public class VerifyEmailUseCase implements UseCaseService {
                 request.deviceInfo().fingerprint()
         );
         device.markTrusted();
-        account.getDevices().add(device);
+        account.addDevice(device);
         account = accountRepository.save(account);
 
-        AccountDevice savedDevice = account.getDevices().stream()
-                .filter(d -> request.deviceInfo().fingerprint().equals(d.getFingerprint()))
-                .findFirst()
-                .orElseThrow();
+        AccountDevice savedDevice = account.findDeviceByFingerprint(request.deviceInfo().fingerprint()).orElseThrow();
 
         String refreshToken = tokenProvider.generateRefreshToken();
         AccountSession session = AccountSession.create(
@@ -66,6 +75,7 @@ public class VerifyEmailUseCase implements UseCaseService {
                 account.getId(), account.getUuid(), account.getEmail()
         );
 
+        log.info("Verify email successful accountId={}, accountUuid={}", account.getId(), account.getUuid());
         return new AuthTokenResponse(
                 accessToken, refreshToken,
                 tokenProvider.getAccessTokenExpiresInSeconds(),

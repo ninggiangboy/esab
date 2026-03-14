@@ -10,8 +10,8 @@ class AccountLoginHistoryTest {
 
     @Test
     void shouldCreateSuccessfulLoginHistory() {
-        AccountLoginHistory history = AccountLoginHistory.create(
-                1L, 2L, "192.168.1.1", "Mozilla/5.0", LoginResult.SUCCESS, null
+        AccountLoginHistory history = AccountLoginHistory.createSuccess(
+                1L, 2L, "192.168.1.1", "Mozilla/5.0"
         );
 
         assertThat(history.getAccountId()).isEqualTo(1L);
@@ -25,8 +25,8 @@ class AccountLoginHistoryTest {
 
     @Test
     void shouldCreateFailedLoginHistory() {
-        AccountLoginHistory history = AccountLoginHistory.create(
-                1L, null, "10.0.0.1", null, LoginResult.FAILED, "Invalid password"
+        AccountLoginHistory history = AccountLoginHistory.createFailure(
+                1L, null, "10.0.0.1", null, "Invalid password"
         );
 
         assertThat(history.getResult()).isEqualTo(LoginResult.FAILED);

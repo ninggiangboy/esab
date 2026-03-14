@@ -12,7 +12,9 @@ import dev.ngb.domain.identity.model.otp.OtpPurpose;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class ResendVerificationUseCase implements UseCaseService {
 
@@ -22,10 +24,16 @@ public class ResendVerificationUseCase implements UseCaseService {
     private final OtpSender otpSender;
 
     public void execute(ResendVerificationRequest request) {
+        log.info("Resend verification attempt for email={}", request.email() != null ? request.email().replaceAll("(?<=.).(?=.*@)", "*") : "***");
+
         Account account = accountRepository.findByEmail(request.email())
-                .orElseThrow(AccountError.ACCOUNT_NOT_FOUND::exception);
+                .orElseThrow(() -> {
+                    log.warn("Resend verification failed: account not found");
+                    return AccountError.ACCOUNT_NOT_FOUND.exception();
+                });
 
         if (!account.isPending()) {
+            log.warn("Resend verification failed: email already verified accountId={}", account.getId());
             throw AccountError.EMAIL_ALREADY_VERIFIED.exception();
         }
 
@@ -34,5 +42,6 @@ public class ResendVerificationUseCase implements UseCaseService {
         accountOtpRepository.save(otp);
 
         otpSender.send(request.email(), code, OtpPurpose.REGISTRATION);
+        log.info("Resend verification successful accountId={}, OTP sent", account.getId());
     }
 }

@@ -12,9 +12,11 @@ import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 public class ResetPasswordUseCase implements UseCaseService {
 
@@ -24,15 +26,24 @@ public class ResetPasswordUseCase implements UseCaseService {
     private final PasswordEncoder passwordEncoder;
 
     public void execute(ResetPasswordRequest request) {
+        log.info("Reset password attempt for email={}", request.email() != null ? request.email().replaceAll("(?<=.).(?=.*@)", "*") : "***");
+
         Account account = accountRepository.findByEmail(request.email())
-                .orElseThrow(AccountError.ACCOUNT_NOT_FOUND::exception);
+                .orElseThrow(() -> {
+                    log.warn("Reset password failed: account not found");
+                    return AccountError.ACCOUNT_NOT_FOUND.exception();
+                });
 
         AccountOtp otp = accountOtpRepository
                 .findLatestActiveByAccountIdAndPurpose(account.getId(), OtpPurpose.PASSWORD_RESET)
-                .orElseThrow(AccountError.INVALID_OTP::exception);
+                .orElseThrow(() -> {
+                    log.warn("Reset password failed: no active OTP for accountId={}", account.getId());
+                    return AccountError.INVALID_OTP.exception();
+                });
 
         otp.verify(request.otpCode());
         accountOtpRepository.save(otp);
+        log.debug("Password reset OTP verified for accountId={}", account.getId());
 
         String newPasswordHash = passwordEncoder.encode(request.newPassword());
         account.changePassword(newPasswordHash);
@@ -41,5 +52,6 @@ public class ResetPasswordUseCase implements UseCaseService {
         List<AccountSession> activeSessions = accountSessionRepository.findActiveByAccountId(account.getId());
         activeSessions.forEach(AccountSession::revoke);
         accountSessionRepository.saveAll(activeSessions);
+        log.info("Reset password successful accountId={}, revoked {} session(s)", account.getId(), activeSessions.size());
     }
 }

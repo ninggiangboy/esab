@@ -17,7 +17,9 @@ import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class VerifyLoginUseCase implements UseCaseService {
 
@@ -28,29 +30,43 @@ public class VerifyLoginUseCase implements UseCaseService {
     private final TokenProvider tokenProvider;
 
     public AuthTokenResponse execute(VerifyLoginRequest request, String ipAddress) {
+        log.info("Verify login attempt");
+
         TokenProvider.VerificationClaims claims;
         try {
             claims = tokenProvider.parseVerificationToken(request.verificationToken());
         } catch (Exception e) {
+            log.warn("Invalid verification token: {}", e.getMessage());
             throw AccountError.INVALID_VERIFICATION_TOKEN.exception();
         }
 
+        log.debug("Verification token parsed accountId={}, deviceId={}", claims.accountId(), claims.deviceId());
+
         Account account = accountRepository.findById(claims.accountId())
-                .orElseThrow(AccountError.ACCOUNT_NOT_FOUND::exception);
+                .orElseThrow(() -> {
+                    log.warn("Account not found for verify login accountId={}", claims.accountId());
+                    return AccountError.ACCOUNT_NOT_FOUND.exception();
+                });
 
         AccountOtp otp = accountOtpRepository
                 .findLatestActiveByAccountIdAndPurpose(account.getId(), OtpPurpose.LOGIN)
-                .orElseThrow(AccountError.INVALID_OTP::exception);
+                .orElseThrow(() -> {
+                    log.warn("No active login OTP for accountId={}", account.getId());
+                    return AccountError.INVALID_OTP.exception();
+                });
 
         otp.verify(request.otpCode());
         accountOtpRepository.save(otp);
+        log.debug("OTP verified for accountId={}", account.getId());
 
-        AccountDevice device = account.getDevices().stream()
-                .filter(d -> d.getId().equals(claims.deviceId()))
-                .findFirst()
-                .orElseThrow(AccountError.INVALID_VERIFICATION_TOKEN::exception);
+        AccountDevice device = account.findDeviceById(claims.deviceId())
+                .orElseThrow(() -> {
+                    log.warn("Device not found for verify login accountId={}, deviceId={}", account.getId(), claims.deviceId());
+                    return AccountError.INVALID_VERIFICATION_TOKEN.exception();
+                });
 
         if (!Boolean.TRUE.equals(device.getIsTrusted())) {
+            log.debug("Marking device as trusted accountId={}, deviceId={}", account.getId(), device.getId());
             device.markTrusted();
             accountRepository.save(account);
         }
@@ -59,7 +75,7 @@ public class VerifyLoginUseCase implements UseCaseService {
         account = accountRepository.save(account);
 
         accountLoginHistoryRepository.save(
-                AccountLoginHistory.create(account.getId(), device.getId(), ipAddress, null, LoginResult.SUCCESS, null)
+                AccountLoginHistory.createSuccess(account.getId(), device.getId(), ipAddress, null)
         );
 
         String refreshToken = tokenProvider.generateRefreshToken();
@@ -73,6 +89,7 @@ public class VerifyLoginUseCase implements UseCaseService {
                 account.getId(), account.getUuid(), account.getEmail()
         );
 
+        log.info("Verify login successful accountId={}, accountUuid={}", account.getId(), account.getUuid());
         return new AuthTokenResponse(
                 accessToken, refreshToken,
                 tokenProvider.getAccessTokenExpiresInSeconds(),

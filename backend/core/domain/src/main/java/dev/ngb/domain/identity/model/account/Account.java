@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -13,6 +14,8 @@ import java.util.Set;
  * <p>
  * Aggregate root of the identity domain. Owns credentials and devices;
  * sessions, OTPs, and login history are operational/audit entities accessed separately.
+ * <p>
+ * Devices and credentials are exposed as immutable sets; all mutations must go through this aggregate.
  */
 @Getter
 public class Account extends DomainEntity<Long> {
@@ -31,6 +34,20 @@ public class Account extends DomainEntity<Long> {
 
     private Set<AccountCredential> credentials;
     private Set<AccountDevice> devices;
+
+    /**
+     * Returns an immutable view of credentials. Mutations must use {@link #addCredential(AccountCredential)}.
+     */
+    public Set<AccountCredential> getCredentials() {
+        return credentials == null ? Set.of() : Set.copyOf(credentials);
+    }
+
+    /**
+     * Returns an immutable copy of devices. To add a device use {@link #addDevice(AccountDevice)}.
+     */
+    public Set<AccountDevice> getDevices() {
+        return devices == null ? Set.of() : Set.copyOf(devices);
+    }
 
     public static Account create(String email, String passwordHash) {
         Account obj = new Account();
@@ -87,6 +104,36 @@ public class Account extends DomainEntity<Long> {
         return this.status == AccountStatus.PENDING;
     }
 
+    public Optional<AccountDevice> findDeviceByFingerprint(String fingerprint) {
+        if (devices == null || fingerprint == null) return Optional.empty();
+        return devices.stream()
+                .filter(d -> fingerprint.equals(d.getFingerprint()))
+                .findFirst();
+    }
+
+    public Optional<AccountDevice> findDeviceById(Long deviceId) {
+        if (devices == null || deviceId == null) return Optional.empty();
+        return devices.stream()
+                .filter(d -> deviceId.equals(d.getId()))
+                .findFirst();
+    }
+
+    /** Adds a device to this account (mutations go through aggregate root). */
+    public void addDevice(AccountDevice device) {
+        if (device == null) return;
+        if (this.devices == null) this.devices = new HashSet<>();
+        this.devices.add(device);
+        this.updatedAt = Instant.now(clock);
+    }
+
+    /** Adds a credential to this account (mutations go through aggregate root). */
+    public void addCredential(AccountCredential credential) {
+        if (credential == null) return;
+        if (this.credentials == null) this.credentials = new HashSet<>();
+        this.credentials.add(credential);
+        this.updatedAt = Instant.now(clock);
+    }
+
     public static Account reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,
             String email, String phoneNumber, String passwordHash, AccountStatus status,
@@ -109,8 +156,8 @@ public class Account extends DomainEntity<Long> {
         obj.twoFactorEnabled = twoFactorEnabled;
         obj.lastLoginAt = lastLoginAt;
         obj.lastLoginIp = lastLoginIp;
-        obj.credentials = credentials;
-        obj.devices = devices;
+        obj.credentials = credentials == null ? new HashSet<>() : new HashSet<>(credentials);
+        obj.devices = devices == null ? new HashSet<>() : new HashSet<>(devices);
         return obj;
     }
 }
