@@ -15,11 +15,11 @@ public class ThreadPollVote extends DomainEntity<Long> {
 
     private Long threadId;
     private Long profileId;
-    private Long optionId;
+    private Integer optionIndex;
 
     public static ThreadPollVote reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,
-            Long threadId, Long profileId, Long optionId) {
+            Long threadId, Long profileId, Integer optionIndex) {
         ThreadPollVote obj = new ThreadPollVote();
         obj.id = id;
         obj.uuid = uuid;
@@ -29,7 +29,7 @@ public class ThreadPollVote extends DomainEntity<Long> {
         obj.updatedAt = updatedAt;
         obj.threadId = threadId;
         obj.profileId = profileId;
-        obj.optionId = optionId;
+        obj.optionIndex = optionIndex;
         return obj;
     }
 }

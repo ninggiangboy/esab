@@ -33,7 +33,7 @@ public class ThreadPollVoteJdbcRepository extends JdbcRepository<ThreadPollVote,
                 entity.getUpdatedAt(),
                 entity.getThreadId(),
                 entity.getProfileId(),
-                entity.getOptionId()
+                entity.getOptionIndex()
         );
     }
 
@@ -48,7 +48,7 @@ public class ThreadPollVoteJdbcRepository extends JdbcRepository<ThreadPollVote,
                 .updatedAt(domain.getUpdatedAt())
                 .threadId(domain.getThreadId())
                 .profileId(domain.getProfileId())
-                .optionId(domain.getOptionId())
+                .optionIndex(domain.getOptionIndex())
                 .build();
     }
 }

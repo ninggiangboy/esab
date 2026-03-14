@@ -16,5 +16,5 @@ public class ThreadPollVoteJdbcEntity extends JdbcEntity<Long> {
 
     private Long threadId;
     private Long profileId;
-    private Long optionId;
+    private Integer optionIndex;
 }
