@@ -1,9 +1,11 @@
 package dev.ngb.domain.chat.model.message;
 
 import dev.ngb.domain.DomainEntity;
+import dev.ngb.util.CollectionUtils;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -27,6 +29,14 @@ public class Message extends DomainEntity<Long> {
     private Set<MessageMedia> medias;
     private Set<MessageReaction> reactions;
 
+    public Set<MessageMedia> getMedias() {
+        return CollectionUtils.immutable(medias);
+    }
+
+    public Set<MessageReaction> getReactions() {
+        return CollectionUtils.immutable(reactions);
+    }
+
     public static Message reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,
             Long conversationId, Long senderProfileId, MessageType type, String content,
@@ -44,8 +54,8 @@ public class Message extends DomainEntity<Long> {
         obj.content = content;
         obj.editedAt = editedAt;
         obj.deletedAt = deletedAt;
-        obj.medias = medias;
-        obj.reactions = reactions;
+        obj.medias = medias == null ? new HashSet<>() : new HashSet<>(medias);
+        obj.reactions = reactions == null ? new HashSet<>() : new HashSet<>(reactions);
         return obj;
     }
 }

@@ -1,9 +1,11 @@
 package dev.ngb.domain.profile.model.profile;
 
 import dev.ngb.domain.DomainEntity;
+import dev.ngb.util.CollectionUtils;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -41,6 +43,22 @@ public class Profile extends DomainEntity<Long> {
     private Set<ProfileMetadata> metadata;
     private Set<ProfileUsername> usernameHistory;
 
+    public Set<ProfileLink> getLinks() {
+        return CollectionUtils.immutable(links);
+    }
+
+    public Set<ProfileMedia> getMedias() {
+        return CollectionUtils.immutable(medias);
+    }
+
+    public Set<ProfileMetadata> getMetadata() {
+        return CollectionUtils.immutable(metadata);
+    }
+
+    public Set<ProfileUsername> getUsernameHistory() {
+        return CollectionUtils.immutable(usernameHistory);
+    }
+
     public static Profile reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,
             Long accountId, String username, String displayName, String bio, String website, String location,
@@ -68,10 +86,10 @@ public class Profile extends DomainEntity<Long> {
         obj.stats = stats;
         obj.setting = setting;
         obj.activity = activity;
-        obj.links = links;
-        obj.medias = medias;
-        obj.metadata = metadata;
-        obj.usernameHistory = usernameHistory;
+        obj.links = links == null ? new HashSet<>() : new HashSet<>(links);
+        obj.medias = medias == null ? new HashSet<>() : new HashSet<>(medias);
+        obj.metadata = metadata == null ? new HashSet<>() : new HashSet<>(metadata);
+        obj.usernameHistory = usernameHistory == null ? new HashSet<>() : new HashSet<>(usernameHistory);
         return obj;
     }
 }

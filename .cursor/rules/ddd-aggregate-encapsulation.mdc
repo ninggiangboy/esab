@@ -1,0 +1,43 @@
+---
+description: DDD aggregate root encapsulation – child entities must not be mutated directly from outside the aggregate.
+alwaysApply: true
+---
+
+# DDD Aggregate Encapsulation
+
+- **Aggregate Root is the only entry point** into an aggregate.
+- **Do not expose child entities/value objects for external mutation.**
+- **All state changes inside the aggregate must go through methods on the Aggregate Root.**
+
+### 1. Access rules
+
+- **Do not** keep references to child entities outside the aggregate.
+- **Do not** mutate child entities directly:
+
+```java
+// ❌ Avoid
+order.getItems().get(0).changePrice(100);
+```
+
+- **Do** expose behavior on the root that enforces invariants:
+
+```java
+// ✅ Good
+order.changeItemPrice(itemId, 100);
+order.addItem(productId, quantity, price);
+```
+
+### 2. Invariant and transaction boundary
+
+- Aggregate Root is responsible for:
+  - enforcing **business invariants** for the whole aggregate (e.g. order total = sum of item subtotals),
+  - defining the **transaction boundary**: a single aggregate instance is the unit of consistency.
+- Child entities live and die with the root; external code should only talk to the root.
+
+### 3. Reading children safely
+
+- Reading children is allowed, but must not allow mutation:
+  - return **immutable views** (e.g. `Collections.unmodifiableList(items)`),
+  - or return **DTOs** / query models on the read side (CQRS).
+- Never expose setters or mutable collections that let callers bypass the root’s invariants.
+

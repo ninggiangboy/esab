@@ -1,9 +1,11 @@
 package dev.ngb.domain.chat.model.conversation;
 
 import dev.ngb.domain.DomainEntity;
+import dev.ngb.util.CollectionUtils;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -25,6 +27,14 @@ public class Conversation extends DomainEntity<Long> {
     private Set<ConversationParticipant> participants;
     private Set<ConversationReadState> readStates;
 
+    public Set<ConversationParticipant> getParticipants() {
+        return CollectionUtils.immutable(participants);
+    }
+
+    public Set<ConversationReadState> getReadStates() {
+        return CollectionUtils.immutable(readStates);
+    }
+
     public static Conversation reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,
             ConversationType type, Long createdByProfileId, Long lastMessageId, Instant lastMessageAt,
@@ -40,8 +50,8 @@ public class Conversation extends DomainEntity<Long> {
         obj.createdByProfileId = createdByProfileId;
         obj.lastMessageId = lastMessageId;
         obj.lastMessageAt = lastMessageAt;
-        obj.participants = participants;
-        obj.readStates = readStates;
+        obj.participants = participants == null ? new HashSet<>() : new HashSet<>(participants);
+        obj.readStates = readStates == null ? new HashSet<>() : new HashSet<>(readStates);
         return obj;
     }
 }

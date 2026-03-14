@@ -1,9 +1,11 @@
 package dev.ngb.domain.thread.model.thread;
 
 import dev.ngb.domain.DomainEntity;
+import dev.ngb.util.CollectionUtils;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -53,6 +55,22 @@ public class Thread extends DomainEntity<Long> {
 
     private ThreadLinkPreview preview;
 
+    public Set<ThreadMention> getMentions() {
+        return CollectionUtils.immutable(mentions);
+    }
+
+    public Set<ThreadHashtag> getHashtags() {
+        return CollectionUtils.immutable(hashtags);
+    }
+
+    public Set<ThreadMedia> getMedias() {
+        return CollectionUtils.immutable(medias);
+    }
+
+    public Set<ThreadPollOption> getPollOptions() {
+        return CollectionUtils.immutable(pollOptions);
+    }
+
     public static Thread reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,
             Long authorProfileId, String rawContent, Long parentThreadId, Long rootThreadId, Long quoteThreadId,
@@ -91,11 +109,11 @@ public class Thread extends DomainEntity<Long> {
         obj.hasHashtags = hasHashtags;
         obj.hasMedias = hasMedias;
         obj.hasPolls = hasPolls;
-        obj.mentions = mentions;
-        obj.hashtags = hashtags;
-        obj.medias = medias;
+        obj.mentions = mentions == null ? new HashSet<>() : new HashSet<>(mentions);
+        obj.hashtags = hashtags == null ? new HashSet<>() : new HashSet<>(hashtags);
+        obj.medias = medias == null ? new HashSet<>() : new HashSet<>(medias);
         obj.poll = poll;
-        obj.pollOptions = pollOptions;
+        obj.pollOptions = pollOptions == null ? new HashSet<>() : new HashSet<>(pollOptions);
         obj.preview = preview;
         return obj;
     }

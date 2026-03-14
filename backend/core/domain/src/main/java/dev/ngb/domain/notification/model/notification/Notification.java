@@ -1,9 +1,11 @@
 package dev.ngb.domain.notification.model.notification;
 
 import dev.ngb.domain.DomainEntity;
+import dev.ngb.util.CollectionUtils;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -35,6 +37,18 @@ public class Notification extends DomainEntity<Long> {
     private Set<NotificationObject> objects;
     private Set<NotificationDelivery> deliveries;
 
+    public Set<NotificationActor> getActors() {
+        return CollectionUtils.immutable(actors);
+    }
+
+    public Set<NotificationObject> getObjects() {
+        return CollectionUtils.immutable(objects);
+    }
+
+    public Set<NotificationDelivery> getDeliveries() {
+        return CollectionUtils.immutable(deliveries);
+    }
+
     public static Notification reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,
             Long recipientProfileId, Long actorProfileId, NotificationType type, NotificationEntityType entityType,
@@ -56,9 +70,9 @@ public class Notification extends DomainEntity<Long> {
         obj.groupKey = groupKey;
         obj.actorCount = actorCount;
         obj.lastActorProfileId = lastActorProfileId;
-        obj.actors = actors;
-        obj.objects = objects;
-        obj.deliveries = deliveries;
+        obj.actors = actors == null ? new HashSet<>() : new HashSet<>(actors);
+        obj.objects = objects == null ? new HashSet<>() : new HashSet<>(objects);
+        obj.deliveries = deliveries == null ? new HashSet<>() : new HashSet<>(deliveries);
         return obj;
     }
 }
