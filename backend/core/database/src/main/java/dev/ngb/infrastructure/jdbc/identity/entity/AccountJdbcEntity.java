@@ -31,7 +31,4 @@ public class AccountJdbcEntity extends JdbcEntity<Long> {
 
     @MappedCollection(idColumn = "account_id")
     private Set<AccountCredentialJdbcEntity> credentials;
-
-    @MappedCollection(idColumn = "account_id")
-    private Set<AccountDeviceJdbcEntity> devices;
 }

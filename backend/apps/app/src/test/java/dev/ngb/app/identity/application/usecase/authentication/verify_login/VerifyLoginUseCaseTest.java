@@ -12,6 +12,7 @@ import dev.ngb.domain.identity.model.account.DeviceType;
 import dev.ngb.domain.identity.model.otp.AccountOtp;
 import dev.ngb.domain.identity.model.otp.OtpChannel;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
+import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountLoginHistoryRepository;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
@@ -37,6 +38,8 @@ class VerifyLoginUseCaseTest {
 
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private AccountDeviceRepository accountDeviceRepository;
     @Mock
     private AccountOtpRepository accountOtpRepository;
     @Mock
@@ -67,7 +70,7 @@ class VerifyLoginUseCaseTest {
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
         when(accountOtpRepository.findLatestActiveByAccountIdAndPurpose(1L, OtpPurpose.LOGIN))
                 .thenReturn(Optional.of(otp));
-        when(accountRepository.save(any(Account.class))).thenReturn(account);
+        when(accountDeviceRepository.findById(5L)).thenReturn(Optional.of(device));
         when(tokenProvider.generateRefreshToken()).thenReturn("refresh");
         when(tokenProvider.hashToken("refresh")).thenReturn("hashed");
         when(tokenProvider.generateAccessToken(any(), any(), any())).thenReturn("access");
@@ -129,12 +132,7 @@ class VerifyLoginUseCaseTest {
 
     @Test
     void shouldThrowWhenDeviceNotFoundInAccount() {
-        Account account = Account.reconstruct(
-                1L, "uuid", null, Instant.now(), null, null,
-                "user@test.com", null, "hash", AccountStatus.ACTIVE,
-                true, false, false, null, null,
-                new HashSet<>(), new HashSet<>()
-        );
+        Account account = buildActiveAccountWithDevice(null);
         AccountOtp otp = AccountOtp.create(1L, "123456", OtpPurpose.LOGIN, OtpChannel.EMAIL);
         var request = new VerifyLoginRequest("ver-token", "123456");
 
@@ -143,6 +141,7 @@ class VerifyLoginUseCaseTest {
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
         when(accountOtpRepository.findLatestActiveByAccountIdAndPurpose(1L, OtpPurpose.LOGIN))
                 .thenReturn(Optional.of(otp));
+        when(accountDeviceRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.execute(request, IP))
                 .isInstanceOf(DomainException.class)

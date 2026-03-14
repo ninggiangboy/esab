@@ -16,10 +16,12 @@ import dev.ngb.domain.identity.model.otp.OtpPurpose;
 import dev.ngb.domain.identity.model.session.AccountLoginHistory;
 import dev.ngb.domain.identity.model.session.AccountSession;
 import dev.ngb.domain.identity.model.session.LoginResult;
+import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountLoginHistoryRepository;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
+import dev.ngb.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginAccountUseCase implements UseCaseService {
 
     private final AccountRepository accountRepository;
+    private final AccountDeviceRepository accountDeviceRepository;
     private final AccountSessionRepository accountSessionRepository;
     private final AccountOtpRepository accountOtpRepository;
     private final AccountLoginHistoryRepository accountLoginHistoryRepository;
@@ -37,11 +40,11 @@ public class LoginAccountUseCase implements UseCaseService {
     private final OtpSender otpSender;
 
     public LoginAccountResponse execute(LoginAccountRequest request, String ipAddress) {
-        log.info("Login attempt for email={}", maskEmail(request.email()));
+        log.info("Login attempt for email={}", StringUtils.maskEmail(request.email()));
 
         Account account = accountRepository.findByEmail(request.email())
                 .orElseThrow(() -> {
-                    log.warn("Login failed: account not found for email={}", maskEmail(request.email()));
+                    log.warn("Login failed: account not found for email={}", StringUtils.maskEmail(request.email()));
                     return AccountError.INVALID_CREDENTIALS.exception();
                 });
 
@@ -57,7 +60,9 @@ public class LoginAccountUseCase implements UseCaseService {
         validateAccountStatus(account);
 
         String fingerprint = request.deviceInfo().fingerprint();
-        AccountDevice existingDevice = account.findDeviceByFingerprint(fingerprint).orElse(null);
+        AccountDevice existingDevice = accountDeviceRepository
+                .findByAccountIdAndFingerprint(account.getId(), fingerprint)
+                .orElse(null);
 
         boolean isNewDevice = existingDevice == null;
         boolean needs2FA = Boolean.TRUE.equals(account.getTwoFactorEnabled());
@@ -70,19 +75,14 @@ public class LoginAccountUseCase implements UseCaseService {
                     request.deviceInfo().deviceName(),
                     fingerprint
             );
-            account.addDevice(newDevice);
-            account = accountRepository.save(account);
-
-            AccountDevice savedDevice = account.findDeviceByFingerprint(fingerprint).orElseThrow();
+            AccountDevice savedDevice = accountDeviceRepository.save(newDevice);
             log.info("New device login for accountId={}, deviceId={}, OTP required", account.getId(), savedDevice.getId());
             return sendVerificationAndRespond(account, savedDevice);
         }
 
         if (needs2FA) {
             existingDevice.touch();
-            account = accountRepository.save(account);
-
-            AccountDevice savedDevice = account.findDeviceByFingerprint(fingerprint).orElseThrow();
+            AccountDevice savedDevice = accountDeviceRepository.save(existingDevice);
             log.info("2FA required for accountId={}, deviceId={}", account.getId(), savedDevice.getId());
             return sendVerificationAndRespond(account, savedDevice);
         }
@@ -90,8 +90,7 @@ public class LoginAccountUseCase implements UseCaseService {
         existingDevice.touch();
         account.recordLogin(ipAddress);
         account = accountRepository.save(account);
-
-        AccountDevice savedDevice = account.findDeviceByFingerprint(fingerprint).orElseThrow();
+        AccountDevice savedDevice = accountDeviceRepository.save(existingDevice);
 
         accountLoginHistoryRepository.save(
                 AccountLoginHistory.createSuccess(account.getId(), savedDevice.getId(), ipAddress, null)
@@ -136,13 +135,6 @@ public class LoginAccountUseCase implements UseCaseService {
             }
             case ACTIVE -> { }
         }
-    }
-
-    private static String maskEmail(String email) {
-        if (email == null || email.length() < 3) return "***";
-        int at = email.indexOf('@');
-        if (at <= 0) return "***";
-        return email.substring(0, Math.min(2, at)) + "***" + email.substring(at);
     }
 
     private LoginAccountResponse sendVerificationAndRespond(Account account, AccountDevice device) {

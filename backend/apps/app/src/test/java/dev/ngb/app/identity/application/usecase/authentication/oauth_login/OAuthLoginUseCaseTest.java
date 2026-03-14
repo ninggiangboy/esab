@@ -8,6 +8,7 @@ import dev.ngb.app.identity.application.usecase.authentication.oauth_login.dto.O
 import dev.ngb.domain.DomainException;
 import dev.ngb.domain.identity.error.AccountError;
 import dev.ngb.domain.identity.model.account.*;
+import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,8 @@ class OAuthLoginUseCaseTest {
 
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private AccountDeviceRepository accountDeviceRepository;
     @Mock
     private AccountSessionRepository accountSessionRepository;
     @Mock
@@ -57,9 +60,11 @@ class OAuthLoginUseCaseTest {
                     1L, saved.getUuid(), null, Instant.now(), null, null,
                     saved.getEmail(), null, null, AccountStatus.ACTIVE,
                     true, false, false, null, null,
-                    new HashSet<>(saved.getCredentials()), new HashSet<>(saved.getDevices())
+                    new HashSet<>(saved.getCredentials()), new HashSet<>()
             );
         });
+        when(accountDeviceRepository.findByAccountIdAndFingerprint(1L, "fp-new")).thenReturn(Optional.empty());
+        when(accountDeviceRepository.save(any(AccountDevice.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(tokenProvider.generateRefreshToken()).thenReturn("refresh");
         when(tokenProvider.hashToken("refresh")).thenReturn("hashed");
         when(tokenProvider.generateAccessToken(any(), any(), any())).thenReturn("access");
@@ -92,6 +97,8 @@ class OAuthLoginUseCaseTest {
         when(oAuthProviderVerifier.verify(AuthProvider.GOOGLE, "provider-token")).thenReturn(userInfo);
         when(accountRepository.findByEmail("existing@test.com")).thenReturn(Optional.of(account));
         when(accountRepository.save(any(Account.class))).thenReturn(account);
+        when(accountDeviceRepository.findByAccountIdAndFingerprint(1L, "fp-known")).thenReturn(Optional.of(device));
+        when(accountDeviceRepository.save(any(AccountDevice.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(tokenProvider.generateRefreshToken()).thenReturn("refresh");
         when(tokenProvider.hashToken("refresh")).thenReturn("hashed");
         when(tokenProvider.generateAccessToken(any(), any(), any())).thenReturn("access");

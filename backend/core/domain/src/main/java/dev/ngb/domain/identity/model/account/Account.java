@@ -33,20 +33,12 @@ public class Account extends DomainEntity<Long> {
     private String lastLoginIp;
 
     private Set<AccountCredential> credentials;
-    private Set<AccountDevice> devices;
 
     /**
      * Returns an immutable view of credentials. Mutations must use {@link #addCredential(AccountCredential)}.
      */
     public Set<AccountCredential> getCredentials() {
         return credentials == null ? Set.of() : Set.copyOf(credentials);
-    }
-
-    /**
-     * Returns an immutable copy of devices. To add a device use {@link #addDevice(AccountDevice)}.
-     */
-    public Set<AccountDevice> getDevices() {
-        return devices == null ? Set.of() : Set.copyOf(devices);
     }
 
     public static Account create(String email, String passwordHash) {
@@ -59,7 +51,6 @@ public class Account extends DomainEntity<Long> {
         obj.phoneVerified = false;
         obj.twoFactorEnabled = false;
         obj.credentials = new HashSet<>();
-        obj.devices = new HashSet<>();
         return obj;
     }
 
@@ -72,7 +63,6 @@ public class Account extends DomainEntity<Long> {
         obj.phoneVerified = false;
         obj.twoFactorEnabled = false;
         obj.credentials = new HashSet<>();
-        obj.devices = new HashSet<>();
         return obj;
     }
 
@@ -104,28 +94,6 @@ public class Account extends DomainEntity<Long> {
         return this.status == AccountStatus.PENDING;
     }
 
-    public Optional<AccountDevice> findDeviceByFingerprint(String fingerprint) {
-        if (devices == null || fingerprint == null) return Optional.empty();
-        return devices.stream()
-                .filter(d -> fingerprint.equals(d.getFingerprint()))
-                .findFirst();
-    }
-
-    public Optional<AccountDevice> findDeviceById(Long deviceId) {
-        if (devices == null || deviceId == null) return Optional.empty();
-        return devices.stream()
-                .filter(d -> deviceId.equals(d.getId()))
-                .findFirst();
-    }
-
-    /** Adds a device to this account (mutations go through aggregate root). */
-    public void addDevice(AccountDevice device) {
-        if (device == null) return;
-        if (this.devices == null) this.devices = new HashSet<>();
-        this.devices.add(device);
-        this.updatedAt = Instant.now(clock);
-    }
-
     /** Adds a credential to this account (mutations go through aggregate root). */
     public void addCredential(AccountCredential credential) {
         if (credential == null) return;
@@ -139,7 +107,7 @@ public class Account extends DomainEntity<Long> {
             String email, String phoneNumber, String passwordHash, AccountStatus status,
             Boolean emailVerified, Boolean phoneVerified, Boolean twoFactorEnabled,
             Instant lastLoginAt, String lastLoginIp,
-            Set<AccountCredential> credentials, Set<AccountDevice> devices) {
+            Set<AccountCredential> credentials) {
         Account obj = new Account();
         obj.id = id;
         obj.uuid = uuid;
@@ -157,7 +125,6 @@ public class Account extends DomainEntity<Long> {
         obj.lastLoginAt = lastLoginAt;
         obj.lastLoginIp = lastLoginIp;
         obj.credentials = credentials == null ? new HashSet<>() : new HashSet<>(credentials);
-        obj.devices = devices == null ? new HashSet<>() : new HashSet<>(devices);
         return obj;
     }
 }

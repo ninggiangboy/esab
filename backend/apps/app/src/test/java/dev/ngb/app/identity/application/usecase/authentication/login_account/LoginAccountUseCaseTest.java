@@ -10,6 +10,7 @@ import dev.ngb.app.identity.application.usecase.authentication.login_account.dto
 import dev.ngb.domain.DomainException;
 import dev.ngb.domain.identity.error.AccountError;
 import dev.ngb.domain.identity.model.account.*;
+import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountLoginHistoryRepository;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
@@ -35,6 +36,8 @@ class LoginAccountUseCaseTest {
 
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private AccountDeviceRepository accountDeviceRepository;
     @Mock
     private AccountSessionRepository accountSessionRepository;
     @Mock
@@ -67,6 +70,7 @@ class LoginAccountUseCaseTest {
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp-known"));
 
         when(accountRepository.findByEmail("user@test.com")).thenReturn(Optional.of(account));
+        when(accountDeviceRepository.findByAccountIdAndFingerprint(1L, "fp-known")).thenReturn(Optional.of(device));
         when(passwordEncoder.matches("password", "hashed-pw")).thenReturn(true);
         when(accountRepository.save(any(Account.class))).thenReturn(account);
         when(tokenProvider.generateRefreshToken()).thenReturn("refresh-token");
@@ -180,7 +184,7 @@ class LoginAccountUseCaseTest {
 
         when(accountRepository.findByEmail("user@test.com")).thenReturn(Optional.of(account));
         when(passwordEncoder.matches("password", "hashed-pw")).thenReturn(true);
-        when(accountRepository.save(any(Account.class))).thenReturn(account);
+        when(accountDeviceRepository.save(any(AccountDevice.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(otpCodeGenerator.generate()).thenReturn("654321");
         when(tokenProvider.generateVerificationToken(any(), any())).thenReturn("ver-token");
 
@@ -204,8 +208,9 @@ class LoginAccountUseCaseTest {
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp-known"));
 
         when(accountRepository.findByEmail("user@test.com")).thenReturn(Optional.of(account));
+        when(accountDeviceRepository.findByAccountIdAndFingerprint(1L, "fp-known")).thenReturn(Optional.of(device));
         when(passwordEncoder.matches("password", "hashed-pw")).thenReturn(true);
-        when(accountRepository.save(any(Account.class))).thenReturn(account);
+        when(accountDeviceRepository.save(any(AccountDevice.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(otpCodeGenerator.generate()).thenReturn("111111");
         when(tokenProvider.generateVerificationToken(any(), any())).thenReturn("ver-token-2fa");
 

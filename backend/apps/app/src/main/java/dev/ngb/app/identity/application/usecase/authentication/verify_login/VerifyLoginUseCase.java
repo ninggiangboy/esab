@@ -12,6 +12,7 @@ import dev.ngb.domain.identity.model.otp.OtpPurpose;
 import dev.ngb.domain.identity.model.session.AccountLoginHistory;
 import dev.ngb.domain.identity.model.session.AccountSession;
 import dev.ngb.domain.identity.model.session.LoginResult;
+import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountLoginHistoryRepository;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class VerifyLoginUseCase implements UseCaseService {
 
     private final AccountRepository accountRepository;
+    private final AccountDeviceRepository accountDeviceRepository;
     private final AccountOtpRepository accountOtpRepository;
     private final AccountSessionRepository accountSessionRepository;
     private final AccountLoginHistoryRepository accountLoginHistoryRepository;
@@ -48,48 +50,50 @@ public class VerifyLoginUseCase implements UseCaseService {
                     return AccountError.ACCOUNT_NOT_FOUND.exception();
                 });
 
+        Long accountId = account.getId();
         AccountOtp otp = accountOtpRepository
-                .findLatestActiveByAccountIdAndPurpose(account.getId(), OtpPurpose.LOGIN)
+                .findLatestActiveByAccountIdAndPurpose(accountId, OtpPurpose.LOGIN)
                 .orElseThrow(() -> {
-                    log.warn("No active login OTP for accountId={}", account.getId());
+                    log.warn("No active login OTP for accountId={}", accountId);
                     return AccountError.INVALID_OTP.exception();
                 });
 
         otp.verify(request.otpCode());
         accountOtpRepository.save(otp);
-        log.debug("OTP verified for accountId={}", account.getId());
+        log.debug("OTP verified for accountId={}", accountId);
 
-        AccountDevice device = account.findDeviceById(claims.deviceId())
+        AccountDevice device = accountDeviceRepository.findById(claims.deviceId())
+                .filter(d -> accountId.equals(d.getAccountId()))
                 .orElseThrow(() -> {
-                    log.warn("Device not found for verify login accountId={}, deviceId={}", account.getId(), claims.deviceId());
+                    log.warn("Device not found for verify login accountId={}, deviceId={}", accountId, claims.deviceId());
                     return AccountError.INVALID_VERIFICATION_TOKEN.exception();
                 });
 
         if (!Boolean.TRUE.equals(device.getIsTrusted())) {
-            log.debug("Marking device as trusted accountId={}, deviceId={}", account.getId(), device.getId());
+            log.debug("Marking device as trusted accountId={}, deviceId={}", accountId, device.getId());
             device.markTrusted();
-            accountRepository.save(account);
+            accountDeviceRepository.save(device);
         }
 
         account.recordLogin(ipAddress);
         account = accountRepository.save(account);
 
         accountLoginHistoryRepository.save(
-                AccountLoginHistory.createSuccess(account.getId(), device.getId(), ipAddress, null)
+                AccountLoginHistory.createSuccess(accountId, device.getId(), ipAddress, null)
         );
 
         String refreshToken = tokenProvider.generateRefreshToken();
         AccountSession session = AccountSession.create(
-                account.getId(), device.getId(),
+                accountId, device.getId(),
                 tokenProvider.hashToken(refreshToken), ipAddress
         );
         accountSessionRepository.save(session);
 
         String accessToken = tokenProvider.generateAccessToken(
-                account.getId(), account.getUuid(), account.getEmail()
+                accountId, account.getUuid(), account.getEmail()
         );
 
-        log.info("Verify login successful accountId={}, accountUuid={}", account.getId(), account.getUuid());
+        log.info("Verify login successful accountId={}, accountUuid={}", accountId, account.getUuid());
         return new AuthTokenResponse(
                 accessToken, refreshToken,
                 tokenProvider.getAccessTokenExpiresInSeconds(),

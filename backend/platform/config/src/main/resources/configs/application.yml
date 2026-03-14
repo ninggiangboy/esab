@@ -10,6 +10,13 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
+
+logging:
+  level:
+    org.springframework.jdbc.core: DEBUG
+    org.springframework.data.jdbc: DEBUG
+    dev.ngb: DEBUG
+
 management:
   tracing:
     sampling:

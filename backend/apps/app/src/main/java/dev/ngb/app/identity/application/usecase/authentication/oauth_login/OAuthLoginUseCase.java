@@ -10,6 +10,7 @@ import dev.ngb.domain.identity.model.account.Account;
 import dev.ngb.domain.identity.model.account.AccountCredential;
 import dev.ngb.domain.identity.model.account.AccountDevice;
 import dev.ngb.domain.identity.model.session.AccountSession;
+import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class OAuthLoginUseCase implements UseCaseService {
 
     private final AccountRepository accountRepository;
+    private final AccountDeviceRepository accountDeviceRepository;
     private final AccountSessionRepository accountSessionRepository;
     private final TokenProvider tokenProvider;
     private final OAuthProviderVerifier oAuthProviderVerifier;
@@ -71,7 +73,9 @@ public class OAuthLoginUseCase implements UseCaseService {
         }
 
         String fingerprint = request.deviceInfo().fingerprint();
-        AccountDevice device = account.findDeviceByFingerprint(fingerprint).orElse(null);
+        AccountDevice device = accountDeviceRepository
+                .findByAccountIdAndFingerprint(account.getId(), fingerprint)
+                .orElse(null);
 
         if (device == null) {
             log.debug("New device for OAuth login accountId={}", account.getId());
@@ -82,18 +86,14 @@ public class OAuthLoginUseCase implements UseCaseService {
                     fingerprint
             );
             newDevice.markTrusted();
-            account.addDevice(newDevice);
-            account.recordLogin(ipAddress);
-            account = accountRepository.save(account);
-
-            device = account.findDeviceByFingerprint(fingerprint).orElseThrow();
+            device = accountDeviceRepository.save(newDevice);
         } else {
             device.touch();
-            account.recordLogin(ipAddress);
-            account = accountRepository.save(account);
-
-            device = account.findDeviceByFingerprint(fingerprint).orElseThrow();
+            device = accountDeviceRepository.save(device);
         }
+
+        account.recordLogin(ipAddress);
+        account = accountRepository.save(account);
 
         String refreshToken = tokenProvider.generateRefreshToken();
         AccountSession session = AccountSession.create(

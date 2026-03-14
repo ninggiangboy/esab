@@ -10,6 +10,7 @@ import dev.ngb.domain.identity.model.account.AccountDevice;
 import dev.ngb.domain.identity.model.otp.AccountOtp;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
 import dev.ngb.domain.identity.model.session.AccountSession;
+import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class VerifyEmailUseCase implements UseCaseService {
 
     private final AccountRepository accountRepository;
+    private final AccountDeviceRepository accountDeviceRepository;
     private final AccountOtpRepository accountOtpRepository;
     private final AccountSessionRepository accountSessionRepository;
     private final TokenProvider tokenProvider;
@@ -39,10 +41,11 @@ public class VerifyEmailUseCase implements UseCaseService {
             throw AccountError.EMAIL_ALREADY_VERIFIED.exception();
         }
 
+        Long accountId = account.getId();
         AccountOtp otp = accountOtpRepository
                 .findLatestActiveByAccountIdAndPurpose(account.getId(), OtpPurpose.REGISTRATION)
                 .orElseThrow(() -> {
-                    log.warn("Verify email failed: no active OTP for accountId={}", account.getId());
+                    log.warn("Verify email failed: no active OTP for accountId={}", accountId);
                     return AccountError.INVALID_OTP.exception();
                 });
 
@@ -59,10 +62,7 @@ public class VerifyEmailUseCase implements UseCaseService {
                 request.deviceInfo().fingerprint()
         );
         device.markTrusted();
-        account.addDevice(device);
-        account = accountRepository.save(account);
-
-        AccountDevice savedDevice = account.findDeviceByFingerprint(request.deviceInfo().fingerprint()).orElseThrow();
+        AccountDevice savedDevice = accountDeviceRepository.save(device);
 
         String refreshToken = tokenProvider.generateRefreshToken();
         AccountSession session = AccountSession.create(

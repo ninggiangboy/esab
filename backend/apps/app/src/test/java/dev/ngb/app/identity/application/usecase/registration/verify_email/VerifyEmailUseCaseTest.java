@@ -12,6 +12,7 @@ import dev.ngb.domain.identity.model.account.DeviceType;
 import dev.ngb.domain.identity.model.otp.AccountOtp;
 import dev.ngb.domain.identity.model.otp.OtpChannel;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
+import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
@@ -36,6 +37,8 @@ class VerifyEmailUseCaseTest {
     @Mock
     private AccountRepository accountRepository;
     @Mock
+    private AccountDeviceRepository accountDeviceRepository;
+    @Mock
     private AccountOtpRepository accountOtpRepository;
     @Mock
     private AccountSessionRepository accountSessionRepository;
@@ -57,7 +60,7 @@ class VerifyEmailUseCaseTest {
         when(accountRepository.findByEmail("user@test.com")).thenReturn(Optional.of(pendingAccount));
         when(accountOtpRepository.findLatestActiveByAccountIdAndPurpose(1L, OtpPurpose.REGISTRATION))
                 .thenReturn(Optional.of(otp));
-        when(accountRepository.save(any(Account.class))).thenReturn(pendingAccount);
+        when(accountDeviceRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(tokenProvider.generateRefreshToken()).thenReturn("refresh-token");
         when(tokenProvider.hashToken("refresh-token")).thenReturn("hashed");
         when(tokenProvider.generateAccessToken(any(), any(), any())).thenReturn("access-token");
