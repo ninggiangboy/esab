@@ -7,4 +7,8 @@ import dev.ngb.domain.profile.model.profile.Profile;
  * Repository for managing {@link Profile} aggregates.
  */
 public interface ProfileRepository extends Repository<Profile, Long> {
+
+    boolean existsByAccountId(Long accountId);
+
+    boolean existsByUsername(String username);
 }

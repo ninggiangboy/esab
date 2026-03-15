@@ -1,7 +1,7 @@
 package dev.ngb.app.identity.infrastructure;
 
 import dev.ngb.app.identity.application.port.OAuthProviderVerifier;
-import dev.ngb.domain.identity.model.account.AuthProvider;
+import dev.ngb.domain.identity.model.auth.AuthProvider;
 import org.springframework.stereotype.Component;
 
 /**

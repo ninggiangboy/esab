@@ -92,6 +92,38 @@ Resends the verification OTP if the previous one expired.
 
 ---
 
+## `POST /api/profiles`
+
+Creates a profile for the authenticated account after email verification.
+
+**Request:**
+
+```json
+{
+  "username": "user1",
+  "displayName": "User One"
+}
+```
+
+**Response (201):**
+
+```json
+{
+  "profileUuid": "550e8400-e29b-41d4-a716-446655440123"
+}
+```
+
+**Errors:**
+
+| Code | Error                   | When                                             |
+|------|-------------------------|--------------------------------------------------|
+| 400  | Validation error        | Invalid input                                    |
+| 401  | Unauthorized            | Missing or invalid access token                  |
+| 409  | PROFILE_ALREADY_EXISTS  | Profile already exists for this account          |
+| 409  | USERNAME_ALREADY_EXISTS | Username is already taken                        |
+
+---
+
 ## Sequence Diagram
 
 ```mermaid
@@ -124,4 +156,15 @@ sequenceDiagram
     end
 
     Note over C,Mail: Client can call POST /verify-email/resend if OTP expired
+
+    C->>API: POST /api/profiles {username, ...}
+    API->>UC: CreateProfileUseCase
+    UC->>DB: Load account by account_id from token
+    UC->>DB: Check existing profile and username uniqueness
+    alt Conflicts
+        UC-->>C: 409 PROFILE_ALREADY_EXISTS or USERNAME_ALREADY_EXISTS
+    else
+        UC->>DB: Save new profile
+        UC-->>C: 201 {profileUuid}
+    end
 ```

@@ -9,7 +9,9 @@ import dev.ngb.app.identity.application.usecase.authentication.login_account.dto
 import dev.ngb.app.identity.application.usecase.authentication.login_account.dto.LoginAccountResponse;
 import dev.ngb.domain.DomainException;
 import dev.ngb.domain.identity.error.AccountError;
-import dev.ngb.domain.identity.model.account.*;
+import dev.ngb.domain.identity.model.auth.*;
+import dev.ngb.domain.identity.model.auth.AccountDevice;
+import dev.ngb.domain.identity.model.auth.DeviceType;
 import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountLoginHistoryRepository;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
@@ -122,8 +124,7 @@ class LoginAccountUseCaseTest {
         Account account = Account.reconstruct(
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hashed-pw", AccountStatus.PENDING,
-                false, false, false, null, null,
-                new HashSet<>()
+                false, false, false, null, null
         );
         var request = new LoginAccountRequest("user@test.com", "password",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp"));
@@ -142,8 +143,7 @@ class LoginAccountUseCaseTest {
         Account account = Account.reconstruct(
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hashed-pw", AccountStatus.SUSPENDED,
-                true, false, false, null, null,
-                new HashSet<>()
+                true, false, false, null, null
         );
         var request = new LoginAccountRequest("user@test.com", "password",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp"));
@@ -162,8 +162,7 @@ class LoginAccountUseCaseTest {
         Account account = Account.reconstruct(
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hashed-pw", AccountStatus.BANNED,
-                true, false, false, null, null,
-                new HashSet<>()
+                true, false, false, null, null
         );
         var request = new LoginAccountRequest("user@test.com", "password",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp"));
@@ -225,8 +224,7 @@ class LoginAccountUseCaseTest {
         return Account.reconstruct(
                 1L, "uuid-123", null, Instant.now(), null, null,
                 "user@test.com", null, "hashed-pw", AccountStatus.ACTIVE,
-                true, false, twoFactorEnabled, null, null,
-                new HashSet<>()
+                true, false, twoFactorEnabled, null, null
         );
     }
 }

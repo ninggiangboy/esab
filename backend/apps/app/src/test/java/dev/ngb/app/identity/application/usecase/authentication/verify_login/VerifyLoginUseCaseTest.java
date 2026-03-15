@@ -5,10 +5,10 @@ import dev.ngb.app.identity.application.port.TokenProvider;
 import dev.ngb.app.identity.application.usecase.authentication.verify_login.dto.VerifyLoginRequest;
 import dev.ngb.domain.DomainException;
 import dev.ngb.domain.identity.error.AccountError;
-import dev.ngb.domain.identity.model.account.Account;
-import dev.ngb.domain.identity.model.account.AccountDevice;
-import dev.ngb.domain.identity.model.account.AccountStatus;
-import dev.ngb.domain.identity.model.account.DeviceType;
+import dev.ngb.domain.identity.model.auth.Account;
+import dev.ngb.domain.identity.model.auth.AccountDevice;
+import dev.ngb.domain.identity.model.auth.AccountStatus;
+import dev.ngb.domain.identity.model.auth.DeviceType;
 import dev.ngb.domain.identity.model.otp.AccountOtp;
 import dev.ngb.domain.identity.model.otp.OtpChannel;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -154,8 +153,7 @@ class VerifyLoginUseCaseTest {
         return Account.reconstruct(
                 1L, "uuid-123", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.ACTIVE,
-                true, false, true, null, null,
-                new HashSet<>()
+                true, false, true, null, null
         );
     }
 }

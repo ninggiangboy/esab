@@ -11,4 +11,8 @@ public class StringUtils {
         if (at <= 0) return "***";
         return email.substring(0, Math.min(2, at)) + "***" + email.substring(at);
     }
+
+    public static String trim(String str) {
+        return str == null ? null : str.strip();
+    }
 }

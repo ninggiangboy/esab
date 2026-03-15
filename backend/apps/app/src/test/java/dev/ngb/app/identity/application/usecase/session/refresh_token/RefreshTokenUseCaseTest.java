@@ -5,8 +5,8 @@ import dev.ngb.app.identity.application.port.TokenProvider;
 import dev.ngb.app.identity.application.usecase.session.refresh_token.dto.RefreshTokenRequest;
 import dev.ngb.domain.DomainException;
 import dev.ngb.domain.identity.error.AccountError;
-import dev.ngb.domain.identity.model.account.Account;
-import dev.ngb.domain.identity.model.account.AccountStatus;
+import dev.ngb.domain.identity.model.auth.Account;
+import dev.ngb.domain.identity.model.auth.AccountStatus;
 import dev.ngb.domain.identity.model.session.AccountSession;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,8 +48,7 @@ class RefreshTokenUseCaseTest {
         Account account = Account.reconstruct(
                 10L, "acc-uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.ACTIVE,
-                true, false, false, null, null,
-                new HashSet<>()
+                true, false, false, null, null
         );
         var request = new RefreshTokenRequest("old-refresh-token");
 
@@ -147,8 +145,7 @@ class RefreshTokenUseCaseTest {
         Account suspendedAccount = Account.reconstruct(
                 10L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.SUSPENDED,
-                true, false, false, null, null,
-                new HashSet<>()
+                true, false, false, null, null
         );
         var request = new RefreshTokenRequest("token");
 

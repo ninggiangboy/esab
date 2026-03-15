@@ -4,8 +4,8 @@ import dev.ngb.app.identity.application.port.PasswordEncoder;
 import dev.ngb.app.identity.application.usecase.password.reset_password.dto.ResetPasswordRequest;
 import dev.ngb.domain.DomainException;
 import dev.ngb.domain.identity.error.AccountError;
-import dev.ngb.domain.identity.model.account.Account;
-import dev.ngb.domain.identity.model.account.AccountStatus;
+import dev.ngb.domain.identity.model.auth.Account;
+import dev.ngb.domain.identity.model.auth.AccountStatus;
 import dev.ngb.domain.identity.model.otp.AccountOtp;
 import dev.ngb.domain.identity.model.otp.OtpChannel;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,8 +47,7 @@ class ResetPasswordUseCaseTest {
         Account account = Account.reconstruct(
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "old-hash", AccountStatus.ACTIVE,
-                true, false, false, null, null,
-                new HashSet<>()
+                true, false, false, null, null
         );
         AccountOtp otp = AccountOtp.create(1L, "123456", OtpPurpose.PASSWORD_RESET, OtpChannel.EMAIL);
         AccountSession session = AccountSession.reconstruct(
@@ -88,8 +86,7 @@ class ResetPasswordUseCaseTest {
         Account account = Account.reconstruct(
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.ACTIVE,
-                true, false, false, null, null,
-                new HashSet<>()
+                true, false, false, null, null
         );
         var request = new ResetPasswordRequest("user@test.com", "123456", "newPassword");
 
@@ -108,8 +105,7 @@ class ResetPasswordUseCaseTest {
         Account account = Account.reconstruct(
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "old-hash", AccountStatus.ACTIVE,
-                true, false, false, null, null,
-                new HashSet<>()
+                true, false, false, null, null
         );
         AccountOtp otp = AccountOtp.create(1L, "111111", OtpPurpose.PASSWORD_RESET, OtpChannel.EMAIL);
         AccountSession session1 = AccountSession.reconstruct(

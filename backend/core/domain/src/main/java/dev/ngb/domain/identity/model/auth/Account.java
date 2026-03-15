@@ -1,20 +1,16 @@
-package dev.ngb.domain.identity.model.account;
+package dev.ngb.domain.identity.model.auth;
 
 import dev.ngb.domain.DomainEntity;
 import dev.ngb.domain.identity.error.AccountError;
 import lombok.Getter;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Core identity entity representing a user's authentication account, separated from their public profile.
  * <p>
- * Aggregate root of the identity domain. Owns credentials and devices;
- * sessions, OTPs, and login history are operational/audit entities accessed separately.
- * <p>
- * Devices and credentials are exposed as immutable sets; all mutations must go through this aggregate.
+ * Aggregate root of the identity domain. Credentials, devices, sessions, OTPs, and login history
+ * are separate entities with their own repositories; they are not owned by this aggregate.
  */
 @Getter
 public class Account extends DomainEntity<Long> {
@@ -31,15 +27,6 @@ public class Account extends DomainEntity<Long> {
     private Instant lastLoginAt;
     private String lastLoginIp;
 
-    private Set<AccountCredential> credentials;
-
-    /**
-     * Returns an immutable view of credentials. Mutations must use {@link #addCredential(AccountCredential)}.
-     */
-    public Set<AccountCredential> getCredentials() {
-        return credentials == null ? Set.of() : Set.copyOf(credentials);
-    }
-
     public static Account create(String email, String passwordHash) {
         Account obj = new Account();
         obj.createdAt = Instant.now(obj.clock);
@@ -49,7 +36,6 @@ public class Account extends DomainEntity<Long> {
         obj.emailVerified = false;
         obj.phoneVerified = false;
         obj.twoFactorEnabled = false;
-        obj.credentials = new HashSet<>();
         return obj;
     }
 
@@ -61,7 +47,6 @@ public class Account extends DomainEntity<Long> {
         obj.emailVerified = true;
         obj.phoneVerified = false;
         obj.twoFactorEnabled = false;
-        obj.credentials = new HashSet<>();
         return obj;
     }
 
@@ -93,20 +78,11 @@ public class Account extends DomainEntity<Long> {
         return this.status == AccountStatus.PENDING;
     }
 
-    /** Adds a credential to this account (mutations go through aggregate root). */
-    public void addCredential(AccountCredential credential) {
-        if (credential == null) return;
-        if (this.credentials == null) this.credentials = new HashSet<>();
-        this.credentials.add(credential);
-        this.updatedAt = Instant.now(clock);
-    }
-
     public static Account reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,
             String email, String phoneNumber, String passwordHash, AccountStatus status,
             Boolean emailVerified, Boolean phoneVerified, Boolean twoFactorEnabled,
-            Instant lastLoginAt, String lastLoginIp,
-            Set<AccountCredential> credentials) {
+            Instant lastLoginAt, String lastLoginIp) {
         Account obj = new Account();
         obj.id = id;
         obj.uuid = uuid;
@@ -123,7 +99,6 @@ public class Account extends DomainEntity<Long> {
         obj.twoFactorEnabled = twoFactorEnabled;
         obj.lastLoginAt = lastLoginAt;
         obj.lastLoginIp = lastLoginIp;
-        obj.credentials = credentials == null ? new HashSet<>() : new HashSet<>(credentials);
         return obj;
     }
 }

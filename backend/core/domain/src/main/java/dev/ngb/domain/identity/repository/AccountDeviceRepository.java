@@ -1,7 +1,7 @@
 package dev.ngb.domain.identity.repository;
 
 import dev.ngb.domain.Repository;
-import dev.ngb.domain.identity.model.account.AccountDevice;
+import dev.ngb.domain.identity.model.auth.AccountDevice;
 
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package dev.ngb.domain.identity.model.account;
+package dev.ngb.domain.identity.model.auth;
 
 /**
  * Device platform categories.

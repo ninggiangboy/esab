@@ -5,7 +5,7 @@ import dev.ngb.app.identity.application.port.TokenProvider;
 import dev.ngb.app.identity.application.usecase.session.refresh_token.dto.RefreshTokenRequest;
 import dev.ngb.application.UseCaseService;
 import dev.ngb.domain.identity.error.AccountError;
-import dev.ngb.domain.identity.model.account.Account;
+import dev.ngb.domain.identity.model.auth.Account;
 import dev.ngb.domain.identity.model.session.AccountSession;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;

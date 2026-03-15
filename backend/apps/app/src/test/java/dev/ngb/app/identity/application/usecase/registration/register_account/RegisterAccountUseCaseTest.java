@@ -7,7 +7,7 @@ import dev.ngb.app.identity.application.usecase.registration.register_account.dt
 import dev.ngb.app.identity.application.usecase.registration.register_account.dto.RegisterAccountResponse;
 import dev.ngb.domain.DomainException;
 import dev.ngb.domain.identity.error.AccountError;
-import dev.ngb.domain.identity.model.account.Account;
+import dev.ngb.domain.identity.model.auth.Account;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;

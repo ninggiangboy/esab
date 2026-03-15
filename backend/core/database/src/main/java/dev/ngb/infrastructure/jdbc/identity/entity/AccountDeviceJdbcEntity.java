@@ -1,6 +1,6 @@
 package dev.ngb.infrastructure.jdbc.identity.entity;
 
-import dev.ngb.domain.identity.model.account.DeviceType;
+import dev.ngb.domain.identity.model.auth.DeviceType;
 import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

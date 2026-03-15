@@ -1,4 +1,4 @@
-package dev.ngb.domain.profile.model.profile;
+package dev.ngb.domain.profile.model.stats;
 
 import dev.ngb.domain.DomainEntity;
 import lombok.Getter;
@@ -19,6 +19,18 @@ public class ProfileStats extends DomainEntity<Long> {
     private Long threadCount;
     private Long likeCount;
     private Long mediaCount;
+
+    public static ProfileStats createForNewProfile(Long profileId) {
+        ProfileStats obj = new ProfileStats();
+        obj.createdAt = Instant.now(obj.clock);
+        obj.profileId = profileId;
+        obj.followerCount = 0L;
+        obj.followingCount = 0L;
+        obj.threadCount = 0L;
+        obj.likeCount = 0L;
+        obj.mediaCount = 0L;
+        return obj;
+    }
 
     public static ProfileStats reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,

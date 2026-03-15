@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
-
-import java.util.Set;
 
 @Getter
 @Setter
@@ -28,25 +25,4 @@ public class ProfileJdbcEntity extends JdbcEntity<Long> {
     private String bannerUrl;
     private ProfileVisibility visibility;
     private Boolean isVerified;
-
-    @MappedCollection(idColumn = "profile_id")
-    private ProfileStatsJdbcEntity stats;
-
-    @MappedCollection(idColumn = "profile_id")
-    private ProfileSettingJdbcEntity setting;
-
-    @MappedCollection(idColumn = "profile_id")
-    private ProfileActivityJdbcEntity activity;
-
-    @MappedCollection(idColumn = "profile_id")
-    private Set<ProfileLinkJdbcEntity> links;
-
-    @MappedCollection(idColumn = "profile_id")
-    private Set<ProfileMediaJdbcEntity> medias;
-
-    @MappedCollection(idColumn = "profile_id")
-    private Set<ProfileMetadataJdbcEntity> metadata;
-
-    @MappedCollection(idColumn = "profile_id")
-    private Set<ProfileUsernameJdbcEntity> usernameHistory;
 }

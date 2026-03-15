@@ -1,4 +1,4 @@
-package dev.ngb.domain.profile.model.profile;
+package dev.ngb.domain.profile.model.username;
 
 import dev.ngb.domain.DomainEntity;
 import lombok.Getter;

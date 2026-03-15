@@ -1,4 +1,4 @@
-package dev.ngb.domain.identity.model.account;
+package dev.ngb.domain.identity.model.auth;
 
 import dev.ngb.domain.DomainException;
 import dev.ngb.domain.identity.error.AccountError;
@@ -19,7 +19,6 @@ class AccountTest {
         assertThat(account.getEmailVerified()).isFalse();
         assertThat(account.getPhoneVerified()).isFalse();
         assertThat(account.getTwoFactorEnabled()).isFalse();
-        assertThat(account.getCredentials()).isEmpty();
         assertThat(account.getCreatedAt()).isNotNull();
         assertThat(account.getUuid()).isNotNull();
     }
@@ -34,7 +33,6 @@ class AccountTest {
         assertThat(account.getEmailVerified()).isTrue();
         assertThat(account.getPhoneVerified()).isFalse();
         assertThat(account.getTwoFactorEnabled()).isFalse();
-        assertThat(account.getCredentials()).isEmpty();
         assertThat(account.getCreatedAt()).isNotNull();
     }
 
@@ -101,8 +99,7 @@ class AccountTest {
         Account account = Account.reconstruct(
                 1L, "uuid-123", 1L, null, null, null,
                 "user@test.com", "+1234567890", "hash", AccountStatus.ACTIVE,
-                true, false, false, null, null,
-                new java.util.HashSet<>()
+                true, false, false, null, null
         );
 
         assertThat(account.getId()).isEqualTo(1L);

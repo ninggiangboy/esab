@@ -1,6 +1,6 @@
 package dev.ngb.infrastructure.jdbc.identity.entity;
 
-import dev.ngb.domain.identity.model.account.AuthProvider;
+import dev.ngb.domain.identity.model.auth.AuthProvider;
 import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

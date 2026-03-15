@@ -6,10 +6,11 @@ import dev.ngb.app.identity.application.usecase.authentication.oauth_login.dto.O
 import dev.ngb.app.identity.application.usecase.authentication.oauth_login.dto.OAuthLoginResponse;
 import dev.ngb.application.UseCaseService;
 import dev.ngb.domain.identity.error.AccountError;
-import dev.ngb.domain.identity.model.account.Account;
-import dev.ngb.domain.identity.model.account.AccountCredential;
-import dev.ngb.domain.identity.model.account.AccountDevice;
+import dev.ngb.domain.identity.model.auth.Account;
+import dev.ngb.domain.identity.model.auth.AccountCredential;
+import dev.ngb.domain.identity.model.auth.AccountDevice;
 import dev.ngb.domain.identity.model.session.AccountSession;
+import dev.ngb.domain.identity.repository.AccountCredentialRepository;
 import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
@@ -23,6 +24,7 @@ import java.util.Optional;
 public class OAuthLoginUseCase implements UseCaseService {
 
     private final AccountRepository accountRepository;
+    private final AccountCredentialRepository accountCredentialRepository;
     private final AccountDeviceRepository accountDeviceRepository;
     private final AccountSessionRepository accountSessionRepository;
     private final TokenProvider tokenProvider;
@@ -48,27 +50,25 @@ public class OAuthLoginUseCase implements UseCaseService {
         if (isNewAccount) {
             log.debug("Creating new account from OAuth for email={}", userInfo.email());
             account = Account.createFromOAuth(userInfo.email());
-            AccountCredential credential = AccountCredential.create(
-                    null, request.provider(), userInfo.providerAccountId(), request.providerToken(), null
-            );
-            account.addCredential(credential);
             account = accountRepository.save(account);
+            AccountCredential credential = AccountCredential.create(
+                    account.getId(), request.provider(), userInfo.providerAccountId(),
+                    request.providerToken(), null
+            );
+            accountCredentialRepository.save(credential);
         } else {
             account = existingAccount.get();
             if (!account.isActive()) {
                 log.warn("OAuth login rejected: account not active accountId={}", account.getId());
                 throw AccountError.ACCOUNT_NOT_ACTIVE.exception();
             }
-            boolean hasProvider = account.getCredentials().stream()
-                    .anyMatch(c -> c.getProvider() == request.provider());
-            if (!hasProvider) {
+            if (!accountCredentialRepository.existsByAccountIdAndProvider(account.getId(), request.provider())) {
                 log.debug("Linking OAuth provider to existing account accountId={}", account.getId());
                 AccountCredential credential = AccountCredential.create(
                         account.getId(), request.provider(), userInfo.providerAccountId(),
                         request.providerToken(), null
                 );
-                account.addCredential(credential);
-                account = accountRepository.save(account);
+                accountCredentialRepository.save(credential);
             }
         }
 

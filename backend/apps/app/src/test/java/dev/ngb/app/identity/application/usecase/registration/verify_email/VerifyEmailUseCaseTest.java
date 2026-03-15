@@ -6,9 +6,9 @@ import dev.ngb.app.identity.application.port.TokenProvider;
 import dev.ngb.app.identity.application.usecase.registration.verify_email.dto.VerifyEmailRequest;
 import dev.ngb.domain.DomainException;
 import dev.ngb.domain.identity.error.AccountError;
-import dev.ngb.domain.identity.model.account.Account;
-import dev.ngb.domain.identity.model.account.AccountStatus;
-import dev.ngb.domain.identity.model.account.DeviceType;
+import dev.ngb.domain.identity.model.auth.Account;
+import dev.ngb.domain.identity.model.auth.AccountStatus;
+import dev.ngb.domain.identity.model.auth.DeviceType;
 import dev.ngb.domain.identity.model.otp.AccountOtp;
 import dev.ngb.domain.identity.model.otp.OtpChannel;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,8 +91,7 @@ class VerifyEmailUseCaseTest {
         Account activeAccount = Account.reconstruct(
                 1L, "uuid", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.ACTIVE,
-                true, false, false, null, null,
-                new HashSet<>()
+                true, false, false, null, null
         );
         var request = new VerifyEmailRequest("user@test.com", "123456",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp"));
@@ -125,8 +123,7 @@ class VerifyEmailUseCaseTest {
         return Account.reconstruct(
                 1L, "uuid-pending", null, Instant.now(), null, null,
                 "user@test.com", null, "hash", AccountStatus.PENDING,
-                false, false, false, null, null,
-                new HashSet<>()
+                false, false, false, null, null
         );
     }
 }

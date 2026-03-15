@@ -7,7 +7,12 @@ import dev.ngb.app.identity.application.usecase.authentication.oauth_login.dto.O
 import dev.ngb.app.identity.application.usecase.authentication.oauth_login.dto.OAuthLoginResponse;
 import dev.ngb.domain.DomainException;
 import dev.ngb.domain.identity.error.AccountError;
-import dev.ngb.domain.identity.model.account.*;
+import dev.ngb.domain.identity.model.auth.Account;
+import dev.ngb.domain.identity.model.auth.AccountStatus;
+import dev.ngb.domain.identity.model.auth.AuthProvider;
+import dev.ngb.domain.identity.model.auth.AccountDevice;
+import dev.ngb.domain.identity.model.auth.DeviceType;
+import dev.ngb.domain.identity.repository.AccountCredentialRepository;
 import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.domain.identity.repository.AccountSessionRepository;
@@ -18,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +35,8 @@ class OAuthLoginUseCaseTest {
 
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private AccountCredentialRepository accountCredentialRepository;
     @Mock
     private AccountDeviceRepository accountDeviceRepository;
     @Mock
@@ -58,8 +64,7 @@ class OAuthLoginUseCaseTest {
             return Account.reconstruct(
                     1L, saved.getUuid(), null, Instant.now(), null, null,
                     saved.getEmail(), null, null, AccountStatus.ACTIVE,
-                    true, false, false, null, null,
-                    new HashSet<>(saved.getCredentials())
+                    true, false, false, null, null
             );
         });
         when(accountDeviceRepository.findByAccountIdAndFingerprint(1L, "fp-new")).thenReturn(Optional.empty());
@@ -87,9 +92,9 @@ class OAuthLoginUseCaseTest {
         Account account = Account.reconstruct(
                 1L, "uuid", null, Instant.now(), null, null,
                 "existing@test.com", null, null, AccountStatus.ACTIVE,
-                true, false, false, null, null,
-                new HashSet<>()
+                true, false, false, null, null
         );
+        when(accountCredentialRepository.existsByAccountIdAndProvider(1L, AuthProvider.GOOGLE)).thenReturn(false);
         var request = new OAuthLoginRequest(AuthProvider.GOOGLE, "provider-token",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp-known"));
 
@@ -129,8 +134,7 @@ class OAuthLoginUseCaseTest {
         Account suspendedAccount = Account.reconstruct(
                 1L, "uuid", null, Instant.now(), null, null,
                 "suspended@test.com", null, null, AccountStatus.SUSPENDED,
-                true, false, false, null, null,
-                new HashSet<>()
+                true, false, false, null, null
         );
         var request = new OAuthLoginRequest(AuthProvider.GOOGLE, "token",
                 new DeviceInfo(DeviceType.WEB, "Chrome", "fp"));

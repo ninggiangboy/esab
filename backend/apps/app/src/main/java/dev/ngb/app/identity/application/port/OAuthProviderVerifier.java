@@ -1,6 +1,6 @@
 package dev.ngb.app.identity.application.port;
 
-import dev.ngb.domain.identity.model.account.AuthProvider;
+import dev.ngb.domain.identity.model.auth.AuthProvider;
 
 public interface OAuthProviderVerifier {
 

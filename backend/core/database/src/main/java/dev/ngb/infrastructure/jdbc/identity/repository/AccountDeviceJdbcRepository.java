@@ -1,6 +1,6 @@
 package dev.ngb.infrastructure.jdbc.identity.repository;
 
-import dev.ngb.domain.identity.model.account.AccountDevice;
+import dev.ngb.domain.identity.model.auth.AccountDevice;
 import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.infrastructure.jdbc.base.helper.JdbcMetadataHelper;
 import dev.ngb.infrastructure.jdbc.base.repository.JdbcRepository;

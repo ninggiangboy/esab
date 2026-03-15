@@ -5,7 +5,7 @@ import dev.ngb.app.identity.application.port.OtpSender;
 import dev.ngb.app.identity.application.usecase.registration.resend_verification.dto.ResendVerificationRequest;
 import dev.ngb.application.UseCaseService;
 import dev.ngb.domain.identity.error.AccountError;
-import dev.ngb.domain.identity.model.account.Account;
+import dev.ngb.domain.identity.model.auth.Account;
 import dev.ngb.domain.identity.model.otp.AccountOtp;
 import dev.ngb.domain.identity.model.otp.OtpChannel;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;

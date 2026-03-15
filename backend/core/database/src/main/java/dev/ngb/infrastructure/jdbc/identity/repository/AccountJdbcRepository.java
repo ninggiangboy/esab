@@ -1,11 +1,9 @@
 package dev.ngb.infrastructure.jdbc.identity.repository;
 
-import dev.ngb.domain.identity.model.account.Account;
-import dev.ngb.domain.identity.model.account.AccountCredential;
+import dev.ngb.domain.identity.model.auth.Account;
 import dev.ngb.domain.identity.repository.AccountRepository;
 import dev.ngb.infrastructure.jdbc.base.helper.JdbcMetadataHelper;
 import dev.ngb.infrastructure.jdbc.base.repository.JdbcRepository;
-import dev.ngb.infrastructure.jdbc.identity.entity.AccountCredentialJdbcEntity;
 import dev.ngb.infrastructure.jdbc.identity.entity.AccountJdbcEntity;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,8 +11,6 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Repository
 public class AccountJdbcRepository extends JdbcRepository<Account, AccountJdbcEntity, Long> implements AccountRepository {
@@ -55,8 +51,7 @@ public class AccountJdbcRepository extends JdbcRepository<Account, AccountJdbcEn
                 entity.getPhoneVerified(),
                 entity.getTwoFactorEnabled(),
                 entity.getLastLoginAt(),
-                entity.getLastLoginIp(),
-                entity.getCredentials() == null ? Set.of() : entity.getCredentials().stream().map(this::mapCredentialToDomain).collect(Collectors.toSet())
+                entity.getLastLoginIp()
         );
     }
 
@@ -78,39 +73,6 @@ public class AccountJdbcRepository extends JdbcRepository<Account, AccountJdbcEn
                 .twoFactorEnabled(domain.getTwoFactorEnabled())
                 .lastLoginAt(domain.getLastLoginAt())
                 .lastLoginIp(domain.getLastLoginIp())
-                .credentials(domain.getCredentials() == null ? null : domain.getCredentials().stream().map(this::mapCredentialToJdbc).collect(Collectors.toSet()))
-                .build();
-    }
-
-    private AccountCredential mapCredentialToDomain(AccountCredentialJdbcEntity entity) {
-        return AccountCredential.reconstruct(
-                entity.getId(),
-                entity.getUuid(),
-                entity.getCreatedBy(),
-                entity.getCreatedAt(),
-                entity.getUpdatedBy(),
-                entity.getUpdatedAt(),
-                entity.getAccountId(),
-                entity.getProvider(),
-                entity.getProviderAccountId(),
-                entity.getAccessToken(),
-                entity.getRefreshToken()
-        );
-    }
-
-    private AccountCredentialJdbcEntity mapCredentialToJdbc(AccountCredential domain) {
-        return AccountCredentialJdbcEntity.builder()
-                .id(domain.getId())
-                .uuid(domain.getUuid())
-                .createdBy(domain.getCreatedBy())
-                .createdAt(domain.getCreatedAt())
-                .updatedBy(domain.getUpdatedBy())
-                .updatedAt(domain.getUpdatedAt())
-                .accountId(domain.getAccountId())
-                .provider(domain.getProvider())
-                .providerAccountId(domain.getProviderAccountId())
-                .accessToken(domain.getAccessToken())
-                .refreshToken(domain.getRefreshToken())
                 .build();
     }
 }

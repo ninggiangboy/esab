@@ -1,16 +1,14 @@
 package dev.ngb.infrastructure.jdbc.identity.entity;
 
-import dev.ngb.domain.identity.model.account.AccountStatus;
+import dev.ngb.domain.identity.model.auth.AccountStatus;
 import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -28,7 +26,4 @@ public class AccountJdbcEntity extends JdbcEntity<Long> {
     private Boolean twoFactorEnabled;
     private Instant lastLoginAt;
     private String lastLoginIp;
-
-    @MappedCollection(idColumn = "account_id")
-    private Set<AccountCredentialJdbcEntity> credentials;
 }
