@@ -58,6 +58,6 @@ public class ProfileActivityJdbcRepository
 
     @Override
     public Optional<ProfileActivity> findByProfileId(Long profileId) {
-        return findOneBy("profileId", profileId);
+        return findOneByField("profileId", profileId);
     }
 }

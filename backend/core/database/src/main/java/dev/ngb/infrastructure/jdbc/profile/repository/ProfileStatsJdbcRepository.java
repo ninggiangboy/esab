@@ -63,7 +63,7 @@ public class ProfileStatsJdbcRepository extends JdbcRepository<ProfileStats, Pro
 
     @Override
     public Optional<ProfileStats> findByProfileId(Long profileId) {
-        return findOneBy("profile_id", profileId);
+        return findOneByField("profile_id", profileId);
     }
 }
 

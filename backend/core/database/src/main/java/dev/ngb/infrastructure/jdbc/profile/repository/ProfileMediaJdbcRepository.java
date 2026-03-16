@@ -60,6 +60,6 @@ public class ProfileMediaJdbcRepository
 
     @Override
     public List<ProfileMedia> findByProfileId(Long profileId) {
-        return findAllBy("profileId", profileId);
+        return findAllByField("profileId", profileId);
     }
 }

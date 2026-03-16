@@ -26,12 +26,12 @@ public class AccountJdbcRepository extends JdbcRepository<Account, AccountJdbcEn
 
     @Override
     public boolean existsByEmail(String email) {
-        return existsBy("email", email);
+        return existsByField("email", email);
     }
 
     @Override
     public Optional<Account> findByEmail(String email) {
-        return findOneBy("email", email);
+        return findOneByField("email", email);
     }
 
     @Override

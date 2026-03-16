@@ -54,6 +54,7 @@ public class VerifyEmailUseCase implements UseCaseService {
         log.debug("Registration OTP verified for accountId={}", account.getId());
 
         account.activate();
+        accountRepository.save(account);
 
         AccountDevice device = AccountDevice.create(
                 account.getId(),

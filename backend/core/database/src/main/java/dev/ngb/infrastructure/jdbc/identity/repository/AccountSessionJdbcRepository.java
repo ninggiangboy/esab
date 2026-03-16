@@ -28,7 +28,7 @@ public class AccountSessionJdbcRepository extends JdbcRepository<AccountSession,
 
     @Override
     public Optional<AccountSession> findByTokenHash(String tokenHash) {
-        return findOneBy("token_hash", tokenHash);
+        return findOneByField("token_hash", tokenHash);
     }
 
     @Override

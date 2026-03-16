@@ -64,7 +64,7 @@ public class AccountCredentialJdbcRepository
 
     @Override
     public List<AccountCredential> findByAccountId(Long accountId) {
-        return findAllBy("accountId", accountId);
+        return findAllByField("accountId", accountId);
     }
 
     @Override

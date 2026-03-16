@@ -62,6 +62,6 @@ public class ProfileSettingJdbcRepository
 
     @Override
     public Optional<ProfileSetting> findByProfileId(Long profileId) {
-        return findOneBy("profileId", profileId);
+        return findOneByField("profileId", profileId);
     }
 }

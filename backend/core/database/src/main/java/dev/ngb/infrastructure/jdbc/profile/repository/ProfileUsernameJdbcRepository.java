@@ -58,6 +58,6 @@ public class ProfileUsernameJdbcRepository
 
     @Override
     public List<ProfileUsername> findByProfileId(Long profileId) {
-        return findAllBy("profileId", profileId);
+        return findAllByField("profile_id", profileId);
     }
 }

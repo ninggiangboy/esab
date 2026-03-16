@@ -15,4 +15,8 @@ public class StringUtils {
     public static String trim(String str) {
         return str == null ? null : str.strip();
     }
+
+    public static String toSingleLine(String str) {
+        return str == null ? null : str.replace("\n", " ");
+    }
 }

@@ -58,6 +58,6 @@ public class ProfileMetadataJdbcRepository
 
     @Override
     public List<ProfileMetadata> findByProfileId(Long profileId) {
-        return findAllBy("profileId", profileId);
+        return findAllByField("profileId", profileId);
     }
 }

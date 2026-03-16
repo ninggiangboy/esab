@@ -60,6 +60,6 @@ public class ProfileLinkJdbcRepository
 
     @Override
     public List<ProfileLink> findByProfileId(Long profileId) {
-        return findAllBy("profileId", profileId);
+        return findAllByField("profileId", profileId);
     }
 }

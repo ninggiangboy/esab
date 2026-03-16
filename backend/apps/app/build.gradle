@@ -12,4 +12,8 @@ dependencies {
     implementation project(':libs:constant')
 
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
 }

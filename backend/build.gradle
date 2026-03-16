@@ -18,6 +18,7 @@ ext {
     set('springAiVersion', "1.1.0")
     set('springModulithVersion', "2.0.0")
     set('springCloudVersion', "2025.1.1")
+    set('testcontainersVersion', "1.20.4")
 }
 
 allprojects {
@@ -46,6 +47,7 @@ subprojects {
                 mavenBom "org.springframework.modulith:spring-modulith-bom:$springModulithVersion"
                 mavenBom "io.sentry:sentry-bom:$sentryVersion"
                 mavenBom "org.springframework.ai:spring-ai-bom:$springAiVersion"
+                mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
             }
         }
     }

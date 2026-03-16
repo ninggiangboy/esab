@@ -6,12 +6,14 @@ import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.infrastructure.jdbc.base.helper.JdbcMetadataHelper;
 import dev.ngb.infrastructure.jdbc.base.repository.JdbcRepository;
 import dev.ngb.infrastructure.jdbc.identity.entity.AccountOtpJdbcEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
+import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-import java.util.Map;
+import java.time.Instant;
 import java.util.Optional;
 
 @Repository
@@ -28,16 +30,12 @@ public class AccountOtpJdbcRepository extends JdbcRepository<AccountOtp, Account
 
     @Override
     public Optional<AccountOtp> findLatestActiveByAccountIdAndPurpose(Long accountId, OtpPurpose purpose) {
-        String sql = """
-                SELECT * FROM iam_account_otps
-                WHERE account_id = :accountId
-                  AND purpose = :purpose
-                  AND is_used = false
-                  AND expires_at > NOW()
-                ORDER BY created_at DESC
-                LIMIT 1
-                """;
-        return findOneBySql(sql, Map.of("accountId", accountId, "purpose", purpose.name()));
+        Criteria criteria = Criteria.where("account_id").is(accountId)
+                .and("purpose").is(purpose.name())
+                .and("is_used").is(false)
+                .and("expires_at").greaterThan(Instant.now());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        return findOneBySorted(criteria, sort);
     }
 
     @Override
@@ -64,7 +62,7 @@ public class AccountOtpJdbcRepository extends JdbcRepository<AccountOtp, Account
         return AccountOtpJdbcEntity.builder()
                 .id(domain.getId())
                 .uuid(domain.getUuid())
-                .createdBy(domain.getCreatedBy())
+                .createdBy(domain.getCreatedBy())  
                 .createdAt(domain.getCreatedAt())
                 .updatedBy(domain.getUpdatedBy())
                 .updatedAt(domain.getUpdatedAt())

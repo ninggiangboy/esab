@@ -5,8 +5,10 @@ import dev.ngb.domain.Repository;
 import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
 import dev.ngb.infrastructure.jdbc.base.entity.SoftDeletable;
 import dev.ngb.infrastructure.jdbc.base.helper.JdbcMetadataHelper;
+import dev.ngb.util.StringUtils;
 import org.jspecify.annotations.Nullable;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
@@ -25,12 +27,11 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
     protected final String UUID_COLUMN = "uuid";
     protected final String IS_DELETED_COLUMN = "is_deleted";
 
-    protected final JdbcClient jdbcClient;
+    private final JdbcClient jdbcClient;
     protected final JdbcTemplate jdbcTemplate;
-    protected final JdbcAggregateTemplate jdbcAggregate;
-    protected final JdbcMetadataHelper jdbcMetadataHelper;
-    protected final Class<J> clazz;
-    protected final boolean softDeleteSupported;
+    private final JdbcAggregateTemplate jdbcAggregate;
+    private final Class<J> clazz;
+    private final boolean softDeleteSupported;
 
     protected JdbcRepository(
             Class<J> clazz,
@@ -43,7 +44,6 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
         this.jdbcClient = jdbcClient;
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcAggregate = jdbcAggregate;
-        this.jdbcMetadataHelper = jdbcMetadataHelper;
         this.softDeleteSupported = SoftDeletable.class.isAssignableFrom(clazz);
     }
 
@@ -51,52 +51,87 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
 
     protected abstract J mapToJdbc(D entity);
 
-    protected Query fromCriteria(@Nullable Criteria criteria) {
+    protected Query buildQuery(@Nullable Criteria criteria) {
+        return buildQuery(criteria, null);
+    }
+
+    protected Query buildQuery(@Nullable Criteria criteria, @Nullable Sort sort) {
+        Query query;
+
         if (!softDeleteSupported) {
-            return criteria == null ? Query.empty() : Query.query(criteria);
+            query = criteria == null ? Query.empty() : Query.query(criteria);
+        } else {
+            Criteria defaultCriteria = Criteria.where(IS_DELETED_COLUMN).isFalse();
+            Criteria finalCriteria = criteria == null
+                    ? defaultCriteria
+                    : defaultCriteria.and(criteria);
+            query = Query.query(finalCriteria);
         }
-        Criteria defaultCriteria = Criteria.where(IS_DELETED_COLUMN).isFalse();
 
-        Criteria finalCriteria = criteria == null
-                ? defaultCriteria
-                : defaultCriteria.and(criteria);
+        if (sort != null && sort.isSorted()) {
+            query = query.sort(sort);
+        }
 
-        return Query.query(finalCriteria);
+        return query;
     }
 
     protected List<D> findAllBy(@Nullable Criteria criteria) {
-        return jdbcAggregate.findAll(fromCriteria(criteria), clazz).stream().map(this::mapToDomain).toList();
+        return findAllBySorted(criteria, null);
+    }
+
+    protected List<D> findAllBySorted(@Nullable Criteria criteria, @Nullable Sort sort) {
+        return jdbcAggregate
+                .findAll(buildQuery(criteria, sort), clazz)
+                .stream()
+                .map(this::mapToDomain)
+                .toList();
     }
 
     protected Optional<D> findOneBy(@Nullable Criteria criteria) {
-        return jdbcAggregate.findOne(fromCriteria(criteria), clazz).map(this::mapToDomain);
+        return jdbcAggregate
+                .findOne(buildQuery(criteria), clazz)
+                .map(this::mapToDomain);
     }
 
-    protected Long countBy(@Nullable Criteria criteria) {
-        return jdbcAggregate.count(fromCriteria(criteria), clazz);
+    protected Optional<D> findOneBySorted(@Nullable Criteria criteria, @Nullable Sort sort) {
+        return jdbcAggregate
+                .findOne(buildQuery(criteria, sort), clazz)
+                .map(this::mapToDomain);
+    }
+
+    protected long countBy(@Nullable Criteria criteria) {
+        return jdbcAggregate.count(buildQuery(criteria), clazz);
     }
 
     protected boolean existsBy(@Nullable Criteria criteria) {
         return countBy(criteria) > 0;
     }
 
-    protected List<D> findAllBy(String fieldName, Object value) {
-        Criteria criteria = Criteria.where(fieldName).is(value);
-        return findAllBy(criteria);
+    protected List<D> findAllByField(String fieldName, Object value) {
+        return findAllByFieldSorted(fieldName, value, null);
     }
 
-    protected Optional<D> findOneBy(String fieldName, Object value) {
+    protected List<D> findAllByFieldSorted(String fieldName, Object value, @Nullable Sort sort) {
+        Criteria criteria = Criteria.where(fieldName).is(value);
+        return findAllBySorted(criteria, sort);
+    }
+
+    protected Optional<D> findOneByField(String fieldName, Object value) {
         Criteria criteria = Criteria.where(fieldName).is(value);
         return findOneBy(criteria);
     }
 
-    protected boolean existsBy(String fieldName, Object value) {
+    protected boolean existsByField(String fieldName, Object value) {
         Criteria criteria = Criteria.where(fieldName).is(value);
-        return countBy(criteria) > 0;
+        return existsBy(criteria);
+    }
+
+    protected List<D> findAllSorted(Sort sort) {
+        return findAllBySorted(null, sort);
     }
 
     protected List<D> findAllBySql(String sql, Map<String, ?> params) {
-        return jdbcClient.sql(sql)
+        return jdbcClient.sql(StringUtils.toSingleLine(sql))
                 .params(params)
                 .query(clazz)
                 .list()
@@ -106,15 +141,15 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
     }
 
     protected Optional<D> findOneBySql(String sql, Map<String, ?> params) {
-        return jdbcClient.sql(sql)
+        return jdbcClient.sql(StringUtils.toSingleLine(sql))
                 .params(params)
                 .query(clazz)
                 .optional()
                 .map(this::mapToDomain);
     }
 
-    protected Long countBySql(String sql, Map<String, ?> params) {
-        return jdbcClient.sql(sql)
+    protected long countBySql(String sql, Map<String, ?> params) {
+        return jdbcClient.sql(StringUtils.toSingleLine(sql))
                 .params(params)
                 .query(Long.class)
                 .single();
@@ -131,14 +166,14 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
 
     @Override
     public Optional<D> findById(ID id) {
-        Criteria findByIdCriteria = Criteria.where(ID_COLUMN).is(id);
-        return findOneBy(findByIdCriteria);
+        Criteria criteria = Criteria.where(ID_COLUMN).is(id);
+        return findOneBy(criteria);
     }
 
     @Override
     public Optional<D> findByUuid(String uuid) {
-        Criteria findByUuidCriteria = Criteria.where(UUID_COLUMN).is(uuid);
-        return findOneBy(findByUuidCriteria);
+        Criteria criteria = Criteria.where(UUID_COLUMN).is(uuid);
+        return findOneBy(criteria);
     }
 
     @Override
@@ -146,8 +181,9 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
         if (ids == null || ids.isEmpty()) {
             return List.of();
         }
-        Criteria findByIdsCriteria = Criteria.where(ID_COLUMN).in(ids);
-        return findAllBy(findByIdsCriteria);
+
+        Criteria criteria = Criteria.where(ID_COLUMN).in(ids);
+        return findAllBy(criteria);
     }
 
     @Override
@@ -155,14 +191,15 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
         if (uuids == null || uuids.isEmpty()) {
             return List.of();
         }
-        Criteria findByUuidsCriteria = Criteria.where(UUID_COLUMN).in(uuids);
-        return findAllBy(findByUuidsCriteria);
+
+        Criteria criteria = Criteria.where(UUID_COLUMN).in(uuids);
+        return findAllBy(criteria);
     }
 
     @Override
     public boolean existsById(ID id) {
-        Criteria findByIdCriteria = Criteria.where(ID_COLUMN).is(id);
-        return countBy(findByIdCriteria) > 0;
+        Criteria criteria = Criteria.where(ID_COLUMN).is(id);
+        return existsBy(criteria);
     }
 
     @Override
@@ -182,9 +219,16 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
         if (entities == null || entities.isEmpty()) {
             return List.of();
         }
+
         try {
-            List<J> saved = jdbcAggregate.saveAll(entities.stream().map(this::mapToJdbc).toList());
-            return saved.stream().map(this::mapToDomain).toList();
+            List<J> saved = jdbcAggregate.saveAll(
+                    entities.stream().map(this::mapToJdbc).toList()
+            );
+
+            return saved.stream()
+                    .map(this::mapToDomain)
+                    .toList();
+
         } catch (OptimisticLockingFailureException ex) {
             throw new ConcurrentModificationException(
                     "Entities were modified concurrently"
@@ -198,10 +242,12 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
             jdbcAggregate.deleteById(entity.getId(), clazz);
             return;
         }
+
         try {
             J jdbcEntity = mapToJdbc(entity);
             ((SoftDeletable) jdbcEntity).setDeletedAt(Instant.now());
             jdbcAggregate.save(jdbcEntity);
+
         } catch (OptimisticLockingFailureException ex) {
             throw new ConcurrentModificationException(
                     "Entity " + entity.getId() + " was modified concurrently"
@@ -214,14 +260,25 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
         if (entities == null || entities.isEmpty()) {
             return;
         }
+
         if (!softDeleteSupported) {
-            jdbcAggregate.deleteAllById(entities.stream().map(DomainEntity::getId).toList(), clazz);
+            jdbcAggregate.deleteAllById(
+                    entities.stream().map(DomainEntity::getId).toList(),
+                    clazz
+            );
             return;
         }
+
         try {
-            List<J> jdbcEntity = entities.stream().map(this::mapToJdbc).toList();
-            jdbcEntity.forEach(j -> ((SoftDeletable) j).setDeletedAt(Instant.now()));
-            jdbcAggregate.saveAll(jdbcEntity);
+            List<J> jdbcEntities = entities.stream()
+                    .map(this::mapToJdbc)
+                    .toList();
+
+            Instant now = Instant.now();
+            jdbcEntities.forEach(e -> ((SoftDeletable) e).setDeletedAt(now));
+
+            jdbcAggregate.saveAll(jdbcEntities);
+
         } catch (OptimisticLockingFailureException ex) {
             throw new ConcurrentModificationException(
                     "Entities were modified concurrently"

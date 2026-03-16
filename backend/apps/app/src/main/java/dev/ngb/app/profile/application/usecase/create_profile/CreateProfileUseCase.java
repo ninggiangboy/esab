@@ -3,7 +3,7 @@ package dev.ngb.app.profile.application.usecase.create_profile;
 import dev.ngb.app.profile.application.usecase.create_profile.dto.CreateProfileRequest;
 import dev.ngb.app.profile.application.usecase.create_profile.dto.CreateProfileResponse;
 import dev.ngb.application.UseCaseService;
-import dev.ngb.app.public_api.IdentityPublicApi;
+import dev.ngb.app.common.public_api.IdentityPublicApi;
 import dev.ngb.domain.identity.error.AccountError;
 import dev.ngb.domain.profile.error.ProfileError;
 import dev.ngb.domain.profile.model.profile.Profile;
@@ -35,11 +35,6 @@ public class CreateProfileUseCase implements UseCaseService {
         }
 
         String username = request.username();
-        if (username == null || username.isBlank()) {
-            log.warn("Create profile failed: username is blank for accountId={}", accountId);
-            throw ProfileError.USERNAME_REQUIRED.exception();
-        }
-
         if (profileRepository.existsByUsername(username)) {
             log.warn("Create profile failed: username already exists username={}", username);
             throw ProfileError.USERNAME_ALREADY_EXISTS.exception();
