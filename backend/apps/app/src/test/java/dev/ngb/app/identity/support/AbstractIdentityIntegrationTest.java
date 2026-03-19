@@ -1,5 +1,6 @@
 package dev.ngb.app.identity.support;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
@@ -37,7 +38,7 @@ public abstract class AbstractIdentityIntegrationTest {
         RestTemplate template = new RestTemplate();
         template.setErrorHandler(new DefaultResponseErrorHandler() {
             @Override
-            public boolean hasError(ClientHttpResponse response) throws IOException {
+            public boolean hasError(@NonNull ClientHttpResponse response) {
                 return false;
             }
         });

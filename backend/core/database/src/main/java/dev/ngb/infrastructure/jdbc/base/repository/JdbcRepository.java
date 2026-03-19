@@ -4,7 +4,7 @@ import dev.ngb.domain.DomainEntity;
 import dev.ngb.domain.Repository;
 import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
 import dev.ngb.infrastructure.jdbc.base.entity.SoftDeletable;
-import dev.ngb.infrastructure.jdbc.base.helper.JdbcMetadataHelper;
+import dev.ngb.infrastructure.jdbc.base.mapper.JdbcMapper;
 import dev.ngb.util.StringUtils;
 import org.jspecify.annotations.Nullable;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -32,24 +32,30 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
     private final JdbcAggregateTemplate jdbcAggregate;
     private final Class<J> clazz;
     private final boolean softDeleteSupported;
+    private final JdbcMapper<D, J> mapper;
 
     protected JdbcRepository(
             Class<J> clazz,
             JdbcClient jdbcClient,
             JdbcTemplate jdbcTemplate,
             JdbcAggregateTemplate jdbcAggregate,
-            JdbcMetadataHelper jdbcMetadataHelper
+            JdbcMapper<D, J> mapper
     ) {
         this.clazz = clazz;
         this.jdbcClient = jdbcClient;
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcAggregate = jdbcAggregate;
         this.softDeleteSupported = SoftDeletable.class.isAssignableFrom(clazz);
+        this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
     }
 
-    protected abstract D mapToDomain(J entity);
+    protected D mapToDomain(J entity) {
+        return mapper.toDomain(entity);
+    }
 
-    protected abstract J mapToJdbc(D entity);
+    protected J mapToJdbc(D entity) {
+        return mapper.toJdbc(entity);
+    }
 
     protected Query buildQuery(@Nullable Criteria criteria) {
         return buildQuery(criteria, null);

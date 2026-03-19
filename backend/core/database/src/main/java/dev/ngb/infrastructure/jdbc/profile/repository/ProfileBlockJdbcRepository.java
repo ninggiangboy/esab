@@ -2,9 +2,9 @@ package dev.ngb.infrastructure.jdbc.profile.repository;
 
 import dev.ngb.domain.profile.model.graph.ProfileBlock;
 import dev.ngb.domain.profile.repository.ProfileBlockRepository;
-import dev.ngb.infrastructure.jdbc.base.helper.JdbcMetadataHelper;
 import dev.ngb.infrastructure.jdbc.base.repository.JdbcRepository;
 import dev.ngb.infrastructure.jdbc.profile.entity.ProfileBlockJdbcEntity;
+import dev.ngb.infrastructure.jdbc.profile.mapper.ProfileBlockJdbcMapper;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -16,37 +16,8 @@ public class ProfileBlockJdbcRepository extends JdbcRepository<ProfileBlock, Pro
     public ProfileBlockJdbcRepository(
             JdbcClient jdbcClient,
             JdbcTemplate jdbcTemplate,
-            JdbcAggregateTemplate jdbcAggregate,
-            JdbcMetadataHelper jdbcMetadataHelper
+            JdbcAggregateTemplate jdbcAggregate
     ) {
-        super(ProfileBlockJdbcEntity.class, jdbcClient, jdbcTemplate, jdbcAggregate, jdbcMetadataHelper);
-    }
-
-    @Override
-    protected ProfileBlock mapToDomain(ProfileBlockJdbcEntity entity) {
-        return ProfileBlock.reconstruct(
-                entity.getId(),
-                entity.getUuid(),
-                entity.getCreatedBy(),
-                entity.getCreatedAt(),
-                entity.getUpdatedBy(),
-                entity.getUpdatedAt(),
-                entity.getBlockerProfileId(),
-                entity.getBlockedProfileId()
-        );
-    }
-
-    @Override
-    protected ProfileBlockJdbcEntity mapToJdbc(ProfileBlock domain) {
-        return ProfileBlockJdbcEntity.builder()
-                .id(domain.getId())
-                .uuid(domain.getUuid())
-                .createdBy(domain.getCreatedBy())
-                .createdAt(domain.getCreatedAt())
-                .updatedBy(domain.getUpdatedBy())
-                .updatedAt(domain.getUpdatedAt())
-                .blockerProfileId(domain.getBlockerProfileId())
-                .blockedProfileId(domain.getBlockedProfileId())
-                .build();
+        super(ProfileBlockJdbcEntity.class, jdbcClient, jdbcTemplate, jdbcAggregate, ProfileBlockJdbcMapper.INSTANCE);
     }
 }

@@ -108,7 +108,7 @@ class AuthApiIntegrationTest extends AbstractIdentityIntegrationTest {
                     Void.class
             );
 
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         }
 
         @Test

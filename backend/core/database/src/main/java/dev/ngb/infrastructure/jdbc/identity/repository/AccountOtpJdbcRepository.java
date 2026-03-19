@@ -3,9 +3,9 @@ package dev.ngb.infrastructure.jdbc.identity.repository;
 import dev.ngb.domain.identity.model.otp.AccountOtp;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
-import dev.ngb.infrastructure.jdbc.base.helper.JdbcMetadataHelper;
 import dev.ngb.infrastructure.jdbc.base.repository.JdbcRepository;
 import dev.ngb.infrastructure.jdbc.identity.entity.AccountOtpJdbcEntity;
+import dev.ngb.infrastructure.jdbc.identity.mapper.AccountOtpJdbcMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.data.relational.core.query.Criteria;
@@ -22,10 +22,9 @@ public class AccountOtpJdbcRepository extends JdbcRepository<AccountOtp, Account
     public AccountOtpJdbcRepository(
             JdbcClient jdbcClient,
             JdbcTemplate jdbcTemplate,
-            JdbcAggregateTemplate jdbcAggregate,
-            JdbcMetadataHelper jdbcMetadataHelper
+            JdbcAggregateTemplate jdbcAggregate
     ) {
-        super(AccountOtpJdbcEntity.class, jdbcClient, jdbcTemplate, jdbcAggregate, jdbcMetadataHelper);
+        super(AccountOtpJdbcEntity.class, jdbcClient, jdbcTemplate, jdbcAggregate, AccountOtpJdbcMapper.INSTANCE);
     }
 
     @Override
@@ -38,41 +37,5 @@ public class AccountOtpJdbcRepository extends JdbcRepository<AccountOtp, Account
         return findOneBySorted(criteria, sort);
     }
 
-    @Override
-    protected AccountOtp mapToDomain(AccountOtpJdbcEntity entity) {
-        return AccountOtp.reconstruct(
-                entity.getId(),
-                entity.getUuid(),
-                entity.getCreatedBy(),
-                entity.getCreatedAt(),
-                entity.getUpdatedBy(),
-                entity.getUpdatedAt(),
-                entity.getAccountId(),
-                entity.getCode(),
-                entity.getPurpose(),
-                entity.getChannel(),
-                entity.getExpiresAt(),
-                entity.getIsUsed(),
-                entity.getAttempts()
-        );
-    }
-
-    @Override
-    protected AccountOtpJdbcEntity mapToJdbc(AccountOtp domain) {
-        return AccountOtpJdbcEntity.builder()
-                .id(domain.getId())
-                .uuid(domain.getUuid())
-                .createdBy(domain.getCreatedBy())  
-                .createdAt(domain.getCreatedAt())
-                .updatedBy(domain.getUpdatedBy())
-                .updatedAt(domain.getUpdatedAt())
-                .accountId(domain.getAccountId())
-                .code(domain.getCode())
-                .purpose(domain.getPurpose())
-                .channel(domain.getChannel())
-                .expiresAt(domain.getExpiresAt())
-                .isUsed(domain.getIsUsed())
-                .attempts(domain.getAttempts())
-                .build();
-    }
+    // mapping handled by base JdbcRepository via JdbcMapper
 }

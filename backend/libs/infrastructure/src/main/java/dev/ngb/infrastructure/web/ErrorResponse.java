@@ -7,10 +7,10 @@ import java.util.Map;
 
 @Schema(description = "Standard error response body")
 public record ErrorResponse(
-        @Schema(description = "Error code identifier", example = "ACCOUNT_NOT_FOUND")
+        @Schema(description = "Error code identifier")
         String error,
 
-        @Schema(description = "Human-readable error message", example = "Account not found")
+        @Schema(description = "Human-readable error message")
         String message,
 
         @Schema(description = "Timestamp of the error occurrence")

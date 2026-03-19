@@ -24,6 +24,7 @@ import dev.ngb.app.identity.application.usecase.session.logout_account.LogoutAcc
 import dev.ngb.app.identity.application.usecase.session.logout_account.dto.LogoutAccountRequest;
 import dev.ngb.app.identity.application.usecase.session.refresh_token.RefreshTokenUseCase;
 import dev.ngb.app.identity.application.usecase.session.refresh_token.dto.RefreshTokenRequest;
+import dev.ngb.infrastructure.web.ResourceResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,66 +49,66 @@ public class AuthResource implements AuthApi {
     @Override
     public ResponseEntity<RegisterAccountResponse> register(RegisterAccountRequest request) {
         RegisterAccountResponse response = registerAccountUseCase.execute(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResourceResponse.created(response);
     }
 
     @Override
     public ResponseEntity<AuthTokenResponse> verifyEmail(VerifyEmailRequest request,
                                                          HttpServletRequest httpRequest) {
         AuthTokenResponse response = verifyEmailUseCase.execute(request, extractIpAddress(httpRequest));
-        return ResponseEntity.ok(response);
+        return ResourceResponse.ok(response);
     }
 
     @Override
     public ResponseEntity<Void> resendVerification(ResendVerificationRequest request) {
         resendVerificationUseCase.execute(request);
-        return ResponseEntity.ok().build();
+        return ResourceResponse.noContent();
     }
 
     @Override
     public ResponseEntity<LoginAccountResponse> login(LoginAccountRequest request,
                                                       HttpServletRequest httpRequest) {
         LoginAccountResponse response = loginAccountUseCase.execute(request, extractIpAddress(httpRequest));
-        return ResponseEntity.ok(response);
+        return ResourceResponse.ok(response);
     }
 
     @Override
     public ResponseEntity<AuthTokenResponse> verifyLogin(VerifyLoginRequest request,
                                                          HttpServletRequest httpRequest) {
         AuthTokenResponse response = verifyLoginUseCase.execute(request, extractIpAddress(httpRequest));
-        return ResponseEntity.ok(response);
+        return ResourceResponse.ok(response);
     }
 
     @Override
     public ResponseEntity<OAuthLoginResponse> oauthLogin(OAuthLoginRequest request,
                                                          HttpServletRequest httpRequest) {
         OAuthLoginResponse response = oAuthLoginUseCase.execute(request, extractIpAddress(httpRequest));
-        return ResponseEntity.ok(response);
+        return ResourceResponse.ok(response);
     }
 
     @Override
     public ResponseEntity<AuthTokenResponse> refreshToken(RefreshTokenRequest request) {
         AuthTokenResponse response = refreshTokenUseCase.execute(request);
-        return ResponseEntity.ok(response);
+        return ResourceResponse.ok(response);
     }
 
     @Override
     public ResponseEntity<Void> logout(LogoutRequest request) {
         String refreshToken = request != null ? request.refreshToken() : null;
         logoutAccountUseCase.execute(new LogoutAccountRequest(refreshToken));
-        return ResponseEntity.noContent().build();
+        return ResourceResponse.noContent();
     }
 
     @Override
     public ResponseEntity<Void> forgotPassword(ForgotPasswordRequest request) {
         forgotPasswordUseCase.execute(request);
-        return ResponseEntity.ok().build();
+        return ResourceResponse.noContent();
     }
 
     @Override
     public ResponseEntity<Void> resetPassword(ResetPasswordRequest request) {
         resetPasswordUseCase.execute(request);
-        return ResponseEntity.ok().build();
+        return ResourceResponse.noContent();
     }
 
     private String extractIpAddress(HttpServletRequest request) {
