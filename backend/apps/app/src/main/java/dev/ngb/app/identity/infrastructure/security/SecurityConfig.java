@@ -3,7 +3,8 @@ package dev.ngb.app.identity.infrastructure.security;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import org.springframework.beans.factory.annotation.Value;
+import dev.ngb.application.port.config.AppConfig;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,13 +26,10 @@ import java.util.Base64;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${app.security.jwt.public-key}")
-    private String publicKeyBase64;
-
-    @Value("${app.security.jwt.private-key}")
-    private String privateKeyBase64;
+    private final AppConfig appConfig;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -63,7 +61,7 @@ public class SecurityConfig {
 
     private RSAPublicKey rsaPublicKey() {
         try {
-            byte[] keyBytes = Base64.getDecoder().decode(publicKeyBase64);
+            byte[] keyBytes = Base64.getDecoder().decode(appConfig.getSecurityJwtPublicKeyBase64());
             X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
             return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(spec);
         } catch (Exception e) {
@@ -73,7 +71,7 @@ public class SecurityConfig {
 
     private RSAPrivateKey rsaPrivateKey() {
         try {
-            byte[] keyBytes = Base64.getDecoder().decode(privateKeyBase64);
+            byte[] keyBytes = Base64.getDecoder().decode(appConfig.getSecurityJwtPrivateKeyBase64());
             PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
             return (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(spec);
         } catch (Exception e) {

@@ -20,5 +20,4 @@ public class AccountLoginHistoryJdbcRepository extends JdbcRepository<AccountLog
     ) {
         super(AccountLoginHistoryJdbcEntity.class, jdbcClient, jdbcTemplate, jdbcAggregate, AccountLoginHistoryJdbcMapper.INSTANCE);
     }
-    // mapping handled by base JdbcRepository via JdbcMapper
 }

@@ -6,8 +6,10 @@ import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
 import dev.ngb.infrastructure.jdbc.base.entity.SoftDeletable;
 import dev.ngb.infrastructure.jdbc.base.mapper.JdbcMapper;
 import dev.ngb.util.StringUtils;
+import dev.ngb.util.TimeProvider;
 import org.jspecify.annotations.Nullable;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.data.relational.core.query.Criteria;
@@ -23,10 +25,12 @@ import java.util.*;
 public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcEntity<ID>, ID>
         implements Repository<D, ID> {
 
+    // Constants
     protected final String ID_COLUMN = "id";
     protected final String UUID_COLUMN = "uuid";
-    protected final String IS_DELETED_COLUMN = "is_deleted";
+    protected final String DELETED_AT_COLUMN = "deleted_at";
 
+    // Fields
     private final JdbcClient jdbcClient;
     protected final JdbcTemplate jdbcTemplate;
     private final JdbcAggregateTemplate jdbcAggregate;
@@ -34,6 +38,7 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
     private final boolean softDeleteSupported;
     private final JdbcMapper<D, J> mapper;
 
+    // Constructor
     protected JdbcRepository(
             Class<J> clazz,
             JdbcClient jdbcClient,
@@ -49,6 +54,7 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
         this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
     }
 
+    // Mapping
     protected D mapToDomain(J entity) {
         return mapper.toDomain(entity);
     }
@@ -57,85 +63,86 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
         return mapper.toJdbc(entity);
     }
 
-    protected Query buildQuery(@Nullable Criteria criteria) {
-        return buildQuery(criteria, null);
-    }
-
-    protected Query buildQuery(@Nullable Criteria criteria, @Nullable Sort sort) {
+    // Query Builder
+    protected Query buildQuery(@Nullable Criteria criteria, @Nullable Pageable pageable) {
         Query query;
 
         if (!softDeleteSupported) {
-            query = criteria == null ? Query.empty() : Query.query(criteria);
+            query = (criteria == null) ? Query.empty() : Query.query(criteria);
         } else {
-            Criteria defaultCriteria = Criteria.where(IS_DELETED_COLUMN).isFalse();
-            Criteria finalCriteria = criteria == null
-                    ? defaultCriteria
-                    : defaultCriteria.and(criteria);
+            Criteria base = Criteria.where(DELETED_AT_COLUMN).isNull();
+            Criteria finalCriteria = (criteria == null) ? base : base.and(criteria);
             query = Query.query(finalCriteria);
         }
 
-        if (sort != null && sort.isSorted()) {
-            query = query.sort(sort);
+        if (pageable != null) {
+            if (pageable.getSort().isSorted()) {
+                query = query.sort(pageable.getSort());
+            }
+            query = query.offset(pageable.getOffset()).limit(pageable.getPageSize());
         }
 
         return query;
     }
 
-    protected List<D> findAllBy(@Nullable Criteria criteria) {
-        return findAllBySorted(criteria, null);
-    }
-
-    protected List<D> findAllBySorted(@Nullable Criteria criteria, @Nullable Sort sort) {
+    // Criteria-based Queries
+    protected List<D> findAll(@Nullable Criteria criteria, @Nullable Pageable pageable) {
         return jdbcAggregate
-                .findAll(buildQuery(criteria, sort), clazz)
+                .findAll(buildQuery(criteria, pageable), clazz)
                 .stream()
                 .map(this::mapToDomain)
                 .toList();
     }
 
-    protected Optional<D> findOneBy(@Nullable Criteria criteria) {
+    protected List<D> findAll(@Nullable Criteria criteria) {
+        return findAll(criteria, Pageable.unpaged());
+    }
+
+    protected Optional<D> findFirst(@Nullable Criteria criteria, @Nullable Sort sort) {
+        Pageable pageable = sort != null && sort.isSorted()
+                ? Pageable.unpaged(sort)
+                : Pageable.unpaged();
         return jdbcAggregate
-                .findOne(buildQuery(criteria), clazz)
+                .findAll(buildQuery(criteria, pageable).limit(1), clazz)
+                .stream()
+                .findFirst()
                 .map(this::mapToDomain);
     }
 
-    protected Optional<D> findOneBySorted(@Nullable Criteria criteria, @Nullable Sort sort) {
+    protected Optional<D> findFirst(@Nullable Criteria criteria) {
+        return findFirst(criteria, Sort.unsorted());
+    }
+
+    protected long count(@Nullable Criteria criteria) {
+        return jdbcAggregate.count(buildQuery(criteria, Pageable.unpaged()), clazz);
+    }
+
+    protected boolean exists(@Nullable Criteria criteria) {
         return jdbcAggregate
-                .findOne(buildQuery(criteria, sort), clazz)
-                .map(this::mapToDomain);
+                .findAll(buildQuery(criteria, Pageable.unpaged()).limit(1), clazz)
+                .iterator()
+                .hasNext();
     }
 
-    protected long countBy(@Nullable Criteria criteria) {
-        return jdbcAggregate.count(buildQuery(criteria), clazz);
+    // Field-based helpers
+    protected List<D> findAllByFieldEqual(String fieldName, Object value) {
+        return findAll(Criteria.where(fieldName).is(value));
     }
 
-    protected boolean existsBy(@Nullable Criteria criteria) {
-        return countBy(criteria) > 0;
+    protected Optional<D> findFirstByFieldEqual(String fieldName, Object value) {
+        return findFirst(Criteria.where(fieldName).is(value));
     }
 
-    protected List<D> findAllByField(String fieldName, Object value) {
-        return findAllByFieldSorted(fieldName, value, null);
+    protected long countByFieldEqual(String fieldName, Object value) {
+        return count(Criteria.where(fieldName).is(value));
     }
 
-    protected List<D> findAllByFieldSorted(String fieldName, Object value, @Nullable Sort sort) {
-        Criteria criteria = Criteria.where(fieldName).is(value);
-        return findAllBySorted(criteria, sort);
+    protected boolean existsByFieldEqual(String fieldName, Object value) {
+        return exists(Criteria.where(fieldName).is(value));
     }
 
-    protected Optional<D> findOneByField(String fieldName, Object value) {
-        Criteria criteria = Criteria.where(fieldName).is(value);
-        return findOneBy(criteria);
-    }
-
-    protected boolean existsByField(String fieldName, Object value) {
-        Criteria criteria = Criteria.where(fieldName).is(value);
-        return existsBy(criteria);
-    }
-
-    protected List<D> findAllSorted(Sort sort) {
-        return findAllBySorted(null, sort);
-    }
-
+    // SQL-based Queries
+    @SuppressWarnings("SqlSourceToSinkFlow")
     protected List<D> findAllBySql(String sql, Map<String, ?> params) {
         return jdbcClient.sql(StringUtils.toSingleLine(sql))
                 .params(params)
@@ -146,14 +153,18 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
                 .toList();
     }
 
+    @SuppressWarnings("SqlSourceToSinkFlow")
     protected Optional<D> findOneBySql(String sql, Map<String, ?> params) {
         return jdbcClient.sql(StringUtils.toSingleLine(sql))
                 .params(params)
                 .query(clazz)
-                .optional()
+                .list()
+                .stream()
+                .findFirst()
                 .map(this::mapToDomain);
     }
 
+    @SuppressWarnings("SqlSourceToSinkFlow")
     protected long countBySql(String sql, Map<String, ?> params) {
         return jdbcClient.sql(StringUtils.toSingleLine(sql))
                 .params(params)
@@ -165,54 +176,44 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
         return countBySql(sql, params) > 0;
     }
 
+    // Repository - Read
     @Override
     public List<D> findAll() {
-        return findAllBy(null);
+        return findAll(null);
     }
 
     @Override
     public Optional<D> findById(ID id) {
-        Criteria criteria = Criteria.where(ID_COLUMN).is(id);
-        return findOneBy(criteria);
+        return findFirst(Criteria.where(ID_COLUMN).is(id));
     }
 
     @Override
     public Optional<D> findByUuid(String uuid) {
-        Criteria criteria = Criteria.where(UUID_COLUMN).is(uuid);
-        return findOneBy(criteria);
+        return findFirst(Criteria.where(UUID_COLUMN).is(uuid));
     }
 
     @Override
     public List<D> findByIds(List<ID> ids) {
-        if (ids == null || ids.isEmpty()) {
-            return List.of();
-        }
-
-        Criteria criteria = Criteria.where(ID_COLUMN).in(ids);
-        return findAllBy(criteria);
+        if (ids == null || ids.isEmpty()) return List.of();
+        return findAll(Criteria.where(ID_COLUMN).in(ids));
     }
 
     @Override
     public List<D> findByUuids(List<String> uuids) {
-        if (uuids == null || uuids.isEmpty()) {
-            return List.of();
-        }
-
-        Criteria criteria = Criteria.where(UUID_COLUMN).in(uuids);
-        return findAllBy(criteria);
+        if (uuids == null || uuids.isEmpty()) return List.of();
+        return findAll(Criteria.where(UUID_COLUMN).in(uuids));
     }
 
     @Override
     public boolean existsById(ID id) {
-        Criteria criteria = Criteria.where(ID_COLUMN).is(id);
-        return existsBy(criteria);
+        return exists(Criteria.where(ID_COLUMN).is(id));
     }
 
+    // Write Operations
     @Override
     public D save(D entity) {
         try {
-            J saved = jdbcAggregate.save(mapToJdbc(entity));
-            return mapToDomain(saved);
+            return mapToDomain(jdbcAggregate.save(mapToJdbc(entity)));
         } catch (OptimisticLockingFailureException ex) {
             throw new ConcurrentModificationException(
                     "Entity " + entity.getId() + " was modified concurrently"
@@ -222,23 +223,16 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
 
     @Override
     public List<D> saveAll(List<D> entities) {
-        if (entities == null || entities.isEmpty()) {
-            return List.of();
-        }
+        if (entities == null || entities.isEmpty()) return List.of();
 
         try {
-            List<J> saved = jdbcAggregate.saveAll(
-                    entities.stream().map(this::mapToJdbc).toList()
-            );
-
-            return saved.stream()
+            return jdbcAggregate.saveAll(
+                            entities.stream().map(this::mapToJdbc).toList()
+                    ).stream()
                     .map(this::mapToDomain)
                     .toList();
-
         } catch (OptimisticLockingFailureException ex) {
-            throw new ConcurrentModificationException(
-                    "Entities were modified concurrently"
-            );
+            throw new ConcurrentModificationException("Entities were modified concurrently");
         }
     }
 
@@ -251,9 +245,8 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
 
         try {
             J jdbcEntity = mapToJdbc(entity);
-            ((SoftDeletable) jdbcEntity).setDeletedAt(Instant.now());
+            ((SoftDeletable) jdbcEntity).setDeletedAt(TimeProvider.now());
             jdbcAggregate.save(jdbcEntity);
-
         } catch (OptimisticLockingFailureException ex) {
             throw new ConcurrentModificationException(
                     "Entity " + entity.getId() + " was modified concurrently"
@@ -263,9 +256,7 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
 
     @Override
     public void deleteAll(List<D> entities) {
-        if (entities == null || entities.isEmpty()) {
-            return;
-        }
+        if (entities == null || entities.isEmpty()) return;
 
         if (!softDeleteSupported) {
             jdbcAggregate.deleteAllById(
@@ -276,19 +267,17 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
         }
 
         try {
+            Instant now = TimeProvider.now();
+
             List<J> jdbcEntities = entities.stream()
                     .map(this::mapToJdbc)
+                    .peek(e -> ((SoftDeletable) e).setDeletedAt(now))
                     .toList();
-
-            Instant now = Instant.now();
-            jdbcEntities.forEach(e -> ((SoftDeletable) e).setDeletedAt(now));
 
             jdbcAggregate.saveAll(jdbcEntities);
 
         } catch (OptimisticLockingFailureException ex) {
-            throw new ConcurrentModificationException(
-                    "Entities were modified concurrently"
-            );
+            throw new ConcurrentModificationException("Entities were modified concurrently");
         }
     }
 }

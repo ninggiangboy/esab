@@ -27,6 +27,6 @@ public class ProfileMetadataJdbcRepository
 
     @Override
     public List<ProfileMetadata> findByProfileId(Long profileId) {
-        return findAllByField("profileId", profileId);
+        return findAllByFieldEqual("profileId", profileId);
     }
 }

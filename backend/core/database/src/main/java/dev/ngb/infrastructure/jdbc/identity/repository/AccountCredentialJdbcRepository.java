@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class AccountCredentialJdbcRepository
@@ -30,7 +29,7 @@ public class AccountCredentialJdbcRepository
 
     @Override
     public List<AccountCredential> findByAccountId(Long accountId) {
-        return findAllByField("accountId", accountId);
+        return findAllByFieldEqual("accountId", accountId);
     }
 
     @Override
@@ -38,6 +37,6 @@ public class AccountCredentialJdbcRepository
         Criteria criteria = Criteria
                 .where("accountId").is(accountId)
                 .and("provider").is(provider.name());
-        return existsBy(criteria);
+        return exists(criteria);
     }
 }

@@ -11,11 +11,11 @@ import java.util.function.Supplier;
 public final class StopwatchUtils {
 
     public static <T> T measure(Supplier<T> supplier, LongConsumer costConsumer) {
-        Instant start = Instant.now();
+        Instant start = TimeProvider.now();
         try {
             return supplier.get();
         } finally {
-            long costMillis = Duration.between(start, Instant.now()).toMillis();
+            long costMillis = Duration.between(start, TimeProvider.now()).toMillis();
             costConsumer.accept(costMillis);
         }
     }

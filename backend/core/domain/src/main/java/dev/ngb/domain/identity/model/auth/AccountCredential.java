@@ -1,6 +1,7 @@
 package dev.ngb.domain.identity.model.auth;
 
 import dev.ngb.domain.DomainEntity;
+import dev.ngb.util.TimeProvider;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -22,7 +23,7 @@ public class AccountCredential extends DomainEntity<Long> {
     public static AccountCredential create(Long accountId, AuthProvider provider,
                                            String providerAccountId, String accessToken, String refreshToken) {
         AccountCredential obj = new AccountCredential();
-        obj.createdAt = Instant.now(obj.clock);
+        obj.createdAt = TimeProvider.now();
         obj.accountId = accountId;
         obj.provider = provider;
         obj.providerAccountId = providerAccountId;

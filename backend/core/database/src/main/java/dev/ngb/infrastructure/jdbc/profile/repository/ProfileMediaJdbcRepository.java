@@ -27,6 +27,6 @@ public class ProfileMediaJdbcRepository
 
     @Override
     public List<ProfileMedia> findByProfileId(Long profileId) {
-        return findAllByField("profileId", profileId);
+        return findAllByFieldEqual("profileId", profileId);
     }
 }

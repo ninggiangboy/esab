@@ -1,7 +1,8 @@
 package dev.ngb.app.identity.infrastructure.security;
 
 import dev.ngb.app.identity.application.port.TokenProvider;
-import org.springframework.beans.factory.annotation.Value;
+import dev.ngb.application.port.config.AppConfig;
+import dev.ngb.application.port.time.TimeProvider;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -21,26 +22,28 @@ import java.util.Base64;
 @Component
 public class JwtTokenProvider implements TokenProvider {
 
+    private final TimeProvider timeProvider;
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
     private final long accessTokenExpiresInSeconds;
     private final long verificationTokenExpiresInSeconds;
 
     public JwtTokenProvider(
+            AppConfig appConfig,
+            TimeProvider timeProvider,
             JwtEncoder jwtEncoder,
-            JwtDecoder jwtDecoder,
-            @Value("${app.security.jwt.access-token-expiry:900}") long accessTokenExpiresInSeconds,
-            @Value("${app.security.jwt.verification-token-expiry:300}") long verificationTokenExpiresInSeconds
+            JwtDecoder jwtDecoder
     ) {
+        this.timeProvider = timeProvider;
         this.jwtEncoder = jwtEncoder;
         this.jwtDecoder = jwtDecoder;
-        this.accessTokenExpiresInSeconds = accessTokenExpiresInSeconds;
-        this.verificationTokenExpiresInSeconds = verificationTokenExpiresInSeconds;
+        this.accessTokenExpiresInSeconds = appConfig.getSecurityJwtAccessTokenExpiry();
+        this.verificationTokenExpiresInSeconds = appConfig.getSecurityJwtRefreshTokenExpiry();
     }
 
     @Override
     public String generateAccessToken(Long accountId, String accountUuid, String email) {
-        Instant now = Instant.now();
+        Instant now = timeProvider.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .subject(accountUuid)
                 .issuedAt(now)
@@ -62,7 +65,7 @@ public class JwtTokenProvider implements TokenProvider {
 
     @Override
     public String generateVerificationToken(Long accountId, Long deviceId) {
-        Instant now = Instant.now();
+        Instant now = timeProvider.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .subject("verification")
                 .issuedAt(now)

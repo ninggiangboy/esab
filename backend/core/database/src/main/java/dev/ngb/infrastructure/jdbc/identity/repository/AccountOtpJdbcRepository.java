@@ -6,6 +6,7 @@ import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.infrastructure.jdbc.base.repository.JdbcRepository;
 import dev.ngb.infrastructure.jdbc.identity.entity.AccountOtpJdbcEntity;
 import dev.ngb.infrastructure.jdbc.identity.mapper.AccountOtpJdbcMapper;
+import dev.ngb.util.TimeProvider;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.data.relational.core.query.Criteria;
@@ -13,7 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.util.Optional;
 
 @Repository
@@ -32,10 +32,8 @@ public class AccountOtpJdbcRepository extends JdbcRepository<AccountOtp, Account
         Criteria criteria = Criteria.where("account_id").is(accountId)
                 .and("purpose").is(purpose.name())
                 .and("is_used").is(false)
-                .and("expires_at").greaterThan(Instant.now());
+                .and("expires_at").greaterThan(TimeProvider.now());
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        return findOneBySorted(criteria, sort);
+        return findFirst(criteria, sort);
     }
-
-    // mapping handled by base JdbcRepository via JdbcMapper
 }

@@ -27,6 +27,6 @@ public class ProfileUsernameJdbcRepository
 
     @Override
     public List<ProfileUsername> findByProfileId(Long profileId) {
-        return findAllByField("profile_id", profileId);
+        return findAllByFieldEqual("profile_id", profileId);
     }
 }

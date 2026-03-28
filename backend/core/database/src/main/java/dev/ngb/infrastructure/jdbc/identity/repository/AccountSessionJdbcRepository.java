@@ -27,15 +27,13 @@ public class AccountSessionJdbcRepository extends JdbcRepository<AccountSession,
 
     @Override
     public Optional<AccountSession> findByTokenHash(String tokenHash) {
-        return findOneByField("token_hash", tokenHash);
+        return findFirstByFieldEqual("token_hash", tokenHash);
     }
 
     @Override
     public List<AccountSession> findActiveByAccountId(Long accountId) {
         Criteria criteria = Criteria.where("account_id").is(accountId)
                 .and("is_revoked").is(false);
-        return findAllBy(criteria);
+        return findAll(criteria);
     }
-
-    // mapping handled by base JdbcRepository via JdbcMapper
 }
