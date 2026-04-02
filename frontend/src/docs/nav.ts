@@ -1,0 +1,43 @@
+export type DocNavItem = { slug: string; title: string }
+
+/** UI reference pages under `/docs/ui/:slug` (from frontend-sample docs). */
+export const docNavItems: DocNavItem[] = [
+  { slug: 'accordion', title: 'Accordion' },
+  { slug: 'avatar', title: 'Avatar' },
+  { slug: 'button', title: 'Button' },
+  { slug: 'calendar', title: 'Calendar' },
+  { slug: 'checkbox', title: 'Checkbox' },
+  { slug: 'combobox', title: 'Combobox' },
+  { slug: 'confirm-dialog', title: 'Confirm dialog' },
+  { slug: 'data-table', title: 'Data table' },
+  { slug: 'date-field', title: 'Date field' },
+  { slug: 'date-picker', title: 'Date picker' },
+  { slug: 'date-range-picker', title: 'Date range picker' },
+  { slug: 'dialog', title: 'Dialog' },
+  { slug: 'file-trigger', title: 'File trigger' },
+  { slug: 'input', title: 'Input' },
+  { slug: 'loading-overlay', title: 'Loading overlay' },
+  { slug: 'menu', title: 'Menu' },
+  { slug: 'nprogress', title: 'NProgress' },
+  { slug: 'number-field', title: 'Number field' },
+  { slug: 'pagination', title: 'Pagination' },
+  { slug: 'popover', title: 'Popover' },
+  { slug: 'radio-group', title: 'Radio group' },
+  { slug: 'range-calendar', title: 'Range calendar' },
+  { slug: 'search-field', title: 'Search field' },
+  { slug: 'select', title: 'Select' },
+  { slug: 'separator', title: 'Separator' },
+  { slug: 'sheet', title: 'Sheet' },
+  { slug: 'sidebar', title: 'Sidebar' },
+  { slug: 'skeleton', title: 'Skeleton' },
+  { slug: 'sonner', title: 'Sonner' },
+  { slug: 'spinner', title: 'Spinner' },
+  { slug: 'switch', title: 'Switch' },
+  { slug: 'table', title: 'Table' },
+  { slug: 'textarea', title: 'Textarea' },
+  { slug: 'time-field', title: 'Time field' },
+  { slug: 'tooltip', title: 'Tooltip' },
+  { slug: 'uploader', title: 'Uploader' },
+]
+
+export const docNavSlugs = new Set(docNavItems.map((i) => i.slug))
