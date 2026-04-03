@@ -15,7 +15,8 @@ const attrs = useAttrs()
 const mergedClass = computed(() => cn('animate-spin', props.class, attrs.class as string))
 
 const passthrough = computed(() => {
-  const { class: _c, ...rest } = attrs as Record<string, unknown>
+  const rest = { ...attrs } as Record<string, unknown>
+  delete rest.class
   return rest
 })
 </script>

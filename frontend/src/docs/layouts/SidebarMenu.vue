@@ -15,10 +15,88 @@ const guideGroups: Group[] = [
   },
 ]
 
+function item(title: string, slug: string): Item {
+  return { title, href: `/docs/ui/${slug}` }
+}
+
 const uiGroups: Group[] = [
   {
-    title: 'Buttons',
-    items: [{ title: 'Button', href: '/docs/ui/button' }],
+    title: 'Actions & inputs',
+    items: [
+      item('Button', 'button'),
+      item('Field', 'field'),
+      item('Input', 'input'),
+      item('Textarea', 'textarea'),
+      item('Password', 'password'),
+      item('Search field', 'searchfield'),
+      item('Number field', 'numberfield'),
+      item('Date field', 'datefield'),
+      item('Checkbox', 'checkbox'),
+      item('Radio group', 'radio-group'),
+      item('Switch', 'switch'),
+      item('Slider', 'slider'),
+      item('Toggle', 'toggle'),
+      item('Textfield (module)', 'textfield'),
+    ],
+  },
+  {
+    title: 'Layout & display',
+    items: [
+      item('Separator', 'separator'),
+      item('Card', 'card'),
+      item('Badge', 'badge'),
+      item('Avatar', 'avatar'),
+      item('Skeleton', 'skeleton'),
+      item('Table', 'table'),
+      item('Breadcrumbs', 'breadcrumbs'),
+      item('Scroll area', 'scroll-area'),
+      item('Spinner', 'spinner'),
+      item('Loading overlay', 'loading-overlay'),
+      item('App sidebar', 'sidebar'),
+    ],
+  },
+  {
+    title: 'Overlay & navigation',
+    items: [
+      item('Accordion', 'accordion'),
+      item('Tabs', 'tabs'),
+      item('Popover', 'popover'),
+      item('Tooltip', 'tooltip'),
+      item('Dialog', 'dialog'),
+      item('Sheet', 'sheet'),
+      item('Collapsible', 'collapsible'),
+      item('Dropdown menu', 'menu'),
+      item('Listbox', 'listbox'),
+      item('Pagination', 'pagination'),
+    ],
+  },
+  {
+    title: 'Data & pickers',
+    items: [
+      item('Calendar', 'calendar'),
+      item('Date picker', 'datepicker'),
+      item('Select', 'select'),
+      item('Data table', 'datatable'),
+      item('Grid list', 'grid-list'),
+    ],
+  },
+  {
+    title: 'Feedback & upload',
+    items: [
+      item('Progress', 'progress'),
+      item('Sonner (toast)', 'sonner'),
+      item('Confirm dialog', 'confirm-dialog'),
+      item('Dropzone', 'dropzone'),
+      item('Uploader trigger', 'uploader-trigger'),
+      item('Uploader', 'uploader'),
+    ],
+  },
+  {
+    title: 'Forms & app',
+    items: [
+      item('Form (vee-validate)', 'form'),
+      item('Provider', 'provider'),
+    ],
   },
 ]
 

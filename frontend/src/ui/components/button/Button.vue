@@ -33,7 +33,9 @@ const mergedClass = computed(() =>
 )
 
 const passthrough = computed(() => {
-  const { class: _c, type: _t, ...rest } = attrs as Record<string, unknown>
+  const rest = { ...attrs } as Record<string, unknown>
+  delete rest.class
+  delete rest.type
   return rest
 })
 
