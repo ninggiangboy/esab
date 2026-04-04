@@ -3,13 +3,7 @@ import { docFormToast } from '@/docs/examples/_internal/docFormSubmit'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
 import { Button } from '@/ui/components/button'
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  useForm,
-} from '@/ui/components/form'
+import { Form, FormField, FormItem, FormLabel, useForm } from '@/ui/components/form'
 import { Switch } from '@/ui/components/switch-ui'
 
 const schema = toTypedSchema(z.object({ notify: z.boolean() }))

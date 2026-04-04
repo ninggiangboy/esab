@@ -16,7 +16,9 @@ function createToast(variant: Variant) {
       description = typeof data?.description === 'string' ? data.description : undefined
     } else {
       title = messageOrProps.title
-      description = messageOrProps.description ?? (typeof data?.description === 'string' ? data.description : undefined)
+      description =
+        messageOrProps.description ??
+        (typeof data?.description === 'string' ? data.description : undefined)
     }
 
     const { description: _, ...rest } = data ?? {}

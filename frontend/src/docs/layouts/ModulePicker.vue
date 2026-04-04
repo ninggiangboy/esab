@@ -41,7 +41,7 @@ const modules: {
   },
 ]
 
-const current = computed(() => modules.find(m => m.value === selectedModule.value)!)
+const current = computed(() => modules.find((m) => m.value === selectedModule.value)!)
 
 function onDocClick(e: MouseEvent) {
   if (root.value && !root.value.contains(e.target as Node)) {
@@ -62,17 +62,16 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
     >
       <span
         :class="
-          cn(
-            'inline-flex size-7 items-center justify-center rounded-md border',
-            current.className,
-          )
+          cn('inline-flex size-7 items-center justify-center rounded-md border', current.className)
         "
       >
         <component :is="current.icon" class="size-4" />
       </span>
       <span class="flex flex-col items-start min-w-0">
         <span class="text-sm font-medium leading-tight">{{ current.label }}</span>
-        <span class="text-xs text-muted-foreground truncate max-w-45">{{ current.description }}</span>
+        <span class="text-xs text-muted-foreground truncate max-w-45">{{
+          current.description
+        }}</span>
       </span>
       <ChevronDown class="ml-auto w-4 h-4 text-neutral-500 shrink-0" />
     </Button>
@@ -96,10 +95,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
       >
         <span
           :class="
-            cn(
-              'inline-flex size-7 items-center justify-center rounded-md border',
-              item.className,
-            )
+            cn('inline-flex size-7 items-center justify-center rounded-md border', item.className)
           "
         >
           <component :is="item.icon" class="size-4" />

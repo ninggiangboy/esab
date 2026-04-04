@@ -30,7 +30,9 @@ function onChange(e: Event) {
 
 <template>
   <label
-    :class="cn('inline-flex', props.disabled ? 'cursor-not-allowed' : 'cursor-pointer', props.class)"
+    :class="
+      cn('inline-flex', props.disabled ? 'cursor-not-allowed' : 'cursor-pointer', props.class)
+    "
   >
     <input
       type="file"

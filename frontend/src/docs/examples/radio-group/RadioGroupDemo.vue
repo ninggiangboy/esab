@@ -7,14 +7,8 @@ const v = ref('comfort')
 
 <template>
   <RadioGroup v-model="v" class="max-w-xs">
-    <RadioGroupItem value="default">
-      Default
-    </RadioGroupItem>
-    <RadioGroupItem value="comfort">
-      Comfortable
-    </RadioGroupItem>
-    <RadioGroupItem value="compact">
-      Compact
-    </RadioGroupItem>
+    <RadioGroupItem value="default"> Default </RadioGroupItem>
+    <RadioGroupItem value="comfort"> Comfortable </RadioGroupItem>
+    <RadioGroupItem value="compact"> Compact </RadioGroupItem>
   </RadioGroup>
 </template>

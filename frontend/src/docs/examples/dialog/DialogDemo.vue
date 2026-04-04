@@ -36,14 +36,10 @@ import { Input } from '@/ui/components/textfield'
       </div>
       <DialogFooter>
         <DialogClose as-child>
-          <Button variant="outline">
-            Cancel
-          </Button>
+          <Button variant="outline"> Cancel </Button>
         </DialogClose>
         <DialogClose as-child>
-          <Button type="button">
-            Save changes
-          </Button>
+          <Button type="button"> Save changes </Button>
         </DialogClose>
       </DialogFooter>
     </DialogContent>

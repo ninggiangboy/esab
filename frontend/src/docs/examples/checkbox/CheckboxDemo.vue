@@ -6,7 +6,5 @@ const v = ref(false)
 </script>
 
 <template>
-  <Checkbox v-model="v">
-    Accept terms and conditions
-  </Checkbox>
+  <Checkbox v-model="v"> Accept terms and conditions </Checkbox>
 </template>

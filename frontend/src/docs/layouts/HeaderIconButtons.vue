@@ -8,7 +8,14 @@ const GITHUB_URL = 'https://github.com'
 
 <template>
   <div class="flex items-center gap-1">
-    <Button variant="ghost" size="icon" as="a" :href="GITHUB_URL" target="_blank" rel="noopener noreferrer">
+    <Button
+      variant="ghost"
+      size="icon"
+      as="a"
+      :href="GITHUB_URL"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <Github class="size-[18px]" />
     </Button>
     <ThemeSwitcher />

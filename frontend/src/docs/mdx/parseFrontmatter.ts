@@ -19,8 +19,7 @@ export function parseFrontmatter(raw: string): { frontmatter: DocFrontmatter; bo
   const frontmatter: DocFrontmatter = {}
   for (const line of yamlBlock.split('\n')) {
     const m = line.match(/^([\w-]+):\s*(.*)$/)
-    if (m)
-      frontmatter[m[1] as keyof DocFrontmatter] = (m[2]?.trim() ?? '') as never
+    if (m) frontmatter[m[1] as keyof DocFrontmatter] = (m[2]?.trim() ?? '') as never
   }
 
   return { frontmatter, body }

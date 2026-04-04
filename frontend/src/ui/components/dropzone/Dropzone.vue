@@ -28,8 +28,7 @@ const rootClass = computed(() =>
 
 function onDragOver(e: DragEvent) {
   e.preventDefault()
-  if (!props.disabled)
-    isOver.value = true
+  if (!props.disabled) isOver.value = true
 }
 function onDragLeave() {
   isOver.value = false
@@ -37,8 +36,7 @@ function onDragLeave() {
 function onDrop(e: DragEvent) {
   e.preventDefault()
   isOver.value = false
-  if (props.disabled)
-    return
+  if (props.disabled) return
   emit('dropFiles', e.dataTransfer?.files ?? null)
 }
 </script>

@@ -16,9 +16,7 @@ import { Input } from '@/ui/components/textfield'
         <Label for="lop">Password</Label>
         <Input id="lop" placeholder="Enter your password" />
       </div>
-      <Button class="w-full">
-        Login
-      </Button>
+      <Button class="w-full"> Login </Button>
     </div>
   </LoadingOverlay>
 </template>

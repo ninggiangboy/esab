@@ -16,7 +16,7 @@ function onPick(e: Event) {
 <template>
   <div class="flex items-center gap-2 text-sm">
     <label class="inline-flex cursor-pointer">
-      <input type="file" class="sr-only" @change="onPick">
+      <input type="file" class="sr-only" @change="onPick" />
       <Button variant="outline" type="button" as="span">
         <Upload class="size-4" />
         Select a file

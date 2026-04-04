@@ -11,9 +11,7 @@ import {
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Button variant="outline">
-        Shortcuts
-      </Button>
+      <Button variant="outline"> Shortcuts </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <DropdownMenuItem>

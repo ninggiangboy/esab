@@ -18,7 +18,12 @@ const props = defineProps<{
 </script>
 
 <template>
-  <FormControl v-bind="$attrs" :class="props.class" :component-field="props.componentField" v-slot="raw">
+  <FormControl
+    v-bind="$attrs"
+    :class="props.class"
+    :component-field="props.componentField as ComponentFieldBindingObject<unknown>"
+    v-slot="raw"
+  >
     <slot v-bind="raw as FormControlVModelBinds<TModel>" />
   </FormControl>
 </template>

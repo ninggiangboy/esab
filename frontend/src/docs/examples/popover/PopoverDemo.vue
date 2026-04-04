@@ -12,9 +12,7 @@ const mute = ref(false)
 <template>
   <Popover>
     <PopoverTrigger as-child>
-      <Button variant="outline">
-        Settings
-      </Button>
+      <Button variant="outline"> Settings </Button>
     </PopoverTrigger>
     <PopoverContent side="bottom" align="start">
       <div class="flex flex-col gap-4">

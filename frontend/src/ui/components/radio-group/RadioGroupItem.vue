@@ -12,7 +12,9 @@ defineProps<{
 </script>
 
 <template>
-  <label :class="cn('flex items-center gap-x-2 text-sm cursor-pointer', labelVariants(), $props.class)">
+  <label
+    :class="cn('flex items-center gap-x-2 text-sm cursor-pointer', labelVariants(), $props.class)"
+  >
     <RekaRadioGroupItem
       :value="value"
       v-bind="$attrs"

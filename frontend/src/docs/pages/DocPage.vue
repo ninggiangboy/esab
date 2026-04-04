@@ -58,7 +58,10 @@ watch(slug, load, { immediate: true })
           >
             {{ parsed.frontmatter.description }}
           </p>
-          <div v-if="parsed.frontmatter.originalDocs || parsed.frontmatter.sourceCode" class="flex flex-wrap gap-2">
+          <div
+            v-if="parsed.frontmatter.originalDocs || parsed.frontmatter.sourceCode"
+            class="flex flex-wrap gap-2"
+          >
             <Button
               v-if="parsed.frontmatter.originalDocs"
               as="a"

@@ -8,7 +8,19 @@ export async function getShikiHighlighter(): Promise<Highlighter> {
   if (!loading) {
     loading = createHighlighter({
       themes: ['github-light', 'github-dark'],
-      langs: ['javascript', 'typescript', 'vue', 'html', 'css', 'bash', 'json', 'tsx', 'jsx', 'md', 'markdown'],
+      langs: [
+        'javascript',
+        'typescript',
+        'vue',
+        'html',
+        'css',
+        'bash',
+        'json',
+        'tsx',
+        'jsx',
+        'md',
+        'markdown',
+      ],
     })
   }
   instance = await loading

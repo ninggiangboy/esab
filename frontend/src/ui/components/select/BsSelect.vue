@@ -121,16 +121,7 @@ watch(menuOpen, (open) => {
 
 function onSearchKeydown(e: KeyboardEvent) {
   if (['Escape', 'Tab'].includes(e.key)) return
-  if (
-    [
-      'ArrowDown',
-      'ArrowUp',
-      'Home',
-      'End',
-      'PageUp',
-      'PageDown',
-    ].includes(e.key)
-  ) {
+  if (['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
     return
   }
   e.stopPropagation()
@@ -167,21 +158,12 @@ onBeforeUnmount(() => {
         )
       "
     >
-      <SelectValue
-        :placeholder="placeholder ?? 'Select'"
-        class="min-w-0 flex-1"
-      >
+      <SelectValue :placeholder="placeholder ?? 'Select'" class="min-w-0 flex-1">
         <template v-if="multiple && !slots.value" #default>
-          <div
-            v-if="!selectedOptionsOrdered.length"
-            class="text-muted-foreground"
-          >
+          <div v-if="!selectedOptionsOrdered.length" class="text-muted-foreground">
             {{ placeholder ?? 'Select' }}
           </div>
-          <div
-            v-else
-            class="pointer-events-auto flex min-w-0 flex-1 flex-wrap gap-1"
-          >
+          <div v-else class="pointer-events-auto flex min-w-0 flex-1 flex-wrap gap-1">
             <Badge
               v-for="opt in visibleBadgeOptions"
               :key="opt.id"
@@ -257,10 +239,7 @@ onBeforeUnmount(() => {
         </template>
         <SelectViewport
           :class="
-            cn(
-              'scroll-pb-1 p-0 outline-none',
-              searchable && 'min-h-0 flex-1 overflow-y-auto',
-            )
+            cn('scroll-pb-1 p-0 outline-none', searchable && 'min-h-0 flex-1 overflow-y-auto')
           "
         >
           <div
@@ -277,12 +256,16 @@ onBeforeUnmount(() => {
               :value="String(o.id)"
               class="group relative flex w-full cursor-pointer select-none items-center gap-2 rounded-sm py-1.5 pr-2 pl-2 text-sm text-popover-foreground outline-none data-[highlighted]:bg-primary data-[highlighted]:text-white"
             >
-              <SelectItemText class="min-w-0 flex-1 font-normal group-data-[highlighted]:font-medium">
+              <SelectItemText
+                class="min-w-0 flex-1 font-normal group-data-[highlighted]:font-medium"
+              >
                 <slot name="option" :option="o">
                   {{ o.name }}
                 </slot>
               </SelectItemText>
-              <div class="flex w-5 shrink-0 items-center justify-center text-primary-foreground group-data-[highlighted]:text-white">
+              <div
+                class="flex w-5 shrink-0 items-center justify-center text-primary-foreground group-data-[highlighted]:text-white"
+              >
                 <SelectItemIndicator>
                   <Check class="size-4" />
                 </SelectItemIndicator>

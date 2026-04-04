@@ -7,9 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip
   <div class="flex space-x-4">
     <Tooltip>
       <TooltipTrigger as-child>
-        <Button variant="outline">
-          Basic Tooltip
-        </Button>
+        <Button variant="outline"> Basic Tooltip </Button>
       </TooltipTrigger>
       <TooltipContent>
         <p>Simple tooltip text</p>
@@ -17,9 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip
     </Tooltip>
     <Tooltip>
       <TooltipTrigger as-child>
-        <Button variant="outline">
-          Another Tooltip
-        </Button>
+        <Button variant="outline"> Another Tooltip </Button>
       </TooltipTrigger>
       <TooltipContent>
         <p>Another simple tooltip</p>

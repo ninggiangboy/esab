@@ -29,7 +29,11 @@ const columns = [
       const value = getValue()
       const method = methodOptions.find((o) => o.id === value)
       return h('div', { class: 'flex items-center gap-2' }, [
-        h('div', { class: cn(method?.color, 'rounded-sm p-1.5') }, h(CreditCard, { class: 'size-4' })),
+        h(
+          'div',
+          { class: cn(method?.color, 'rounded-sm p-1.5') },
+          h(CreditCard, { class: 'size-4' }),
+        ),
         h('span', { class: 'font-medium' }, method?.name ?? ''),
       ])
     },
@@ -124,12 +128,7 @@ function deleteSelected() {
         placeholder="Payment Method"
         :options="methodOptions"
       />
-      <Button
-        v-if="isFiltering"
-        class="max-sm:hidden"
-        variant="outline"
-        @click="clearFilters"
-      >
+      <Button v-if="isFiltering" class="max-sm:hidden" variant="outline" @click="clearFilters">
         <X class="size-4" />
         Clear
       </Button>

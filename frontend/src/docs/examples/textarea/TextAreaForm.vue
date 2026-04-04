@@ -37,8 +37,6 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
         <FormMessage />
       </FormItem>
     </FormField>
-    <Button type="submit">
-      Submit
-    </Button>
+    <Button type="submit"> Submit </Button>
   </Form>
 </template>

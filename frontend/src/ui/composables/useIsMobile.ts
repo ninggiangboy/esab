@@ -8,7 +8,10 @@ interface UseIsMobileProps {
 
 export function useIsMobile({ breakpointPx = DEFAULT_MOBILE_BREAKPOINT }: UseIsMobileProps = {}) {
   function matches() {
-    return typeof window !== 'undefined' && window.matchMedia(`(max-width: ${breakpointPx - 1}px)`).matches
+    return (
+      typeof window !== 'undefined' &&
+      window.matchMedia(`(max-width: ${breakpointPx - 1}px)`).matches
+    )
   }
 
   const isMobile = ref(matches())

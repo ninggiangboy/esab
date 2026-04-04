@@ -11,8 +11,6 @@ import { Pencil } from 'lucide-vue-next'
         <Pencil class="size-4" />
       </Button>
     </TooltipTrigger>
-    <TooltipContent class="max-w-xs">
-      Edit
-    </TooltipContent>
+    <TooltipContent class="max-w-xs"> Edit </TooltipContent>
   </Tooltip>
 </template>

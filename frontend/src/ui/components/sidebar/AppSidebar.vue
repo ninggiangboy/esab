@@ -10,7 +10,12 @@ defineProps<{
 </script>
 
 <template>
-  <aside data-slot="sidebar" :class="cn('flex h-full w-64 flex-col border-r bg-sidebar text-sidebar-foreground', $props.class)">
+  <aside
+    data-slot="sidebar"
+    :class="
+      cn('flex h-full w-64 flex-col border-r bg-sidebar text-sidebar-foreground', $props.class)
+    "
+  >
     <slot />
   </aside>
 </template>

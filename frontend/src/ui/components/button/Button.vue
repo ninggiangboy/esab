@@ -29,7 +29,11 @@ const props = withDefaults(
 const attrs = useAttrs()
 
 const mergedClass = computed(() =>
-  cn(buttonVariants({ variant: props.variant, size: props.size }), props.class, attrs.class as string),
+  cn(
+    buttonVariants({ variant: props.variant, size: props.size }),
+    props.class,
+    attrs.class as string,
+  ),
 )
 
 const passthrough = computed(() => {
@@ -50,7 +54,6 @@ const resolvedType = computed(() => {
 const disabled = computed(() => {
   return props.loading || (attrs.disabled as boolean | undefined)
 })
-
 </script>
 
 <template>

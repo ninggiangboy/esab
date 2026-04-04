@@ -10,7 +10,11 @@ defineProps<{
 </script>
 
 <template>
-  <AvatarRoot data-slot="avatar" :class="cn('relative flex size-7 shrink-0 overflow-hidden rounded-full', $props.class)" v-bind="$attrs">
+  <AvatarRoot
+    data-slot="avatar"
+    :class="cn('relative flex size-7 shrink-0 overflow-hidden rounded-full', $props.class)"
+    v-bind="$attrs"
+  >
     <slot />
   </AvatarRoot>
 </template>

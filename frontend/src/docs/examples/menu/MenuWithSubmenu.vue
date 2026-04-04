@@ -22,9 +22,7 @@ const subTriggerClass = cn(
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Button variant="outline">
-        Actions
-      </Button>
+      <Button variant="outline"> Actions </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <DropdownMenuItem>Copy</DropdownMenuItem>

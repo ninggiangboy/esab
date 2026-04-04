@@ -46,7 +46,9 @@ export function useValidateFiles(rules: UploaderRules) {
       if (rejectedByExtension.length)
         parts.push(`${rejectedByExtension.length} rejected by extension`)
       if (rejectedBySize.length)
-        parts.push(`${rejectedBySize.length} rejected by size (max ${formatFileSize(maxFileSize!)})`)
+        parts.push(
+          `${rejectedBySize.length} rejected by size (max ${formatFileSize(maxFileSize!)})`,
+        )
       toast.warning(parts.join(' · '))
     }
 

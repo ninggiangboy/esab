@@ -10,7 +10,7 @@ const props = defineProps<{
 const activeId = ref<string | null>(null)
 let observer: IntersectionObserver | null = null
 
-const ids = computed(() => props.toc.map(t => t.id))
+const ids = computed(() => props.toc.map((t) => t.id))
 
 function rebuildObserver() {
   observer?.disconnect()
@@ -18,7 +18,7 @@ function rebuildObserver() {
   if (!props.toc.length) return
 
   observer = new IntersectionObserver(
-    entries => {
+    (entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
           activeId.value = entry.target.id

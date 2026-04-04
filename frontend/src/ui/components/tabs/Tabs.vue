@@ -16,7 +16,12 @@ const tab = defineModel<string | number>('modelValue')
     v-model="tab"
     :orientation="orientation"
     :default-value="defaultValue"
-    :class="cn('group/tabs-root group flex flex-col gap-2 data-[orientation=vertical]:flex-row', $props.class)"
+    :class="
+      cn(
+        'group/tabs-root group flex flex-col gap-2 data-[orientation=vertical]:flex-row',
+        $props.class,
+      )
+    "
   >
     <slot />
   </TabsRoot>

@@ -22,7 +22,7 @@ function onPick(e: Event) {
       <AvatarFallback class="text-lg">CN</AvatarFallback>
     </Avatar>
     <label class="inline-flex cursor-pointer">
-      <input type="file" accept=".png,.jpg,.jpeg" class="sr-only" @change="onPick">
+      <input type="file" accept=".png,.jpg,.jpeg" class="sr-only" @change="onPick" />
       <Button variant="outline" type="button" as="span">
         <Upload class="size-4" />
         Select a file

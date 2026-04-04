@@ -20,7 +20,13 @@ watch(
 
 <template>
   <div class="relative">
-    <Button variant="ghost" size="icon" class="size-10 [&>svg]:size-6" aria-label="Open menu" @click="open = true">
+    <Button
+      variant="ghost"
+      size="icon"
+      class="size-10 [&>svg]:size-6"
+      aria-label="Open menu"
+      @click="open = true"
+    >
       <Menu />
     </Button>
 

@@ -13,10 +13,34 @@ interface User {
 }
 
 const data: User[] = [
-  { id: '1', name: 'Alice Johnson', email: 'alice@company.com', department: 'Engineering', role: 'Senior Developer' },
-  { id: '2', name: 'Bob Smith', email: 'bob@company.com', department: 'Marketing', role: 'Marketing Manager' },
-  { id: '3', name: 'Carol Davis', email: 'carol@company.com', department: 'Engineering', role: 'Product Manager' },
-  { id: '4', name: 'David Wilson', email: 'david@company.com', department: 'Sales', role: 'Sales Representative' },
+  {
+    id: '1',
+    name: 'Alice Johnson',
+    email: 'alice@company.com',
+    department: 'Engineering',
+    role: 'Senior Developer',
+  },
+  {
+    id: '2',
+    name: 'Bob Smith',
+    email: 'bob@company.com',
+    department: 'Marketing',
+    role: 'Marketing Manager',
+  },
+  {
+    id: '3',
+    name: 'Carol Davis',
+    email: 'carol@company.com',
+    department: 'Engineering',
+    role: 'Product Manager',
+  },
+  {
+    id: '4',
+    name: 'David Wilson',
+    email: 'david@company.com',
+    department: 'Sales',
+    role: 'Sales Representative',
+  },
   { id: '5', name: 'Eva Brown', email: 'eva@company.com', department: 'HR', role: 'HR Specialist' },
 ]
 
@@ -38,14 +62,12 @@ function bulk(action: string) {
 <template>
   <div class="w-full space-y-3">
     <div class="flex h-8 items-center justify-between">
-      <span class="text-sm text-muted-foreground">{{ selectedCount }} of {{ data.length }} selected</span>
+      <span class="text-sm text-muted-foreground"
+        >{{ selectedCount }} of {{ data.length }} selected</span
+      >
       <div v-if="selectedCount > 0" class="flex gap-2">
-        <Button variant="destructive" @click="bulk('Delete')">
-          Delete Selected
-        </Button>
-        <Button variant="outline" @click="bulk('Export')">
-          Export Selected
-        </Button>
+        <Button variant="destructive" @click="bulk('Delete')"> Delete Selected </Button>
+        <Button variant="outline" @click="bulk('Export')"> Export Selected </Button>
       </div>
     </div>
     <DataTable

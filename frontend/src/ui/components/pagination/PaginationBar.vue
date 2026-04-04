@@ -36,7 +36,12 @@ const pageSizeModel = computed({
       <BsSelect v-model="pageSizeModel" class="w-32" :options="sizeOptions" />
     </div>
     <div class="flex items-center gap-2">
-      <Button variant="outline" size="sm" :disabled="page <= 1" @click="emit('update:page', page - 1)">
+      <Button
+        variant="outline"
+        size="sm"
+        :disabled="page <= 1"
+        @click="emit('update:page', page - 1)"
+      >
         Prev
       </Button>
       <span class="text-sm tabular-nums">{{ page }} / {{ pageCount }}</span>

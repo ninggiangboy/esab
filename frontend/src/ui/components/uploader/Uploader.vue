@@ -107,8 +107,7 @@ async function addFiles(list: FileList | null) {
 }
 
 function removeAt(i: number) {
-  if (props.isDisabled)
-    return
+  if (props.isDisabled) return
   files.value = files.value.filter((_, j) => j !== i)
   emit('fileListChange', files.value)
 }
@@ -118,14 +117,14 @@ function removeAt(i: number) {
   <div :class="cn('grid gap-3', props.class)" :aria-invalid="props['aria-invalid']">
     <Dropzone v-if="triggerType === 'dropzone'" :disabled="isDisabled" @drop-files="addFiles">
       <span class="text-muted-foreground text-sm">Drop files or use the trigger</span>
-      <UploaderTrigger class="mt-2" :disabled="isDisabled" :multiple="allowMultiple" @change="addFiles" />
+      <UploaderTrigger
+        class="mt-2"
+        :disabled="isDisabled"
+        :multiple="allowMultiple"
+        @change="addFiles"
+      />
     </Dropzone>
-    <UploaderTrigger
-      v-else
-      :disabled="isDisabled"
-      :multiple="allowMultiple"
-      @change="addFiles"
-    />
+    <UploaderTrigger v-else :disabled="isDisabled" :multiple="allowMultiple" @change="addFiles" />
     <div
       v-if="files.length"
       :class="listType === 'card' ? 'grid grid-cols-2 gap-2' : 'flex flex-col gap-2'"

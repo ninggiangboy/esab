@@ -67,18 +67,18 @@ const onSubmit = handleSubmit((values) => {
       <FormItem>
         <FormLabel>Language</FormLabel>
         <FormControl v-slot="controlProps">
-          <BsSelect v-bind="{ ...componentField, ...controlProps }" multiple :options="languageOptions" />
+          <BsSelect
+            v-bind="{ ...componentField, ...controlProps }"
+            multiple
+            :options="languageOptions"
+          />
         </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>
     <div class="grid grid-cols-2 gap-2 py-2">
-      <Button type="button" variant="outline">
-        Cancel
-      </Button>
-      <Button type="submit">
-        Save
-      </Button>
+      <Button type="button" variant="outline"> Cancel </Button>
+      <Button type="submit"> Save </Button>
     </div>
   </Form>
 </template>

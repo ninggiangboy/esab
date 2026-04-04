@@ -16,8 +16,6 @@ function refetch() {
 
 <template>
   <div>
-    <Button variant="outline" :loading="isFetching" @click="refetch">
-      Refetch
-    </Button>
+    <Button variant="outline" :loading="isFetching" @click="refetch"> Refetch </Button>
   </div>
 </template>

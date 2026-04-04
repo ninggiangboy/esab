@@ -41,22 +41,15 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
 
 <template>
   <Form class="space-y-5" @submit="onSubmit">
-    <!-- No `type="checkbox"`: group v-model is the whole string[]; checkbox type would nest arrays. -->
     <FormField v-slot="{ componentField }" name="interest">
       <FormItem>
         <FormLabel>Select your interests</FormLabel>
         <FormDescription>Pick one or more.</FormDescription>
         <FormVm generic="string[]" v-slot="vm" :component-field="componentField">
           <CheckboxGroup v-bind="vm" class="grid grid-cols-3 gap-4">
-            <Checkbox value="reading">
-              Reading
-            </Checkbox>
-            <Checkbox value="writing">
-              Writing
-            </Checkbox>
-            <Checkbox value="coding">
-              Coding
-            </Checkbox>
+            <Checkbox value="reading"> Reading </Checkbox>
+            <Checkbox value="writing"> Writing </Checkbox>
+            <Checkbox value="coding"> Coding </Checkbox>
           </CheckboxGroup>
         </FormVm>
         <FormMessage />
@@ -80,16 +73,12 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
     <FormField v-slot="{ componentField }" name="acceptTerm" type="checkbox">
       <FormItem>
         <FormVm generic="boolean | 'indeterminate'" v-slot="vm" :component-field="componentField">
-          <Checkbox v-bind="vm">
-            I accept the terms and conditions
-          </Checkbox>
+          <Checkbox v-bind="vm"> I accept the terms and conditions </Checkbox>
         </FormVm>
         <FormMessage />
       </FormItem>
     </FormField>
 
-    <Button type="submit">
-      Submit
-    </Button>
+    <Button type="submit"> Submit </Button>
   </Form>
 </template>

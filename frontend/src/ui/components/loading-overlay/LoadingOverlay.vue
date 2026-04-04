@@ -15,10 +15,7 @@ withDefaults(
 <template>
   <div :class="cn('relative', isLoading && 'opacity-60', $props.class)">
     <slot />
-    <div
-      v-if="isLoading"
-      class="absolute inset-0 z-10 flex items-center justify-center"
-    >
+    <div v-if="isLoading" class="absolute inset-0 z-10 flex items-center justify-center">
       <Spinner class="size-7 text-primary" />
     </div>
   </div>

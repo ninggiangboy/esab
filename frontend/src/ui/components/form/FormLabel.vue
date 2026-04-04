@@ -16,11 +16,7 @@ const invalid = computed(() => !!errorMessage.value)
 </script>
 
 <template>
-  <Label
-    data-slot="form-label"
-    :for="id"
-    :class="cn(invalid && 'text-destructive', props.class)"
-  >
+  <Label data-slot="form-label" :for="id" :class="cn(invalid && 'text-destructive', props.class)">
     <slot />
   </Label>
 </template>

@@ -10,6 +10,10 @@ const value = shallowRef<DateRange | null>(null)
 <template>
   <div class="flex flex-col gap-2">
     <RangeCalendarPanel v-model="value" />
-    <pre class="rounded-md border bg-background-secondary p-2 font-mono text-xs">{{ value ? JSON.stringify({ start: value.start?.toString(), end: value.end?.toString() }, null, 2) : 'No value' }}</pre>
+    <pre class="rounded-md border bg-background-secondary p-2 font-mono text-xs">{{
+      value
+        ? JSON.stringify({ start: value.start?.toString(), end: value.end?.toString() }, null, 2)
+        : 'No value'
+    }}</pre>
   </div>
 </template>

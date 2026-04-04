@@ -32,10 +32,7 @@ async function handleAction() {
               v-if="confirmDialogData.variant !== 'destructive'"
               class="size-6 text-blue-500 dark:text-blue-400"
             />
-            <CircleX
-              v-else
-              class="size-6 text-destructive-foreground"
-            />
+            <CircleX v-else class="size-6 text-destructive-foreground" />
           </div>
           <DialogTitle>{{ confirmDialogData.title || 'Confirm' }}</DialogTitle>
           <DialogDescription>

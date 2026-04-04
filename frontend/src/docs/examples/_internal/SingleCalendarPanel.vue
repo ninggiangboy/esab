@@ -48,7 +48,9 @@ function isOutsideMonth(day: DateValue, month: DateValue) {
     :min-value="minValue"
     :max-value="maxValue"
     fixed-weeks
-    :class="cn('w-fit', !unstyled && 'rounded-lg border border-input bg-background-secondary/40 p-3')"
+    :class="
+      cn('w-fit', !unstyled && 'rounded-lg border border-input bg-background-secondary/40 p-3')
+    "
   >
     <CalendarHeader class="mb-2 flex items-center justify-between gap-1">
       <CalendarPrev
@@ -87,8 +89,17 @@ function isOutsideMonth(day: DateValue, month: DateValue) {
           </CalendarGridRow>
         </CalendarGridHead>
         <CalendarGridBody class="[&_tr]:flex [&_tr]:w-full [&_tr]:justify-between">
-          <CalendarGridRow v-for="(weekDates, wi) in month.rows" :key="`w-${wi}`" class="mt-2 flex w-full">
-            <CalendarCell v-for="weekDate in weekDates" :key="weekDate.toString()" :date="weekDate" class="relative p-0 text-center text-sm">
+          <CalendarGridRow
+            v-for="(weekDates, wi) in month.rows"
+            :key="`w-${wi}`"
+            class="mt-2 flex w-full"
+          >
+            <CalendarCell
+              v-for="weekDate in weekDates"
+              :key="weekDate.toString()"
+              :date="weekDate"
+              class="relative p-0 text-center text-sm"
+            >
               <CalendarCellTrigger
                 :day="weekDate"
                 :month="month.value"

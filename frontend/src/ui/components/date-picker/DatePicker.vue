@@ -35,9 +35,7 @@ const model = defineModel<DateValue | undefined>({
       </FieldGroup>
     </DatePickerField>
     <DatePickerTrigger as-child>
-      <Button variant="outline" size="sm" class="w-full justify-start">
-        Calendar
-      </Button>
+      <Button variant="outline" size="sm" class="w-full justify-start"> Calendar </Button>
     </DatePickerTrigger>
     <DatePickerContent class="z-50 rounded-md border bg-popover p-2 shadow-md w-auto">
       <DatePickerCalendar />

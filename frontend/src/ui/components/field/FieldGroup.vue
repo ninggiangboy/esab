@@ -14,7 +14,11 @@ const props = defineProps<{
 const attrs = useAttrs()
 
 const mergedClass = computed(() =>
-  cn(fieldGroupVariants({ variant: props.variant ?? 'default' }), props.class, attrs.class as string),
+  cn(
+    fieldGroupVariants({ variant: props.variant ?? 'default' }),
+    props.class,
+    attrs.class as string,
+  ),
 )
 const passthrough = computed(() => {
   const rest = { ...attrs } as Record<string, unknown>

@@ -5,7 +5,14 @@ import { ArrowDown, ArrowUp, FileSearch } from 'lucide-vue-next'
 import { computed, h, toRef } from 'vue'
 import { Checkbox } from '@/ui/components/checkbox'
 import { Spinner } from '@/ui/components/spinner'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/components/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/ui/components/table'
 import { cn } from '@/ui/lib/utils'
 import { getCommonPinningStyles } from './dataTableUtils'
 
@@ -107,7 +114,10 @@ const table = useVueTable({
         <TableHead
           v-for="header in headerGroup.headers"
           :key="header.id"
-          :style="{ ...getCommonPinningStyles(header.column), width: header.getSize() ? `${header.getSize()}px` : undefined }"
+          :style="{
+            ...getCommonPinningStyles(header.column),
+            width: header.getSize() ? `${header.getSize()}px` : undefined,
+          }"
           :class="(header.column.columnDef as { meta?: { className?: string } }).meta?.className"
         >
           <div v-if="!header.isPlaceholder" class="flex items-center gap-1">
@@ -118,10 +128,7 @@ const table = useVueTable({
               @click="header.column.getToggleSortingHandler()?.($event)"
             >
               <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
-              <ArrowUp
-                v-if="header.column.getIsSorted() === 'asc'"
-                class="size-3.5 opacity-60"
-              />
+              <ArrowUp v-if="header.column.getIsSorted() === 'asc'" class="size-3.5 opacity-60" />
               <ArrowDown
                 v-else-if="header.column.getIsSorted() === 'desc'"
                 class="size-3.5 opacity-60"
@@ -155,7 +162,10 @@ const table = useVueTable({
           <TableCell
             v-for="cell in row.getVisibleCells()"
             :key="cell.id"
-            :style="{ ...getCommonPinningStyles(cell.column), width: cell.column.getSize() ? `${cell.column.getSize()}px` : undefined }"
+            :style="{
+              ...getCommonPinningStyles(cell.column),
+              width: cell.column.getSize() ? `${cell.column.getSize()}px` : undefined,
+            }"
             :class="(cell.column.columnDef as { meta?: { className?: string } }).meta?.className"
           >
             <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
@@ -164,7 +174,11 @@ const table = useVueTable({
       </template>
       <TableRow v-else>
         <TableCell :colspan="columns.length" class="h-24 text-center">
-          <div :class="cn('flex flex-col items-center justify-center gap-2 text-muted-foreground py-8')">
+          <div
+            :class="
+              cn('flex flex-col items-center justify-center gap-2 text-muted-foreground py-8')
+            "
+          >
             <FileSearch class="size-8 opacity-50" />
             <span class="text-sm">No data</span>
           </div>

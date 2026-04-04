@@ -12,7 +12,9 @@ const props = withDefaults(
 
 <template>
   <div :class="cn('flex items-center gap-2 font-semibold text-foreground', props.class)">
-    <span class="size-8 rounded-md bg-primary/15 border border-border flex items-center justify-center text-xs text-primary">
+    <span
+      class="size-8 rounded-md bg-primary/15 border border-border flex items-center justify-center text-xs text-primary"
+    >
       E
     </span>
     <span v-if="withName" class="text-sm tracking-tight">Esab UI</span>

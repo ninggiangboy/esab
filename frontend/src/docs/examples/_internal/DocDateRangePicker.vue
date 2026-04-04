@@ -18,12 +18,14 @@ defineProps<{
   disabled?: boolean
 }>()
 
-const model = defineModel<{ start: DateValue | undefined; end: DateValue | undefined } | undefined>({
-  default: () => {
-    const t = today(getLocalTimeZone())
-    return { start: t, end: t.add({ days: 7 }) }
+const model = defineModel<{ start: DateValue | undefined; end: DateValue | undefined } | undefined>(
+  {
+    default: () => {
+      const t = today(getLocalTimeZone())
+      return { start: t, end: t.add({ days: 7 }) }
+    },
   },
-})
+)
 </script>
 
 <template>
@@ -52,9 +54,7 @@ const model = defineModel<{ start: DateValue | undefined; end: DateValue | undef
       </FieldGroup>
     </DateRangePickerField>
     <DateRangePickerTrigger as-child>
-      <Button variant="outline" size="sm" class="w-full justify-start">
-        Calendar
-      </Button>
+      <Button variant="outline" size="sm" class="w-full justify-start"> Calendar </Button>
     </DateRangePickerTrigger>
     <DateRangePickerContent class="z-50 w-auto rounded-md border bg-popover p-2 shadow-md">
       <DateRangePickerCalendar />

@@ -12,7 +12,12 @@ defineProps<{
 <template>
   <RekaAvatarFallback
     data-slot="avatar-fallback"
-    :class="cn('bg-sky-500 flex size-full items-center justify-center rounded-full text-white', $props.class)"
+    :class="
+      cn(
+        'bg-sky-500 flex size-full items-center justify-center rounded-full text-white',
+        $props.class,
+      )
+    "
     v-bind="$attrs"
   >
     <slot />

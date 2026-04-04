@@ -30,17 +30,18 @@ withDefaults(
 
 const model = defineModel<DateRange | null>({ default: null })
 
-function cellVariant(
-  flags: { selected: boolean; selectionStart: boolean; selectionEnd: boolean; highlighted: boolean; highlightedStart: boolean; highlightedEnd: boolean },
-): 'none' | 'middle' | 'cap' {
-  if (flags.selectionStart || flags.selectionEnd)
-    return 'cap'
-  if (flags.highlightedStart || flags.highlightedEnd)
-    return 'cap'
-  if (flags.selected)
-    return 'middle'
-  if (flags.highlighted)
-    return 'middle'
+function cellVariant(flags: {
+  selected: boolean
+  selectionStart: boolean
+  selectionEnd: boolean
+  highlighted: boolean
+  highlightedStart: boolean
+  highlightedEnd: boolean
+}): 'none' | 'middle' | 'cap' {
+  if (flags.selectionStart || flags.selectionEnd) return 'cap'
+  if (flags.highlightedStart || flags.highlightedEnd) return 'cap'
+  if (flags.selected) return 'middle'
+  if (flags.highlighted) return 'middle'
   return 'none'
 }
 </script>
@@ -53,7 +54,9 @@ function cellVariant(
     :min-value="minValue"
     :max-value="maxValue"
     fixed-weeks
-    :class="cn('w-fit', !unstyled && 'rounded-lg border border-input bg-background-secondary/40 p-3')"
+    :class="
+      cn('w-fit', !unstyled && 'rounded-lg border border-input bg-background-secondary/40 p-3')
+    "
   >
     <RangeCalendarHeader class="mb-2 flex items-center justify-between gap-1">
       <RangeCalendarPrev
@@ -75,17 +78,34 @@ function cellVariant(
       />
     </RangeCalendarHeader>
     <div class="flex flex-col gap-4 sm:flex-row">
-      <RangeCalendarGrid v-for="month in grid" :key="month.value.toString()" class="w-full border-collapse space-y-1">
+      <RangeCalendarGrid
+        v-for="month in grid"
+        :key="month.value.toString()"
+        class="w-full border-collapse space-y-1"
+      >
         <RangeCalendarGridHead>
           <RangeCalendarGridRow class="mb-1 flex w-full justify-between">
-            <RangeCalendarHeadCell v-for="day in weekDays" :key="day" class="w-9 text-center text-xs font-normal text-muted-foreground">
+            <RangeCalendarHeadCell
+              v-for="day in weekDays"
+              :key="day"
+              class="w-9 text-center text-xs font-normal text-muted-foreground"
+            >
               {{ day }}
             </RangeCalendarHeadCell>
           </RangeCalendarGridRow>
         </RangeCalendarGridHead>
         <RangeCalendarGridBody class="[&_tr]:flex [&_tr]:w-full [&_tr]:justify-between">
-          <RangeCalendarGridRow v-for="(weekDates, wi) in month.rows" :key="`rw-${wi}`" class="mt-2 flex w-full">
-            <RangeCalendarCell v-for="weekDate in weekDates" :key="weekDate.toString()" :date="weekDate" class="relative m-0 h-9 w-9 p-0 text-center text-sm">
+          <RangeCalendarGridRow
+            v-for="(weekDates, wi) in month.rows"
+            :key="`rw-${wi}`"
+            class="mt-2 flex w-full"
+          >
+            <RangeCalendarCell
+              v-for="weekDate in weekDates"
+              :key="weekDate.toString()"
+              :date="weekDate"
+              class="relative m-0 h-9 w-9 p-0 text-center text-sm"
+            >
               <RangeCalendarCellTrigger :day="weekDate" :month="month.value" class="group relative">
                 <template
                   #default="{
@@ -111,7 +131,8 @@ function cellVariant(
                         }),
                       })
                     "
-                  >{{ dayValue }}</span>
+                    >{{ dayValue }}</span
+                  >
                 </template>
               </RangeCalendarCellTrigger>
             </RangeCalendarCell>

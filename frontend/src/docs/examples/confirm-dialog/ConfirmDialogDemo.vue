@@ -20,7 +20,5 @@ function handleDeleteUsers() {
 </script>
 
 <template>
-  <Button variant="outline" @click="handleDeleteUsers">
-    Delete Users
-  </Button>
+  <Button variant="outline" @click="handleDeleteUsers"> Delete Users </Button>
 </template>

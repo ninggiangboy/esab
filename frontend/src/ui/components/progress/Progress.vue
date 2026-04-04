@@ -23,7 +23,11 @@ const pct = computed(() => {
 
 <template>
   <ProgressRoot v-model="model" :max="max" :class="cn('w-full', props.class)">
-    <div :class="cn('relative h-4 w-full overflow-hidden rounded-full bg-neutral-500/15', props.barClassName)">
+    <div
+      :class="
+        cn('relative h-4 w-full overflow-hidden rounded-full bg-neutral-500/15', props.barClassName)
+      "
+    >
       <ProgressIndicator as-child>
         <div
           :class="cn('size-full flex-1 bg-primary-foreground transition-all', props.fillClassName)"

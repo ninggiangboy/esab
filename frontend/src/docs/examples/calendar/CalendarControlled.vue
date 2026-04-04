@@ -9,6 +9,8 @@ const value = ref<DateValue | undefined>()
 <template>
   <div class="flex flex-col gap-2">
     <SingleCalendarPanel v-model="value" />
-    <pre class="rounded-md border bg-background-secondary p-2 font-mono text-xs">{{ value ? value.toString() : 'No value' }}</pre>
+    <pre class="rounded-md border bg-background-secondary p-2 font-mono text-xs">{{
+      value ? value.toString() : 'No value'
+    }}</pre>
   </div>
 </template>

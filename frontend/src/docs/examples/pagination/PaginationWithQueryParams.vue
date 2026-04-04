@@ -14,11 +14,23 @@ const page = computed({
 </script>
 <template>
   <div class="flex items-center justify-center gap-1">
-    <Button variant="ghost" size="icon" class="size-8" :disabled="page <= 1" @click="page = page - 1">
+    <Button
+      variant="ghost"
+      size="icon"
+      class="size-8"
+      :disabled="page <= 1"
+      @click="page = page - 1"
+    >
       <ChevronLeft class="size-4" />
     </Button>
     <span class="px-2 text-sm tabular-nums">{{ page }} / {{ pageCount }}</span>
-    <Button variant="ghost" size="icon" class="size-8" :disabled="page >= pageCount" @click="page = page + 1">
+    <Button
+      variant="ghost"
+      size="icon"
+      class="size-8"
+      :disabled="page >= pageCount"
+      @click="page = page + 1"
+    >
       <ChevronRight class="size-4" />
     </Button>
   </div>

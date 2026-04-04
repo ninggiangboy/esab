@@ -16,10 +16,17 @@ const mobileMenuOpen = ref(false)
 <template>
   <div class="container w-full max-w-350 mx-auto">
     <div class="fixed h-16 max-w-350 w-full z-20">
-      <CrossIcon class="max-xl:hidden absolute top-16 left-[0.5px] -translate-x-1/2 -translate-y-1/2" />
-      <CrossIcon class="max-xl:hidden absolute top-16 right-[0.5px] translate-x-1/2 -translate-y-1/2" />
+      <CrossIcon
+        class="max-xl:hidden absolute top-16 left-[0.5px] -translate-x-1/2 -translate-y-1/2"
+      />
+      <CrossIcon
+        class="max-xl:hidden absolute top-16 right-[0.5px] translate-x-1/2 -translate-y-1/2"
+      />
 
-      <div v-if="!isMobile" class="max-lg:hidden grid grid-cols-[260px_1fr] xl:grid-cols-[260px_1fr_260px] h-full">
+      <div
+        v-if="!isMobile"
+        class="max-lg:hidden grid grid-cols-[260px_1fr] xl:grid-cols-[260px_1fr_260px] h-full"
+      >
         <div class="border-l border-border h-full">
           <SidebarHeader />
         </div>

@@ -9,10 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <a
-    :href="href"
-    :class="cn('transition-colors hover:text-foreground', $props.class)"
-  >
+  <a :href="href" :class="cn('transition-colors hover:text-foreground', $props.class)">
     <slot />
   </a>
 </template>

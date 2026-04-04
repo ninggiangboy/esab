@@ -13,7 +13,11 @@ const props = withDefaults(
 
 <template>
   <DropdownMenuPortal>
-    <Reka v-bind="$attrs" :side-offset="props.sideOffset" :class="dropdownMenuContentClass(props.class)">
+    <Reka
+      v-bind="$attrs"
+      :side-offset="props.sideOffset"
+      :class="dropdownMenuContentClass(props.class)"
+    >
       <slot />
     </Reka>
   </DropdownMenuPortal>

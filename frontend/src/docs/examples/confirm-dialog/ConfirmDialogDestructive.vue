@@ -21,7 +21,5 @@ function handleArchive() {
 </script>
 
 <template>
-  <Button variant="outline" @click="handleArchive">
-    Archive Project
-  </Button>
+  <Button variant="outline" @click="handleArchive"> Archive Project </Button>
 </template>

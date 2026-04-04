@@ -2,7 +2,12 @@
 import { ChevronDown, ChevronUp } from 'lucide-vue-next'
 import { FieldGroup } from '@/ui/components/field'
 import { Separator } from '@/ui/components/separator'
-import { NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput, NumberFieldRoot } from 'reka-ui'
+import {
+  NumberFieldDecrement,
+  NumberFieldIncrement,
+  NumberFieldInput,
+  NumberFieldRoot,
+} from 'reka-ui'
 import { cn } from '@/ui/lib/utils'
 
 defineOptions({ inheritAttrs: false })
@@ -60,16 +65,19 @@ const stepperBtnClass = cn(
           )
         "
       />
-      <div
-        v-if="props.showStepper"
-        class="pointer-events-auto absolute right-0 flex items-center"
-      >
+      <div v-if="props.showStepper" class="pointer-events-auto absolute right-0 flex items-center">
         <Separator orientation="vertical" class="h-5" />
         <div class="flex flex-col px-1.5">
-          <NumberFieldIncrement :class="cn(stepperBtnClass, 'translate-y-0.5')" aria-label="Increment">
+          <NumberFieldIncrement
+            :class="cn(stepperBtnClass, 'translate-y-0.5')"
+            aria-label="Increment"
+          >
             <ChevronUp class="!size-[14px]" aria-hidden="true" />
           </NumberFieldIncrement>
-          <NumberFieldDecrement :class="cn(stepperBtnClass, '-translate-y-0.5')" aria-label="Decrement">
+          <NumberFieldDecrement
+            :class="cn(stepperBtnClass, '-translate-y-0.5')"
+            aria-label="Decrement"
+          >
             <ChevronDown class="!size-[14px]" aria-hidden="true" />
           </NumberFieldDecrement>
         </div>

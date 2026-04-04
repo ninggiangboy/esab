@@ -20,7 +20,12 @@ const model = defineModel<AcceptableValue | AcceptableValue[] | undefined>()
     v-bind="$attrs"
     :type="type"
     :orientation="orientation"
-    :class="cn('group/togglegroup flex items-center justify-center gap-1 data-[orientation=vertical]:flex-col', $props.class)"
+    :class="
+      cn(
+        'group/togglegroup flex items-center justify-center gap-1 data-[orientation=vertical]:flex-col',
+        $props.class,
+      )
+    "
   >
     <slot />
   </ToggleGroupRoot>

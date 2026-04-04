@@ -8,7 +8,10 @@ defineProps<{
 </script>
 
 <template>
-  <caption data-slot="table-caption" :class="cn('text-muted-foreground my-4 text-sm', $props.class)">
+  <caption
+    data-slot="table-caption"
+    :class="cn('text-muted-foreground my-4 text-sm', $props.class)"
+  >
     <slot />
   </caption>
 </template>

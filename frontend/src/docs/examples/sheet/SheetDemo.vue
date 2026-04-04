@@ -3,12 +3,7 @@ import { DialogClose } from 'reka-ui'
 import { Button } from '@/ui/components/button'
 import { Label } from '@/ui/components/field'
 import { Sheet, SheetContent, SheetTrigger } from '@/ui/components/sheet'
-import {
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/ui/components/dialog'
+import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/ui/components/dialog'
 import { Input } from '@/ui/components/textfield'
 </script>
 
@@ -34,14 +29,10 @@ import { Input } from '@/ui/components/textfield'
       </div>
       <DialogFooter>
         <DialogClose as-child>
-          <Button variant="outline">
-            Cancel
-          </Button>
+          <Button variant="outline"> Cancel </Button>
         </DialogClose>
         <DialogClose as-child>
-          <Button type="button">
-            Save changes
-          </Button>
+          <Button type="button"> Save changes </Button>
         </DialogClose>
       </DialogFooter>
     </SheetContent>

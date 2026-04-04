@@ -8,7 +8,10 @@ defineProps<{
 </script>
 
 <template>
-  <ListboxGroupLabel v-bind="$attrs" :class="cn('py-1.5 pl-8 pr-2 text-sm font-semibold', $props.class)">
+  <ListboxGroupLabel
+    v-bind="$attrs"
+    :class="cn('py-1.5 pl-8 pr-2 text-sm font-semibold', $props.class)"
+  >
     <slot />
   </ListboxGroupLabel>
 </template>

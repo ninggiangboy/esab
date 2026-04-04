@@ -27,7 +27,11 @@ const uiGroups: Group[] = [
   },
   {
     title: 'Display',
-    items: [item('Accordion', 'accordion'), item('Avatar', 'avatar'), item('Separator', 'separator')],
+    items: [
+      item('Accordion', 'accordion'),
+      item('Avatar', 'avatar'),
+      item('Separator', 'separator'),
+    ],
   },
   {
     title: 'Buttons',
@@ -105,7 +109,8 @@ const groups = computed(() => (route.path.includes('/docs/ui') ? uiGroups : guid
             :class="
               cn(
                 'block rounded-md px-3 py-1.5 text-[13px] text-secondary-foreground no-underline hover:bg-sidebar-accent',
-                route.path === item.href && 'bg-sidebar-accent font-medium text-sidebar-accent-foreground',
+                route.path === item.href &&
+                  'bg-sidebar-accent font-medium text-sidebar-accent-foreground',
               )
             "
           >

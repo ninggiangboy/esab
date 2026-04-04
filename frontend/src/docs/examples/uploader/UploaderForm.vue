@@ -31,9 +31,7 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
 </script>
 <template>
   <Form class="w-full space-y-4" @submit="onSubmit">
-    <h2 class="text-xl font-semibold">
-      Uploader
-    </h2>
+    <h2 class="text-xl font-semibold">Uploader</h2>
     <FormField v-slot="{ componentField }" name="name">
       <FormItem>
         <FormLabel>Name</FormLabel>

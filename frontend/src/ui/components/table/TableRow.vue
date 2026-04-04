@@ -10,7 +10,9 @@ defineProps<{
 <template>
   <tr
     data-slot="table-row"
-    :class="cn('data-[state=selected]:bg-blue-200! dark:data-[state=selected]:bg-blue-900!', $props.class)"
+    :class="
+      cn('data-[state=selected]:bg-blue-200! dark:data-[state=selected]:bg-blue-900!', $props.class)
+    "
   >
     <slot />
   </tr>

@@ -7,26 +7,18 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip
   <div class="flex space-x-4">
     <Tooltip>
       <TooltipTrigger as-child>
-        <Button variant="outline">
-          Custom Tooltip
-        </Button>
+        <Button variant="outline"> Custom Tooltip </Button>
       </TooltipTrigger>
       <TooltipContent class="max-w-sm rounded-md">
         <div class="p-1">
-          <h4 class="mb-1 text-sm font-semibold">
-            Custom Tooltip
-          </h4>
-          <p class="text-xs">
-            This tooltip has custom styling with a title and description.
-          </p>
+          <h4 class="mb-1 text-sm font-semibold">Custom Tooltip</h4>
+          <p class="text-xs">This tooltip has custom styling with a title and description.</p>
         </div>
       </TooltipContent>
     </Tooltip>
     <Tooltip>
       <TooltipTrigger as-child>
-        <Button variant="outline">
-          Rich Content
-        </Button>
+        <Button variant="outline"> Rich Content </Button>
       </TooltipTrigger>
       <TooltipContent class="max-w-sm rounded-md">
         <div class="p-1">
