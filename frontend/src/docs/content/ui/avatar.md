@@ -1,8 +1,19 @@
 ---
 title: Avatar
-description: Vue UI port (see src/ui/components).
+description: An image with a fallback for representing the user.
+originalDocs: https://react-spectrum.adobe.com/react-aria/Avatar.html
 ---
 
-## Source
+## Usage
 
-`src/ui/components/avatar/`
+<ComponentPreview name="AvatarDemo" />
+
+---
+
+## Examples
+
+### Sizes
+
+<ComponentPreview name="AvatarSizes" />
+
+---

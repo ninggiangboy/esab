@@ -1,8 +1,8 @@
 ---
 title: Sonner
-description: Vue UI port (see src/ui/components).
+description: Toast notifications (vue-sonner).
 ---
 
-## Source
+## Usage
 
-`src/ui/components/sonner/`
+<ComponentPreview name="SonnerDemo" />

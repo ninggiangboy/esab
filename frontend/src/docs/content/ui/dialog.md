@@ -1,8 +1,9 @@
 ---
 title: Dialog
-description: Vue UI port (see src/ui/components).
+description: Modal dialog for focused tasks.
+originalDocs: https://react-spectrum.adobe.com/react-aria/Modal.html
 ---
 
-## Source
+## Usage
 
-`src/ui/components/dialog/`
+<ComponentPreview name="DialogDemo" />

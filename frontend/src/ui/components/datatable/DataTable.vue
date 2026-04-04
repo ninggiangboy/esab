@@ -1,8 +1,9 @@
 <script setup lang="ts" generic="TData extends { id: string | number }">
-import type { ColumnDef } from '@tanstack/vue-table'
+import type { ColumnDef, ColumnPinningState, RowSelectionState } from '@tanstack/vue-table'
 import { FlexRender, getCoreRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
 import { ArrowDown, ArrowUp, FileSearch } from 'lucide-vue-next'
-import { toRef } from 'vue'
+import { computed, h, toRef } from 'vue'
+import { Checkbox } from '@/ui/components/checkbox'
 import { Spinner } from '@/ui/components/spinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/components/table'
 import { cn } from '@/ui/lib/utils'
@@ -11,29 +12,91 @@ import { getCommonPinningStyles } from './dataTableUtils'
 const props = withDefaults(
   defineProps<{
     data: TData[]
-    columns: ColumnDef<TData, unknown>[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TValue must accept heterogeneous accessor columns
+    columns: ColumnDef<TData, any>[]
     containerClassName?: string
     enableSorting?: boolean
     isLoading?: boolean
+    enableRowSelection?: boolean
+    rowSelection?: RowSelectionState
+    columnPinning?: ColumnPinningState
   }>(),
   {
     enableSorting: false,
     isLoading: false,
+    enableRowSelection: false,
+    rowSelection: undefined,
+    columnPinning: undefined,
   },
 )
 
+const emit = defineEmits<{
+  'update:rowSelection': [value: RowSelectionState]
+}>()
+
 const dataRef = toRef(props, 'data')
+
+const selectColumn: ColumnDef<TData, unknown> = {
+  id: 'select',
+  header: ({ table }) =>
+    h(
+      'div',
+      { class: 'flex items-center justify-center px-1' },
+      h(Checkbox, {
+        'aria-label': 'Select all',
+        modelValue: table.getIsAllPageRowsSelected()
+          ? true
+          : table.getIsSomePageRowsSelected()
+            ? 'indeterminate'
+            : false,
+        'onUpdate:modelValue': (v: boolean | 'indeterminate') => {
+          table.toggleAllPageRowsSelected(v === true)
+        },
+      }),
+    ),
+  cell: ({ row }) =>
+    h(Checkbox, {
+      'aria-label': 'Select row',
+      modelValue: row.getIsSelected(),
+      disabled: !row.getCanSelect(),
+      'onUpdate:modelValue': (v: boolean | 'indeterminate') => {
+        row.toggleSelected(v === true)
+      },
+    }),
+  enableSorting: false,
+  size: 36,
+  meta: { className: 'w-9' },
+}
+
+const displayColumns = computed(() =>
+  props.enableRowSelection ? [selectColumn, ...props.columns] : props.columns,
+)
 
 const table = useVueTable({
   get data() {
     return dataRef.value
   },
   get columns() {
-    return props.columns
+    return displayColumns.value
   },
+  getRowId: (row) => String(row.id),
+  enableRowSelection: props.enableRowSelection,
   enableSorting: props.enableSorting,
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
+  state: {
+    get rowSelection() {
+      return props.rowSelection ?? {}
+    },
+    get columnPinning() {
+      return props.columnPinning ?? { left: [], right: [] }
+    },
+  },
+  onRowSelectionChange: (updater) => {
+    const base = props.rowSelection ?? {}
+    const next = typeof updater === 'function' ? updater(base) : updater
+    emit('update:rowSelection', next)
+  },
 })
 </script>
 

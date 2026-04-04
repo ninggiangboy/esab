@@ -1,8 +1,25 @@
 ---
 title: Switch
-description: Vue UI port (see src/ui/components).
+description: On/off control.
+originalDocs: https://react-spectrum.adobe.com/react-aria/Switch.html
 ---
 
-## Source
+## Usage
 
-`src/ui/components/switch/`
+<ComponentPreview name="SwitchDemo" />
+
+---
+
+## Examples
+
+### Disabled
+
+<ComponentPreview name="SwitchDisabled" />
+
+---
+
+### Form
+
+<ComponentPreview name="SwitchForm" />
+
+---

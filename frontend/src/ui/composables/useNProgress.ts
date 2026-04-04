@@ -9,8 +9,6 @@ function ensureConfigured() {
   NProgress.configure({
     showSpinner: false,
     trickleSpeed: 150,
-    template:
-      '<div class="bar bg-primary-foreground! h-[3px]!" role="bar"><div class="peg"></div></div><div class="spinner" role="spinner"><div class="spinner-icon"></div></div>',
   })
 }
 

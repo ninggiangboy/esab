@@ -1,8 +1,8 @@
 ---
-title: Loading Overlay
-description: Vue UI port (see src/ui/components).
+title: LoadingOverlay
+description: Full-surface loading state.
 ---
 
-## Source
+## Usage
 
-`src/ui/components/loading-overlay/`
+<ComponentPreview name="LoadingOverlayDemo" />

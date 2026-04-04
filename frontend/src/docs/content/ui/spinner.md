@@ -1,8 +1,8 @@
 ---
 title: Spinner
-description: Vue port — see `src/ui/components`.
+description: Inline loading indicator.
 ---
 
-## Source
+## Usage
 
-Implementation: `frontend/src/ui/components/spinner/` (or adjacent module).
+<ComponentPreview name="SpinnerDemo" />

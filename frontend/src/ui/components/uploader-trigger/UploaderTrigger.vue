@@ -12,6 +12,7 @@ const props = withDefaults(
     multiple?: boolean
     /** Max total bytes */
     maxSize?: number
+    disabled?: boolean
   }>(),
   { multiple: true },
 )
@@ -28,16 +29,24 @@ function onChange(e: Event) {
 </script>
 
 <template>
-  <label :class="cn('inline-flex cursor-pointer', props.class)">
+  <label
+    :class="cn('inline-flex', props.disabled ? 'cursor-not-allowed' : 'cursor-pointer', props.class)"
+  >
     <input
       type="file"
       class="sr-only"
+      :disabled="props.disabled"
       :accept="accept"
       :multiple="multiple"
       v-bind="$attrs"
       @change="onChange"
     />
-    <Button type="button" as="span" variant="outline">
+    <Button
+      type="button"
+      as="span"
+      variant="outline"
+      :class="cn(props.disabled && 'pointer-events-none opacity-60')"
+    >
       <slot>Select files</slot>
       <span v-if="maxSize" class="text-xs text-muted-foreground ml-1">
         (max {{ formatFileSize(maxSize) }})

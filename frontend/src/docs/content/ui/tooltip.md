@@ -1,8 +1,25 @@
 ---
 title: Tooltip
-description: Vue UI port (see src/ui/components).
+description: Short hint on hover or focus.
+originalDocs: https://react-spectrum.adobe.com/react-aria/Tooltip.html
 ---
 
-## Source
+## Usage
 
-`src/ui/components/tooltip/`
+<ComponentPreview name="TooltipBasic" />
+
+---
+
+## Examples
+
+### Custom
+
+<ComponentPreview name="TooltipCustom" />
+
+---
+
+### Demo
+
+<ComponentPreview name="TooltipDemo" />
+
+---

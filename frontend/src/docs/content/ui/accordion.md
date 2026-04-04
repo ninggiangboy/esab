@@ -1,8 +1,9 @@
 ---
 title: Accordion
-description: Vue UI port (see src/ui/components).
+description: Vertically stacked headers that reveal one or more sections of content.
+originalDocs: https://react-spectrum.adobe.com/react-aria/Accordion.html
 ---
 
-## Source
+## Usage
 
-`src/ui/components/accordion/`
+<ComponentPreview name="AccordionDemo" />

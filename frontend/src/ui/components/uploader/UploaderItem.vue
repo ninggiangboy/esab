@@ -9,6 +9,8 @@ import type { UploaderFile } from './uploaderTypes'
 defineProps<{
   fileState: UploaderFile
   class?: string
+  /** When true, remove control is hidden (e.g. read-only / disabled uploader) */
+  isDisabled?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -32,6 +34,14 @@ const emit = defineEmits<{
         {{ fileState.error }}
       </p>
     </div>
-    <Button type="button" variant="ghost" size="iconSm" @click="emit('remove')">×</Button>
+    <Button
+      v-if="!$props.isDisabled"
+      type="button"
+      variant="ghost"
+      size="iconSm"
+      @click="emit('remove')"
+    >
+      ×
+    </Button>
   </div>
 </template>

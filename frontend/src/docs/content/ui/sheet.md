@@ -1,8 +1,8 @@
 ---
 title: Sheet
-description: Vue UI port (see src/ui/components).
+description: Drawer / side panel overlay.
 ---
 
-## Source
+## Usage
 
-`src/ui/components/sheet/`
+<ComponentPreview name="SheetDemo" />

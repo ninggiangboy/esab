@@ -1,8 +1,19 @@
 ---
 title: Popover
-description: Vue UI port (see src/ui/components).
+description: Floating region anchored to a trigger.
+originalDocs: https://react-spectrum.adobe.com/react-aria/Popover.html
 ---
 
-## Source
+## Usage
 
-`src/ui/components/popover/`
+<ComponentPreview name="PopoverDemo" />
+
+---
+
+## Examples
+
+### Bottom Right
+
+<ComponentPreview name="PopoverBottomRight" />
+
+---

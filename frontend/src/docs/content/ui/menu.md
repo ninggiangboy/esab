@@ -1,8 +1,31 @@
 ---
 title: Menu
-description: Vue UI port (see src/ui/components).
+description: Dropdown menu with items, separators, and submenus.
+originalDocs: https://react-spectrum.adobe.com/react-aria/Menu.html
 ---
 
-## Source
+## Usage
 
-`src/ui/components/menu/`
+<ComponentPreview name="MenuDemo" />
+
+---
+
+## Examples
+
+### With Icon
+
+<ComponentPreview name="MenuWithIcon" />
+
+---
+
+### With Keyboard
+
+<ComponentPreview name="MenuWithKeyboard" />
+
+---
+
+### With Submenu
+
+<ComponentPreview name="MenuWithSubmenu" />
+
+---

@@ -19,11 +19,8 @@ const Preview = shallowRef<ReturnType<typeof getPreviewComponent>>(null)
 const html = ref('')
 const copyDone = ref(false)
 
-const rootClass = computed(() =>
-  cn(
-    'w-full mt-4',
-  ),
-)
+/** Section spacing + bottom rule (mirrors sample `ComponentPreview` outer wrapper) */
+const rootClass = computed(() => cn('w-full mt-4 border-b border-border pb-8'))
 
 async function highlightSource(code: string) {
   const highlighter = await getShikiHighlighter()
@@ -65,7 +62,7 @@ async function copy() {
         v-if="withPreview"
         :class="
           cn(
-            'p-5 min-h-25 docs-not-prose flex items-center justify-center',
+            'p-5 min-h-[100px] docs-not-prose flex items-center justify-center max-w-[400px] mx-auto',
             props.class,
           )
         "

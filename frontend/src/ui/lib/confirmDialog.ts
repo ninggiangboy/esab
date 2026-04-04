@@ -23,5 +23,4 @@ export function confirm(data: ConfirmPayload) {
 
 export function closeConfirm() {
   confirmDialogOpen.value = false
-  confirmDialogData.value = undefined
 }

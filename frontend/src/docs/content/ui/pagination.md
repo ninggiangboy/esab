@@ -1,8 +1,25 @@
 ---
 title: Pagination
-description: Vue UI port (see src/ui/components).
+description: Navigate paged collections.
+originalDocs: https://react-spectrum.adobe.com/react-aria/Pagination.html
 ---
 
-## Source
+## Usage
 
-`src/ui/components/pagination/`
+<ComponentPreview name="PaginationDemo" />
+
+---
+
+## Examples
+
+### With Page Selector
+
+<ComponentPreview name="PaginationWithPageSelector" />
+
+---
+
+### With Query Params
+
+<ComponentPreview name="PaginationWithQueryParams" />
+
+---

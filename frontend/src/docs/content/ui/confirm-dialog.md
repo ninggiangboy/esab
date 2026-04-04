@@ -1,8 +1,18 @@
 ---
-title: Confirm Dialog
-description: Vue UI port (see src/ui/components).
+title: ConfirmDialog
+description: Opinionated confirmation modal.
 ---
 
-## Source
+## Usage
 
-`src/ui/components/confirm-dialog/`
+<ComponentPreview name="ConfirmDialogDemo" />
+
+---
+
+## Examples
+
+### Destructive
+
+<ComponentPreview name="ConfirmDialogDestructive" />
+
+---

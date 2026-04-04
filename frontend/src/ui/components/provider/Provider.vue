@@ -5,9 +5,9 @@ import TooltipProvider from '@/ui/components/tooltip/TooltipProvider.vue'
 </script>
 
 <template>
-  <!-- <TooltipProvider> -->
+  <TooltipProvider>
     <slot />
-    <!-- <Toaster /> -->
-    <!-- <ConfirmDialog /> -->
-  <!-- </TooltipProvider> -->
+    <Toaster />
+    <ConfirmDialog />
+  </TooltipProvider>
 </template>

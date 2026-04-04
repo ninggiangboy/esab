@@ -1,5 +1,5 @@
 import { formatFileSize, validateFileExtension, validateFileSize } from '@/ui/lib/file'
-import { toast } from 'vue-sonner'
+import { toast } from '@/ui/components/sonner'
 
 export interface UploaderRules {
   acceptedFileExtensions?: string[]

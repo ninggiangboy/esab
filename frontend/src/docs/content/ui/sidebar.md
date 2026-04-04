@@ -1,8 +1,8 @@
 ---
 title: Sidebar
-description: Vue UI port (see src/ui/components).
+description: Application sidebar layout with collapsible groups and navigation items.
 ---
 
-## Source
+## Overview
 
-`src/ui/components/sidebar/`
+This layout is provided as a Vue component in `@/ui/components/sidebar`. Wire it in your app shell alongside navigation state.

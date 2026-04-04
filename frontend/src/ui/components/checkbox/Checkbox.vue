@@ -30,11 +30,14 @@ const model = defineModel<boolean | 'indeterminate'>({ default: false })
       class="peer shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
     >
       <template #default="{ state }">
+        <!-- Reka only mounts the indicator when checked/indeterminate; keep mounted so the box stays visible when unchecked -->
         <CheckboxIndicator
+          force-mount
           :class="
             cn(
               'flex size-4 shrink-0 items-center justify-center rounded-[5px] border bg-background-secondary text-white ring-offset-background',
               'data-[state=checked]:bg-primary data-[state=indeterminate]:bg-primary data-[state=checked]:border-black/10 data-[state=indeterminate]:border-black/10',
+              'data-[state=unchecked]:text-transparent',
               'data-[state=checked]:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)]',
               'dark:data-[state=checked]:border-none dark:data-[state=indeterminate]:border-none',
               'peer-disabled:cursor-not-allowed peer-disabled:opacity-80',

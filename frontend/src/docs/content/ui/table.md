@@ -1,8 +1,9 @@
 ---
 title: Table
-description: Vue UI port (see src/ui/components).
+description: Table layout for tabular data.
+originalDocs: https://react-spectrum.adobe.com/react-aria/Table.html
 ---
 
-## Source
+## Usage
 
-`src/ui/components/table/`
+<ComponentPreview name="TableDemo" />

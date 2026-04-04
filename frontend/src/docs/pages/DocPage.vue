@@ -4,6 +4,8 @@ import MdxRenderer from '@/docs/components/MdxRenderer.vue'
 import DocsLayout from '@/docs/layouts/DocsLayout.vue'
 import { loadDocSource } from '@/docs/lib/loadDocSource'
 import { renderDoc, type ParsedDoc } from '@/docs/mdx/renderDoc'
+import { Button } from '@/ui/components/button'
+import { ArrowUpRight, Github } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -46,13 +48,46 @@ watch(slug, load, { immediate: true })
       <div v-if="loading" class="text-muted-foreground text-sm">Loading…</div>
       <div v-else-if="notFound" class="text-destructive text-sm">Document not found.</div>
       <template v-else-if="parsed">
-        <h1 class="text-[40px] font-semibold tracking-tight text-foreground scroll-mt-24">
-          {{ parsed.frontmatter.title ?? 'Untitled' }}
-        </h1>
-        <p v-if="parsed.frontmatter.description" class="text-muted-foreground mt-2 text-[15px] leading-relaxed max-w-3xl">
-          {{ parsed.frontmatter.description }}
-        </p>
-        <div class="mt-8 w-full min-w-0">
+        <div class="mb-10 border-b border-border pb-10">
+          <h1 class="mb-0 font-mono text-[40px] text-foreground scroll-mt-24">
+            {{ parsed.frontmatter.title ?? 'Untitled' }}
+          </h1>
+          <p
+            v-if="parsed.frontmatter.description"
+            class="text-muted-foreground mt-2 mb-2 text-[15px] leading-relaxed max-w-3xl"
+          >
+            {{ parsed.frontmatter.description }}
+          </p>
+          <div v-if="parsed.frontmatter.originalDocs || parsed.frontmatter.sourceCode" class="flex flex-wrap gap-2">
+            <Button
+              v-if="parsed.frontmatter.originalDocs"
+              as="a"
+              variant="outline"
+              size="sm"
+              :href="parsed.frontmatter.originalDocs"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="gap-1"
+            >
+              Docs
+              <ArrowUpRight class="size-4" />
+            </Button>
+            <Button
+              v-if="parsed.frontmatter.sourceCode"
+              as="a"
+              variant="outline"
+              size="sm"
+              :href="parsed.frontmatter.sourceCode"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="gap-1"
+            >
+              Code
+              <Github class="size-4" />
+            </Button>
+          </div>
+        </div>
+        <div class="w-full min-w-0">
           <MdxRenderer :segments="parsed.segments" />
         </div>
       </template>

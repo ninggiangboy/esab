@@ -1,8 +1,18 @@
 ---
 title: Skeleton
-description: Vue UI port (see src/ui/components).
+description: Placeholder while content loads.
 ---
 
-## Source
+## Usage
 
-`src/ui/components/skeleton/`
+<ComponentPreview name="SkeletonDemo" />
+
+---
+
+## Examples
+
+### Screen
+
+<ComponentPreview name="SkeletonScreen" />
+
+---

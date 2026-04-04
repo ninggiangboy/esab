@@ -1,8 +1,31 @@
 ---
 title: Calendar
-description: Vue UI port (see src/ui/components).
+description: A calendar displays one or more date grids and allows users to select dates.
+originalDocs: https://react-spectrum.adobe.com/react-aria/Calendar.html
 ---
 
-## Source
+## Usage
 
-`src/ui/components/calendar/`
+<ComponentPreview name="CalendarDemo" />
+
+---
+
+## Examples
+
+### Controlled
+
+<ComponentPreview name="CalendarControlled" />
+
+---
+
+### Min Max
+
+<ComponentPreview name="CalendarMinMax" />
+
+---
+
+### Unstyled
+
+<ComponentPreview name="CalendarUnstyled" />
+
+---

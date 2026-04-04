@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import axios, { type AxiosRequestConfig } from 'axios'
 import { ref, watch } from 'vue'
-import { toast } from 'vue-sonner'
+import { toast } from '@/ui/components/sonner'
 import { Dropzone } from '@/ui/components/dropzone'
 import { UploaderTrigger } from '@/ui/components/uploader-trigger'
 import { cn } from '@/ui/lib/utils'
@@ -107,6 +107,8 @@ async function addFiles(list: FileList | null) {
 }
 
 function removeAt(i: number) {
+  if (props.isDisabled)
+    return
   files.value = files.value.filter((_, j) => j !== i)
   emit('fileListChange', files.value)
 }
@@ -114,12 +116,13 @@ function removeAt(i: number) {
 
 <template>
   <div :class="cn('grid gap-3', props.class)" :aria-invalid="props['aria-invalid']">
-    <Dropzone v-if="triggerType === 'dropzone' && !isDisabled" @drop-files="addFiles">
+    <Dropzone v-if="triggerType === 'dropzone'" :disabled="isDisabled" @drop-files="addFiles">
       <span class="text-muted-foreground text-sm">Drop files or use the trigger</span>
-      <UploaderTrigger class="mt-2" :multiple="allowMultiple" @change="addFiles" />
+      <UploaderTrigger class="mt-2" :disabled="isDisabled" :multiple="allowMultiple" @change="addFiles" />
     </Dropzone>
     <UploaderTrigger
-      v-else-if="!isDisabled"
+      v-else
+      :disabled="isDisabled"
       :multiple="allowMultiple"
       @change="addFiles"
     />
@@ -131,6 +134,7 @@ function removeAt(i: number) {
         v-for="(f, i) in files"
         :key="f.id ?? String(i)"
         :file-state="f"
+        :is-disabled="isDisabled"
         @remove="removeAt(i)"
       />
     </div>

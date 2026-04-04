@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import 'nprogress/nprogress.css';
 
 @source '../**/*.{vue,ts}';
 
@@ -190,4 +191,14 @@
     .shiki-wrapper :where(pre.shiki) {
         @apply m-0 border-0 bg-transparent p-0 overflow-x-auto;
     }
+}
+
+/* NProgress: use design tokens (package CSS supplies layout / animation) */
+#nprogress .bar {
+    background: var(--primary);
+}
+#nprogress .peg {
+    box-shadow:
+        0 0 10px var(--primary),
+        0 0 5px var(--primary);
 }

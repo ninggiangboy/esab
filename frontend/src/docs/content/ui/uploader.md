@@ -1,8 +1,54 @@
 ---
 title: Uploader
-description: Vue UI port (see src/ui/components).
+description: File upload with progress, validation, and retries.
 ---
 
-## Source
+## Usage
 
-`src/ui/components/uploader/`
+<ComponentPreview name="UploaderCustom" />
+
+---
+
+## Examples
+
+### Demo
+
+<ComponentPreview name="UploaderDemo" />
+
+---
+
+### Disabled
+
+<ComponentPreview name="UploaderDisabled" />
+
+---
+
+### Form
+
+<ComponentPreview name="UploaderForm" />
+
+---
+
+### Retry
+
+<ComponentPreview name="UploaderRetry" />
+
+---
+
+### Validation
+
+<ComponentPreview name="UploaderValidation" />
+
+---
+
+### Variant List Type
+
+<ComponentPreview name="UploaderVariantListType" />
+
+---
+
+### Variant Trigger Type
+
+<ComponentPreview name="UploaderVariantTriggerType" />
+
+---

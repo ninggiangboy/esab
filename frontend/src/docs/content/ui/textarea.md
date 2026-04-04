@@ -1,8 +1,37 @@
 ---
 title: Textarea
-description: Vue UI port (see src/ui/components).
+description: Multi-line text input.
+originalDocs: https://react-spectrum.adobe.com/react-aria/TextField.html
 ---
 
-## Source
+## Usage
 
-`src/ui/components/textarea/`
+<ComponentPreview name="TextAreaDemo" />
+
+---
+
+## Examples
+
+### Disabled
+
+<ComponentPreview name="TextAreaDisabled" />
+
+---
+
+### Form
+
+<ComponentPreview name="TextAreaForm" />
+
+---
+
+### With Button
+
+<ComponentPreview name="TextAreaWithButton" />
+
+---
+
+### With Label
+
+<ComponentPreview name="TextAreaWithLabel" />
+
+---

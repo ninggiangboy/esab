@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { DropdownMenuContent as Reka, DropdownMenuPortal } from 'reka-ui'
-import { cn } from '@/ui/lib/utils'
+import { dropdownMenuContentClass } from './dropdown-menu-surface'
 
-defineProps<{
-  class?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    class?: string
+    sideOffset?: number
+  }>(),
+  { sideOffset: 4 },
+)
 </script>
 
 <template>
   <DropdownMenuPortal>
-    <Reka
-      :class="cn('z-50 min-w-40 rounded-md border bg-popover p-1 shadow-md outline-none', $props.class)"
-    >
+    <Reka v-bind="$attrs" :side-offset="props.sideOffset" :class="dropdownMenuContentClass(props.class)">
       <slot />
     </Reka>
   </DropdownMenuPortal>
