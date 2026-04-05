@@ -5,7 +5,7 @@
 [![Issues](https://img.shields.io/github/issues/ninggiangboy/esab?style=flat-square)](https://github.com/ninggiangboy/esab/issues)
 [![Last commit](https://img.shields.io/github/last-commit/ninggiangboy/esab?style=flat-square)](https://github.com/ninggiangboy/esab/commits/main)
 [![Commits (last month)](https://img.shields.io/github/commit-activity/m/ninggiangboy/esab?style=flat-square)](https://github.com/ninggiangboy/esab/graphs/commit-activity)
-[![License](https://img.shields.io/badge/License-All%20rights%20reserved-lightgrey?style=flat-square)](#license)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 A social/thread-style platform backend built with **Java 25** and **Spring Boot 4**. The system follows domain-driven design and is organized as a Gradle multi-module project with bounded contexts for identity, profiles, threads, chat, hashtags, and notifications.
 
@@ -115,4 +115,6 @@ The authentication API is currently implemented. Full endpoint documentation is 
 
 ## License
 
-All rights reserved.
+Licensed under the [MIT License](LICENSE).
+
+Copyright (c) 2026 Ha Duy Khanh
