@@ -1,5 +1,12 @@
 # esab
 
+[![GitHub](https://img.shields.io/badge/github-ninggiangboy%2Fesab-181717?style=flat-square&logo=github)](https://github.com/ninggiangboy/esab)
+[![Stars](https://img.shields.io/github/stars/ninggiangboy/esab?style=flat-square)](https://github.com/ninggiangboy/esab/stargazers)
+[![Issues](https://img.shields.io/github/issues/ninggiangboy/esab?style=flat-square)](https://github.com/ninggiangboy/esab/issues)
+[![Last commit](https://img.shields.io/github/last-commit/ninggiangboy/esab?style=flat-square)](https://github.com/ninggiangboy/esab/commits/main)
+[![Commits (last month)](https://img.shields.io/github/commit-activity/m/ninggiangboy/esab?style=flat-square)](https://github.com/ninggiangboy/esab/graphs/commit-activity)
+[![License](https://img.shields.io/badge/License-All%20rights%20reserved-lightgrey?style=flat-square)](#license)
+
 A social/thread-style platform backend built with **Java 25** and **Spring Boot 4**. The system follows domain-driven design and is organized as a Gradle multi-module project with bounded contexts for identity, profiles, threads, chat, hashtags, and notifications.
 
 ## Tech Stack
