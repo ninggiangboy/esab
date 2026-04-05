@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  '@vue/runtime-core@3.5.32':
-    hash: e94fd26a0266dda9c7a7859a1a89329f2257e7aa021fc32ae98506670ae38c82
-    path: patches/@vue__runtime-core@3.5.32.patch
-
 importers:
 
   .:
@@ -3888,7 +3883,7 @@ snapshots:
     dependencies:
       '@vue/shared': 3.5.32
 
-  '@vue/runtime-core@3.5.32(patch_hash=e94fd26a0266dda9c7a7859a1a89329f2257e7aa021fc32ae98506670ae38c82)':
+  '@vue/runtime-core@3.5.32':
     dependencies:
       '@vue/reactivity': 3.5.32
       '@vue/shared': 3.5.32
@@ -3896,7 +3891,7 @@ snapshots:
   '@vue/runtime-dom@3.5.32':
     dependencies:
       '@vue/reactivity': 3.5.32
-      '@vue/runtime-core': 3.5.32(patch_hash=e94fd26a0266dda9c7a7859a1a89329f2257e7aa021fc32ae98506670ae38c82)
+      '@vue/runtime-core': 3.5.32
       '@vue/shared': 3.5.32
       csstype: 3.2.3
 
