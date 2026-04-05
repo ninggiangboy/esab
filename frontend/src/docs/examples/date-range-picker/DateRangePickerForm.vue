@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DateValue } from '@internationalized/date'
 import { docFormToast } from '@/docs/examples/_internal/docFormSubmit'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
@@ -6,13 +7,17 @@ import { DateRangePicker } from '@/ui/components/date-range-picker'
 import { Button } from '@/ui/components/button'
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormVm,
   useForm,
 } from '@/ui/components/form'
+
+type DateRangeFormValue =
+  | { start: DateValue | undefined; end: DateValue | undefined }
+  | undefined
 
 const schema = toTypedSchema(z.object({ range: z.any() }))
 const { handleSubmit } = useForm({ validationSchema: schema })
@@ -23,9 +28,9 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
     <FormField v-slot="{ componentField }" name="range">
       <FormItem>
         <FormLabel>Date range</FormLabel>
-        <FormControl v-slot="controlProps">
-          <DateRangePicker v-bind="{ ...componentField, ...controlProps }" />
-        </FormControl>
+        <FormVm generic="DateRangeFormValue" v-slot="vm" :component-field="componentField">
+          <DateRangePicker v-bind="vm" />
+        </FormVm>
         <FormMessage />
       </FormItem>
     </FormField>

@@ -9,6 +9,13 @@ export const DataTableSortingSchema = z.object({
 
 export type DataTableSorting = z.infer<typeof DataTableSortingSchema>
 
+/** Project-specific `columnDef.meta` shape (TanStack's `ColumnMeta` is an empty interface). */
+export type DataTableColumnMeta = { className?: string }
+
+export function getDataTableColumnMetaClassName(meta: unknown): string | undefined {
+  return (meta as DataTableColumnMeta | undefined)?.className
+}
+
 /** Sticky + shadow classes for pinned columns (parity with React `DataTable.utils`). */
 export function getCommonPinningStyles<TData>(column: Column<TData, unknown>): string {
   const isPinned = column.getIsPinned()

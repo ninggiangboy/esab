@@ -5,11 +5,11 @@ import { docFormToast } from '@/docs/examples/_internal/docFormSubmit'
 import { Button } from '@/ui/components/button'
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormVm,
   useForm,
 } from '@/ui/components/form'
 import { BsSelect, type BsSelectOption } from '@/ui/components/select'
@@ -52,27 +52,23 @@ const onSubmit = handleSubmit((values) => {
     <FormField v-slot="{ componentField, errors }" name="role">
       <FormItem>
         <FormLabel>Role</FormLabel>
-        <FormControl v-slot="controlProps">
+        <FormVm generic="string | undefined" v-slot="vm" :component-field="componentField">
           <BsSelect
-            v-bind="{ ...componentField, ...controlProps }"
+            v-bind="vm"
             clearable
             :options="roleOptions"
             :class="errors.length ? 'ring-2 ring-destructive' : ''"
           />
-        </FormControl>
+        </FormVm>
         <FormMessage />
       </FormItem>
     </FormField>
     <FormField v-slot="{ componentField }" name="languages">
       <FormItem>
         <FormLabel>Language</FormLabel>
-        <FormControl v-slot="controlProps">
-          <BsSelect
-            v-bind="{ ...componentField, ...controlProps }"
-            multiple
-            :options="languageOptions"
-          />
-        </FormControl>
+        <FormVm generic="string[]" v-slot="vm" :component-field="componentField">
+          <BsSelect v-bind="vm" multiple :options="languageOptions" />
+        </FormVm>
         <FormMessage />
       </FormItem>
     </FormField>

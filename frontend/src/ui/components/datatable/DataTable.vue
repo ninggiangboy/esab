@@ -20,7 +20,11 @@ import {
 } from '@/ui/components/table'
 import { cn } from '@/ui/lib/utils'
 import type { DataTableSorting } from './dataTableUtils'
-import { getCommonPinningStyles, sortRowsByDataTableSorting } from './dataTableUtils'
+import {
+  getCommonPinningStyles,
+  getDataTableColumnMetaClassName,
+  sortRowsByDataTableSorting,
+} from './dataTableUtils'
 
 const props = withDefaults(
   defineProps<{
@@ -194,7 +198,10 @@ function sortTitle(header: {
               : undefined,
           }"
           :class="
-            cn(getCommonPinningStyles(header.column), header.column.columnDef.meta?.className)
+            cn(
+              getCommonPinningStyles(header.column),
+              getDataTableColumnMetaClassName(header.column.columnDef.meta),
+            )
           "
         >
           <div
@@ -240,7 +247,12 @@ function sortTitle(header: {
                 ? `${cell.column.columnDef.size}px`
                 : undefined,
             }"
-            :class="cn(getCommonPinningStyles(cell.column), cell.column.columnDef.meta?.className)"
+            :class="
+              cn(
+                getCommonPinningStyles(cell.column),
+                getDataTableColumnMetaClassName(cell.column.columnDef.meta),
+              )
+            "
             :title="String(cell.getValue() ?? '')"
           >
             <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />

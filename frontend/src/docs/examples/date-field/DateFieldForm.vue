@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DateValue } from '@internationalized/date'
 import { docFormToast } from '@/docs/examples/_internal/docFormSubmit'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
@@ -6,11 +7,11 @@ import { Button } from '@/ui/components/button'
 import { DateField } from '@/ui/components/datefield'
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormVm,
   useForm,
 } from '@/ui/components/form'
 
@@ -23,9 +24,9 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
     <FormField v-slot="{ componentField }" name="dob">
       <FormItem>
         <FormLabel>Date of birth</FormLabel>
-        <FormControl v-slot="controlProps">
-          <DateField v-bind="{ ...componentField, ...controlProps }" />
-        </FormControl>
+        <FormVm generic="DateValue | undefined" v-slot="vm" :component-field="componentField">
+          <DateField v-bind="vm" />
+        </FormVm>
         <FormMessage />
       </FormItem>
     </FormField>
