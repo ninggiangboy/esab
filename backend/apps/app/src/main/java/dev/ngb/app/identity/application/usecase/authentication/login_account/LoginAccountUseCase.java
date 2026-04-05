@@ -1,25 +1,20 @@
 package dev.ngb.app.identity.application.usecase.authentication.login_account;
 
-import dev.ngb.app.identity.application.port.OtpCodeGenerator;
-import dev.ngb.app.identity.application.port.OtpSender;
 import dev.ngb.app.identity.application.port.PasswordEncoder;
 import dev.ngb.app.identity.application.port.TokenProvider;
+import dev.ngb.app.identity.application.service.AccountOtpDeliveryService;
+import dev.ngb.app.identity.application.service.AccountSessionTokenService;
 import dev.ngb.app.identity.application.usecase.authentication.login_account.dto.LoginAccountRequest;
 import dev.ngb.app.identity.application.usecase.authentication.login_account.dto.LoginAccountResponse;
 import dev.ngb.application.UseCaseService;
 import dev.ngb.domain.identity.error.AccountError;
 import dev.ngb.domain.identity.model.auth.Account;
 import dev.ngb.domain.identity.model.auth.AccountDevice;
-import dev.ngb.domain.identity.model.otp.AccountOtp;
-import dev.ngb.domain.identity.model.otp.OtpChannel;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
 import dev.ngb.domain.identity.model.session.AccountLoginHistory;
-import dev.ngb.domain.identity.model.session.AccountSession;
 import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountLoginHistoryRepository;
-import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
-import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import dev.ngb.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,13 +39,11 @@ public class LoginAccountUseCase implements UseCaseService {
 
     private final AccountRepository accountRepository;
     private final AccountDeviceRepository accountDeviceRepository;
-    private final AccountSessionRepository accountSessionRepository;
-    private final AccountOtpRepository accountOtpRepository;
     private final AccountLoginHistoryRepository accountLoginHistoryRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
-    private final OtpCodeGenerator otpCodeGenerator;
-    private final OtpSender otpSender;
+    private final AccountOtpDeliveryService accountOtpDeliveryService;
+    private final AccountSessionTokenService accountSessionTokenService;
 
     public LoginAccountResponse execute(LoginAccountRequest request, String ipAddress) {
         log.info("Login attempt for email={}", StringUtils.maskEmail(request.email()));
@@ -116,23 +109,14 @@ public class LoginAccountUseCase implements UseCaseService {
                 AccountLoginHistory.createSuccess(account.getId(), savedDevice.getId(), ipAddress, null)
         );
 
-        // Session row stores hashed refresh; raw value goes only to the client.
-        String refreshToken = tokenProvider.generateRefreshToken();
-        AccountSession session = AccountSession.create(
-                account.getId(), savedDevice.getId(),
-                tokenProvider.hashToken(refreshToken), ipAddress
-        );
-        accountSessionRepository.save(session);
-
-        String accessToken = tokenProvider.generateAccessToken(
-                account.getId(), account.getUuid(), account.getEmail()
-        );
+        var tokens = accountSessionTokenService.openSessionAndIssueTokens(account, savedDevice.getId(), ipAddress);
 
         log.info("Login successful for accountId={}, accountUuid={}", account.getId(), account.getUuid());
         return LoginAccountResponse.authenticated(
-                accessToken, refreshToken,
-                tokenProvider.getAccessTokenExpiresInSeconds(),
-                account.getUuid()
+                tokens.accessToken(),
+                tokens.refreshToken(),
+                tokens.expiresIn(),
+                tokens.accountUuid()
         );
     }
 
@@ -160,13 +144,7 @@ public class LoginAccountUseCase implements UseCaseService {
     }
 
     private LoginAccountResponse sendVerificationAndRespond(Account account, AccountDevice device) {
-        log.debug("Sending login OTP for accountId={}", account.getId());
-        // LOGIN purpose distinguishes this from registration or password-reset OTPs.
-        String code = otpCodeGenerator.generate();
-        AccountOtp otp = AccountOtp.create(account.getId(), code, OtpPurpose.LOGIN, OtpChannel.EMAIL);
-        accountOtpRepository.save(otp);
-
-        otpSender.send(account.getEmail(), code, OtpPurpose.LOGIN);
+        accountOtpDeliveryService.sendEmailOtp(account.getId(), account.getEmail(), OtpPurpose.LOGIN);
 
         // Binds the email OTP step to this account + device for VerifyLoginUseCase.
         String verificationToken = tokenProvider.generateVerificationToken(account.getId(), device.getId());

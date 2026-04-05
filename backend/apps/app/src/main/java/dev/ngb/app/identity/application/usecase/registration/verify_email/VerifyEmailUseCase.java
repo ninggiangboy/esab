@@ -1,7 +1,7 @@
 package dev.ngb.app.identity.application.usecase.registration.verify_email;
 
 import dev.ngb.app.identity.application.dto.AuthTokenResponse;
-import dev.ngb.app.identity.application.port.TokenProvider;
+import dev.ngb.app.identity.application.service.AccountSessionTokenService;
 import dev.ngb.app.identity.application.usecase.registration.verify_email.dto.VerifyEmailRequest;
 import dev.ngb.application.UseCaseService;
 import dev.ngb.domain.identity.error.AccountError;
@@ -9,11 +9,9 @@ import dev.ngb.domain.identity.model.auth.Account;
 import dev.ngb.domain.identity.model.auth.AccountDevice;
 import dev.ngb.domain.identity.model.otp.AccountOtp;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
-import dev.ngb.domain.identity.model.session.AccountSession;
 import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
-import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,8 +34,7 @@ public class VerifyEmailUseCase implements UseCaseService {
     private final AccountRepository accountRepository;
     private final AccountDeviceRepository accountDeviceRepository;
     private final AccountOtpRepository accountOtpRepository;
-    private final AccountSessionRepository accountSessionRepository;
-    private final TokenProvider tokenProvider;
+    private final AccountSessionTokenService accountSessionTokenService;
 
     public AuthTokenResponse execute(VerifyEmailRequest request, String ipAddress) {
         log.info("Verify email attempt for email={}", request.email() != null ? request.email().replaceAll("(?<=.).(?=.*@)", "*") : "***");
@@ -82,24 +79,9 @@ public class VerifyEmailUseCase implements UseCaseService {
         device.markTrusted();
         AccountDevice savedDevice = accountDeviceRepository.save(device);
 
-        // Only the hash of the refresh token is stored server-side.
-        String refreshToken = tokenProvider.generateRefreshToken();
-        AccountSession session = AccountSession.create(
-                account.getId(), savedDevice.getId(),
-                tokenProvider.hashToken(refreshToken), ipAddress
-        );
-        accountSessionRepository.save(session);
-
-        // Short-lived JWT; client uses RefreshTokenUseCase when it expires.
-        String accessToken = tokenProvider.generateAccessToken(
-                account.getId(), account.getUuid(), account.getEmail()
-        );
+        AuthTokenResponse tokens = accountSessionTokenService.openSessionAndIssueTokens(account, savedDevice.getId(), ipAddress);
 
         log.info("Verify email successful accountId={}, accountUuid={}", account.getId(), account.getUuid());
-        return new AuthTokenResponse(
-                accessToken, refreshToken,
-                tokenProvider.getAccessTokenExpiresInSeconds(),
-                account.getUuid()
-        );
+        return tokens;
     }
 }

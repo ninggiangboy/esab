@@ -1,7 +1,8 @@
 package dev.ngb.app.identity.application.usecase.authentication.oauth_login;
 
+import dev.ngb.app.identity.application.dto.AuthTokenResponse;
 import dev.ngb.app.identity.application.port.OAuthProviderVerifier;
-import dev.ngb.app.identity.application.port.TokenProvider;
+import dev.ngb.app.identity.application.service.AccountSessionTokenService;
 import dev.ngb.app.identity.application.usecase.authentication.oauth_login.dto.OAuthLoginRequest;
 import dev.ngb.app.identity.application.usecase.authentication.oauth_login.dto.OAuthLoginResponse;
 import dev.ngb.application.UseCaseService;
@@ -9,11 +10,9 @@ import dev.ngb.domain.identity.error.AccountError;
 import dev.ngb.domain.identity.model.auth.Account;
 import dev.ngb.domain.identity.model.auth.AccountCredential;
 import dev.ngb.domain.identity.model.auth.AccountDevice;
-import dev.ngb.domain.identity.model.session.AccountSession;
 import dev.ngb.domain.identity.repository.AccountCredentialRepository;
 import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
-import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,9 +39,8 @@ public class OAuthLoginUseCase implements UseCaseService {
     private final AccountRepository accountRepository;
     private final AccountCredentialRepository accountCredentialRepository;
     private final AccountDeviceRepository accountDeviceRepository;
-    private final AccountSessionRepository accountSessionRepository;
-    private final TokenProvider tokenProvider;
     private final OAuthProviderVerifier oAuthProviderVerifier;
+    private final AccountSessionTokenService accountSessionTokenService;
 
     public OAuthLoginResponse execute(OAuthLoginRequest request, String ipAddress) {
         log.info("OAuth login attempt provider={}", request.provider());
@@ -118,22 +116,15 @@ public class OAuthLoginUseCase implements UseCaseService {
         account = accountRepository.save(account);
 
         // Full session immediately — symmetric with trusted password login.
-        String refreshToken = tokenProvider.generateRefreshToken();
-        AccountSession session = AccountSession.create(
-                account.getId(), device.getId(),
-                tokenProvider.hashToken(refreshToken), ipAddress
-        );
-        accountSessionRepository.save(session);
-
-        String accessToken = tokenProvider.generateAccessToken(
-                account.getId(), account.getUuid(), account.getEmail()
-        );
+        AuthTokenResponse tokens = accountSessionTokenService.openSessionAndIssueTokens(account, device.getId(), ipAddress);
 
         log.info("OAuth login successful accountId={}, accountUuid={}, isNewAccount={}", account.getId(), account.getUuid(), isNewAccount);
         return new OAuthLoginResponse(
-                accessToken, refreshToken,
-                tokenProvider.getAccessTokenExpiresInSeconds(),
-                account.getUuid(), isNewAccount
+                tokens.accessToken(),
+                tokens.refreshToken(),
+                tokens.expiresIn(),
+                tokens.accountUuid(),
+                isNewAccount
         );
     }
 }

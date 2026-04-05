@@ -2,6 +2,7 @@ package dev.ngb.app.identity.application.usecase.authentication.verify_login;
 
 import dev.ngb.app.identity.application.dto.AuthTokenResponse;
 import dev.ngb.app.identity.application.port.TokenProvider;
+import dev.ngb.app.identity.application.service.AccountSessionTokenService;
 import dev.ngb.app.identity.application.usecase.authentication.verify_login.dto.VerifyLoginRequest;
 import dev.ngb.application.UseCaseService;
 import dev.ngb.domain.identity.error.AccountError;
@@ -10,12 +11,10 @@ import dev.ngb.domain.identity.model.auth.AccountDevice;
 import dev.ngb.domain.identity.model.otp.AccountOtp;
 import dev.ngb.domain.identity.model.otp.OtpPurpose;
 import dev.ngb.domain.identity.model.session.AccountLoginHistory;
-import dev.ngb.domain.identity.model.session.AccountSession;
 import dev.ngb.domain.identity.repository.AccountDeviceRepository;
 import dev.ngb.domain.identity.repository.AccountLoginHistoryRepository;
 import dev.ngb.domain.identity.repository.AccountOtpRepository;
 import dev.ngb.domain.identity.repository.AccountRepository;
-import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,9 +36,9 @@ public class VerifyLoginUseCase implements UseCaseService {
     private final AccountRepository accountRepository;
     private final AccountDeviceRepository accountDeviceRepository;
     private final AccountOtpRepository accountOtpRepository;
-    private final AccountSessionRepository accountSessionRepository;
     private final AccountLoginHistoryRepository accountLoginHistoryRepository;
     private final TokenProvider tokenProvider;
+    private final AccountSessionTokenService accountSessionTokenService;
 
     public AuthTokenResponse execute(VerifyLoginRequest request, String ipAddress) {
         log.info("Verify login attempt");
@@ -98,23 +97,9 @@ public class VerifyLoginUseCase implements UseCaseService {
                 AccountLoginHistory.createSuccess(accountId, device.getId(), ipAddress, null)
         );
 
-        // Same session shape as VerifyEmail / trusted LoginAccount path.
-        String refreshToken = tokenProvider.generateRefreshToken();
-        AccountSession session = AccountSession.create(
-                accountId, device.getId(),
-                tokenProvider.hashToken(refreshToken), ipAddress
-        );
-        accountSessionRepository.save(session);
-
-        String accessToken = tokenProvider.generateAccessToken(
-                accountId, account.getUuid(), account.getEmail()
-        );
+        AuthTokenResponse tokens = accountSessionTokenService.openSessionAndIssueTokens(account, device.getId(), ipAddress);
 
         log.info("Verify login successful accountId={}, accountUuid={}", accountId, account.getUuid());
-        return new AuthTokenResponse(
-                accessToken, refreshToken,
-                tokenProvider.getAccessTokenExpiresInSeconds(),
-                account.getUuid()
-        );
+        return tokens;
     }
 }
