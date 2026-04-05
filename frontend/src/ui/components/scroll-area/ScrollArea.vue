@@ -37,7 +37,7 @@ const props = withDefaults(
     >
       <ScrollAreaThumb
         data-slot="scroll-area-thumb"
-        class="bg-neutral-400/50 relative flex-1 rounded-full"
+        class="relative flex-1 rounded-full bg-neutral-400/50 transition-colors hover:bg-neutral-500/65 dark:bg-neutral-500/45 dark:hover:bg-neutral-400/55"
       />
     </ScrollAreaScrollbar>
     <ScrollAreaScrollbar
@@ -48,7 +48,7 @@ const props = withDefaults(
     >
       <ScrollAreaThumb
         data-slot="scroll-area-thumb"
-        class="bg-neutral-400/50 relative flex-1 rounded-full"
+        class="relative flex-1 rounded-full bg-neutral-400/50 transition-colors hover:bg-neutral-500/65 dark:bg-neutral-500/45 dark:hover:bg-neutral-400/55"
       />
     </ScrollAreaScrollbar>
     <ScrollAreaCorner />

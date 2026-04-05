@@ -2,6 +2,8 @@
 import type { DateValue } from '@internationalized/date'
 import { DateFieldInput, DateFieldRoot } from 'reka-ui'
 import { FieldGroup } from '@/ui/components/field'
+import { dateFieldSegmentClassName } from '@/ui/lib/date-field-segment-classes'
+import { UI_DATE_FIELD_LOCALE } from '@/ui/lib/date-field-locale'
 import { cn } from '@/ui/lib/utils'
 
 defineOptions({ inheritAttrs: false })
@@ -10,8 +12,9 @@ withDefaults(
   defineProps<{
     class?: string
     granularity?: 'day' | 'hour' | 'minute' | 'second'
+    locale?: string
   }>(),
-  { granularity: 'day' },
+  { granularity: 'day', locale: UI_DATE_FIELD_LOCALE },
 )
 
 const model = defineModel<DateValue | undefined>()
@@ -22,15 +25,18 @@ const model = defineModel<DateValue | undefined>()
     v-model="model"
     v-bind="$attrs"
     :granularity="granularity"
-    :class="cn('grid w-full gap-1.5', $props.class)"
+    :locale="locale"
+    :class="cn('grid w-full gap-1', $props.class)"
   >
     <template #default="{ segments }">
-      <FieldGroup class="flex min-h-8 flex-wrap items-center gap-0.5 px-2">
-        <template v-for="s in segments" :key="String(s.part)">
+      <FieldGroup class="flex min-h-8 flex-wrap items-center gap-0 px-1.5">
+        <template v-for="(s, i) in segments" :key="`date-field-seg-${i}`">
           <DateFieldInput
             :part="s.part"
-            class="rounded-sm p-0.5 text-sm tabular-nums outline-none focus:bg-muted data-[placeholder]:text-muted-foreground"
-          />
+            :class="dateFieldSegmentClassName()"
+          >
+            {{ s.value }}
+          </DateFieldInput>
         </template>
       </FieldGroup>
     </template>

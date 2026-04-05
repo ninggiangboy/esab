@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import RangeCalendarPanel from '@/docs/examples/_internal/RangeCalendarPanel.vue'
+import { BsRangeCalendar } from '@/ui/components/calendar'
 </script>
 
 <template>
-  <RangeCalendarPanel unstyled />
+  <BsRangeCalendar variant="unstyled" />
 </template>

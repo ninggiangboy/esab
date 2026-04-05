@@ -1,4 +1,7 @@
 /** Date/calendar primitives — use Reka UI building blocks in demos or compose here later. */
+export type { DateRange } from 'reka-ui'
+export { default as BsCalendar } from './BsCalendar.vue'
+export { default as BsRangeCalendar } from './BsRangeCalendar.vue'
 export { rangeCalendarCellLabelVariants } from './calendar-cell-styles'
 export {
   CalendarRoot,

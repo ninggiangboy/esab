@@ -7,7 +7,7 @@ import { Button } from '@/ui/components/button'
 import { DataTable } from '@/ui/components/datatable'
 import { SearchField } from '@/ui/components/searchfield'
 import { BsSelect, type BsSelectOption } from '@/ui/components/select'
-import { PaginationBar } from '@/ui/components/pagination'
+import { Pagination, PaginationPageSizeSelector } from '@/ui/components/pagination'
 import { cn } from '@/ui/lib/utils'
 import { confirm } from '@/ui/components/confirm-dialog'
 import { toast } from '@/ui/components/sonner'
@@ -82,6 +82,8 @@ const filtered = computed(() => {
   return rows
 })
 
+const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / pageSize.value)))
+
 const pageData = computed(() => {
   const start = (page.value - 1) * pageSize.value
   return filtered.value.slice(start, start + pageSize.value)
@@ -89,6 +91,10 @@ const pageData = computed(() => {
 
 watch([search, paymentMethod], () => {
   page.value = 1
+})
+
+watch(totalPages, (tp) => {
+  if (page.value > tp) page.value = tp
 })
 
 function clearFilters() {
@@ -150,17 +156,12 @@ function deleteSelected() {
       container-class-name="h-[335px]"
       @update:row-selection="rowSelection = $event"
     />
-    <PaginationBar
-      :page="page"
-      :page-size="pageSize"
-      :total="filtered.length"
-      @update:page="page = $event"
-      @update:page-size="
-        (s) => {
-          pageSize = s
-          page = 1
-        }
-      "
-    />
+    <div class="flex justify-between gap-4">
+      <PaginationPageSizeSelector
+        v-model="pageSize"
+        @update:model-value="page = 1"
+      />
+      <Pagination v-model="page" :page-count="totalPages" />
+    </div>
   </div>
 </template>

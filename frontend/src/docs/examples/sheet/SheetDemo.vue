@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { DialogClose } from 'reka-ui'
 import { Button } from '@/ui/components/button'
+import {
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/ui/components/dialog'
 import { Label } from '@/ui/components/field'
 import { Sheet, SheetContent, SheetTrigger } from '@/ui/components/sheet'
-import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/ui/components/dialog'
 import { Input } from '@/ui/components/textfield'
 </script>
 

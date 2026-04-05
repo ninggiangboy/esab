@@ -33,6 +33,8 @@ const props = withDefaults(
     searchPlaceholder?: string
     emptyMessage?: string
     defaultValue?: string | string[]
+    /** Extra classes on the dropdown panel (sample: `popoverClassName`) */
+    contentClass?: string
   }>(),
   {
     disabled: false,
@@ -211,6 +213,7 @@ onBeforeUnmount(() => {
         :class="
           cn(
             'z-50 max-h-[350px] w-[var(--reka-select-trigger-width)] overflow-hidden rounded-lg border border-border bg-popover/80 text-popover-foreground shadow-popover outline-none backdrop-blur-xl',
+            props.contentClass,
             'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
             searchable && 'flex flex-col p-1.5',
             !searchable && 'p-1.5',

@@ -45,7 +45,10 @@ const props = defineProps<{
         <p class="text-sm font-semibold text-foreground">
           {{ props.title }}
         </p>
-        <div v-if="props.description" class="mt-0.5 text-sm text-muted-foreground">
+        <div
+          v-if="props.description"
+          class="mt-0.5 whitespace-pre-wrap break-words text-sm text-muted-foreground"
+        >
           {{ props.description }}
         </div>
       </div>

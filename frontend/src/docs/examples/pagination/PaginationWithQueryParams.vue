@@ -1,37 +1,28 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Button } from '@/ui/components/button'
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { Pagination } from '@/ui/components/pagination'
 
 const route = useRoute()
 const router = useRouter()
 const pageCount = 10
+
 const page = computed({
-  get: () => Number(route.query.page ?? 1) || 1,
-  set: (p: number) => router.replace({ query: { ...route.query, page: String(p) } }),
+  get: () => {
+    const n = Number(route.query.page ?? 1)
+    return Number.isFinite(n) && n >= 1 ? Math.min(n, pageCount) : 1
+  },
+  set: (p: number) => {
+    void router.replace({ query: { ...route.query, page: String(p) } })
+  },
 })
 </script>
+
 <template>
-  <div class="flex items-center justify-center gap-1">
-    <Button
-      variant="ghost"
-      size="icon"
-      class="size-8"
-      :disabled="page <= 1"
-      @click="page = page - 1"
-    >
-      <ChevronLeft class="size-4" />
-    </Button>
-    <span class="px-2 text-sm tabular-nums">{{ page }} / {{ pageCount }}</span>
-    <Button
-      variant="ghost"
-      size="icon"
-      class="size-8"
-      :disabled="page >= pageCount"
-      @click="page = page + 1"
-    >
-      <ChevronRight class="size-4" />
-    </Button>
+  <div class="flex w-full flex-col items-center gap-2 rounded-lg border p-4">
+    <Pagination v-model="page" :page-count="pageCount" />
+    <p class="text-xs text-muted-foreground tabular-nums">
+      Query: <code class="rounded bg-muted px-1 py-0.5">page={{ page }}</code>
+    </p>
   </div>
 </template>

@@ -1,25 +1,20 @@
 ---
 title: Pagination
-description: Navigate paged collections.
-originalDocs: https://react-spectrum.adobe.com/react-aria/Pagination.html
+description: A component to render a pagination.
+originalDocs: https://www.npmjs.com/package/react-paginate
+sourceCode: https://github.com/henry-phm/base-stack/blob/main/packages/ui/src/components/Pagination.tsx
 ---
 
 ## Usage
 
 <ComponentPreview name="PaginationDemo" />
 
----
-
 ## Examples
 
-### With Page Selector
-
-<ComponentPreview name="PaginationWithPageSelector" />
-
----
-
-### With Query Params
+### Using query parameters
 
 <ComponentPreview name="PaginationWithQueryParams" />
 
----
+### With page selector
+
+<ComponentPreview name="PaginationWithPageSelector" />

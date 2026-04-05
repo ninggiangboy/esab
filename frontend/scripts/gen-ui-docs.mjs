@@ -103,7 +103,10 @@ const DOCS = {
   },
   'data-table': {
     title: 'DataTable',
-    description: 'Convenience table with toolbar, sorting, selection, and sticky header patterns.',
+    description: 'A component to render a data table.',
+    originalDocs: 'https://tanstack.com/table/latest',
+    sourceCode:
+      'https://github.com/henry-phm/base-stack/blob/main/packages/ui/src/components/DataTable.tsx',
     examples: [
       'DataTableDemo',
       'DataTableColumnAlignment',
@@ -116,7 +119,8 @@ const DOCS = {
   },
   pagination: {
     title: 'Pagination',
-    description: 'Navigate paged collections.',
+    description:
+      'Page controls (`Pagination`) and items-per-page select (`PaginationPageSizeSelector`), mirroring frontend-sample.',
     originalDocs: 'https://react-spectrum.adobe.com/react-aria/Pagination.html',
     examples: ['PaginationDemo', 'PaginationWithPageSelector', 'PaginationWithQueryParams'],
   },

@@ -4,6 +4,7 @@ import MdxRenderer from '@/docs/components/MdxRenderer.vue'
 import DocsLayout from '@/docs/layouts/DocsLayout.vue'
 import { loadDocSource } from '@/docs/lib/loadDocSource'
 import { renderDoc, type ParsedDoc } from '@/docs/mdx/renderDoc'
+import { ScrollArea } from '@/ui/components/scroll-area'
 import { Button } from '@/ui/components/button'
 import { ArrowUpRight, Github } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
@@ -41,7 +42,14 @@ watch(slug, load, { immediate: true })
 <template>
   <DocsLayout>
     <template #toc>
-      <DocToc v-if="parsed?.toc?.length" :toc="parsed.toc" />
+      <ScrollArea
+        v-if="parsed?.toc?.length"
+        class="grid h-[calc(100vh-5rem)] w-full -translate-x-px"
+        :show-horizontal-scrollbar="false"
+      >
+        <DocToc :toc="parsed.toc" />
+        <div class="h-10" />
+      </ScrollArea>
     </template>
 
     <div class="docs-article px-5 py-8 lg:px-10 lg:py-10 min-h-[60vh]">

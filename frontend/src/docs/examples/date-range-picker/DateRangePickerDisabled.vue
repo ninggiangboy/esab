@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DocDateRangePicker from '@/docs/examples/_internal/DocDateRangePicker.vue'
+import { DateRangePicker } from '@/ui/components/date-range-picker'
 </script>
 <template>
-  <DocDateRangePicker disabled class="pointer-events-none opacity-70" />
+  <DateRangePicker disabled class="pointer-events-none opacity-70" />
 </template>

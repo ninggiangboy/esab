@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { DialogClose } from 'reka-ui'
 import { Button } from '@/ui/components/button'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,

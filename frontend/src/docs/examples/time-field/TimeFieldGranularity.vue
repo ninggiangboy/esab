@@ -2,5 +2,5 @@
 import { BsTimeField } from '@/ui/components/datefield'
 </script>
 <template>
-  <BsTimeField granularity="second" class="w-40" />
+  <BsTimeField granularity="second" />
 </template>

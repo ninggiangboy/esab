@@ -1,48 +1,36 @@
 ---
 title: DataTable
-description: Convenience table with toolbar, sorting, selection, and sticky header patterns.
+description: A component to render a data table.
+originalDocs: https://tanstack.com/table/latest
+sourceCode: https://github.com/henry-phm/base-stack/blob/main/packages/ui/src/components/DataTable.tsx
 ---
 
 ## Usage
 
 <ComponentPreview name="DataTableDemo" />
 
----
-
 ## Examples
 
-### Column Alignment
+### Column alignment
 
 <ComponentPreview name="DataTableColumnAlignment" />
 
----
-
-### Loading State
+### Loading state
 
 <ComponentPreview name="DataTableLoadingState" />
 
----
-
-### Realworld
-
-<ComponentPreview name="DataTableRealworld" />
-
----
-
-### Row Selection
+### Row selection
 
 <ComponentPreview name="DataTableRowSelection" />
-
----
 
 ### Sorting
 
 <ComponentPreview name="DataTableSorting" />
 
----
-
-### Sticky
+### Sticky columns
 
 <ComponentPreview name="DataTableSticky" />
 
----
+### Real-world
+
+<ComponentPreview name="DataTableRealworld" />

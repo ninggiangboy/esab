@@ -2,5 +2,5 @@
 import { SearchField } from '@/ui/components/searchfield'
 </script>
 <template>
-  <SearchField placeholder="Search" class="rounded-sm border border-input px-2" />
+  <SearchField placeholder="Search" class="max-w-[300px]"/>
 </template>

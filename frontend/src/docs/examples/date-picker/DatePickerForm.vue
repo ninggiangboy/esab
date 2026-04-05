@@ -6,11 +6,11 @@ import { Button } from '@/ui/components/button'
 import { DatePicker } from '@/ui/components/date-picker'
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormVm,
   useForm,
 } from '@/ui/components/form'
 
@@ -23,9 +23,9 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
     <FormField v-slot="{ componentField }" name="date">
       <FormItem>
         <FormLabel>Date</FormLabel>
-        <FormControl v-slot="controlProps">
-          <DatePicker v-bind="{ ...componentField, ...controlProps }" />
-        </FormControl>
+        <FormVm generic="string | undefined" v-slot="vm" :component-field="componentField">
+          <DatePicker v-bind="vm" />
+        </FormVm>
         <FormMessage />
       </FormItem>
     </FormField>

@@ -7,11 +7,11 @@ import { DatePicker } from '@/ui/components/date-picker'
 import { BsTimeField } from '@/ui/components/datefield'
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormVm,
   useForm,
 } from '@/ui/components/form'
 
@@ -26,9 +26,9 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
         <FormField v-slot="{ componentField }" name="appointmentDate">
           <FormItem>
             <FormLabel>Appointment date</FormLabel>
-            <FormControl v-slot="controlProps">
-              <DatePicker v-bind="{ ...componentField, ...controlProps }" />
-            </FormControl>
+            <FormVm generic="string | undefined" v-slot="vm" :component-field="componentField">
+              <DatePicker v-bind="vm" />
+            </FormVm>
             <FormMessage />
           </FormItem>
         </FormField>
@@ -36,9 +36,9 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
       <FormField v-slot="{ componentField }" name="appointmentTime">
         <FormItem>
           <FormLabel class="opacity-0">Time</FormLabel>
-          <FormControl v-slot="controlProps">
-            <BsTimeField class="w-[72px]" v-bind="{ ...componentField, ...controlProps }" />
-          </FormControl>
+          <FormVm generic="string | undefined" v-slot="vm" :component-field="componentField">
+            <BsTimeField class="w-18 min-w-0 shrink-0" v-bind="vm" />
+          </FormVm>
           <FormMessage />
         </FormItem>
       </FormField>

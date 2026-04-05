@@ -2,7 +2,7 @@
 import { docFormToast } from '@/docs/examples/_internal/docFormSubmit'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
-import DocDateRangePicker from '@/docs/examples/_internal/DocDateRangePicker.vue'
+import { DateRangePicker } from '@/ui/components/date-range-picker'
 import { Button } from '@/ui/components/button'
 import {
   Form,
@@ -24,7 +24,7 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
       <FormItem>
         <FormLabel>Date range</FormLabel>
         <FormControl v-slot="controlProps">
-          <DocDateRangePicker v-bind="{ ...componentField, ...controlProps }" />
+          <DateRangePicker v-bind="{ ...componentField, ...controlProps }" />
         </FormControl>
         <FormMessage />
       </FormItem>

@@ -57,6 +57,7 @@ async function getMarkdownIt(): Promise<MarkdownIt> {
           light: 'github-light',
           dark: 'github-dark',
         },
+        defaultColor: false,
       })
     },
   })

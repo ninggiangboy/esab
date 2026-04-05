@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import SingleCalendarPanel from '@/docs/examples/_internal/SingleCalendarPanel.vue'
+import { BsCalendar } from '@/ui/components/calendar'
 </script>
 
 <template>
-  <SingleCalendarPanel unstyled />
+  <BsCalendar variant="unstyled" />
 </template>

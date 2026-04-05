@@ -2,5 +2,5 @@
 import { BsTimeField } from '@/ui/components/datefield'
 </script>
 <template>
-  <BsTimeField class="w-[72px]" />
+  <BsTimeField class="w-18" />
 </template>
