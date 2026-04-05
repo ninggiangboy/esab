@@ -16,6 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+/*
+ * Completes password reset using the OTP from ForgotPassword. The account is loaded by email,
+ * the latest active password-reset OTP is checked against the submitted code, then the new password
+ * is hashed and applied through the domain model.
+ *
+ * Every active session for that account is revoked so stolen refresh tokens cannot keep working
+ * after a successful reset; users must sign in again everywhere.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class ResetPasswordUseCase implements UseCaseService {
@@ -28,12 +36,14 @@ public class ResetPasswordUseCase implements UseCaseService {
     public void execute(ResetPasswordRequest request) {
         log.info("Reset password attempt for email={}", request.email() != null ? request.email().replaceAll("(?<=.).(?=.*@)", "*") : "***");
 
+        // Unlike forgot-password, invalid email is an error: user is past the enumeration-safe entrypoint.
         Account account = accountRepository.findByEmail(request.email())
                 .orElseThrow(() -> {
                     log.warn("Reset password failed: account not found");
                     return AccountError.ACCOUNT_NOT_FOUND.exception();
                 });
 
+        // Must match a code still valid in domain terms (attempt limits, expiry, etc.).
         AccountOtp otp = accountOtpRepository
                 .findLatestActiveByAccountIdAndPurpose(account.getId(), OtpPurpose.PASSWORD_RESET)
                 .orElseThrow(() -> {
@@ -46,9 +56,11 @@ public class ResetPasswordUseCase implements UseCaseService {
         log.debug("Password reset OTP verified for accountId={}", account.getId());
 
         String newPasswordHash = passwordEncoder.encode(request.newPassword());
+        // Domain aggregate owns password transition rules.
         account.changePassword(newPasswordHash);
         accountRepository.save(account);
 
+        // Invalidate outstanding refresh tokens so old clients cannot keep refreshing.
         List<AccountSession> activeSessions = accountSessionRepository.findActiveByAccountId(account.getId());
         activeSessions.forEach(AccountSession::revoke);
         accountSessionRepository.saveAll(activeSessions);

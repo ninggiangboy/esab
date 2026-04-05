@@ -17,6 +17,18 @@ import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/*
+ * Confirms registration by validating the OTP that was emailed after sign-up. The account must
+ * still be pending; if it was already verified, the use case fails so the flow cannot be replayed.
+ *
+ * The latest active registration OTP is loaded and checked against the submitted code. On success
+ * the account is activated and persisted. A device record is created from the request and marked
+ * trusted, since proving inbox access is treated as strong enough for first login on that device.
+ *
+ * A new session is opened: the refresh token is stored hashed, and a short-lived access token is
+ * issued—the same pattern as a successful password login. The client receives AuthTokenResponse
+ * with tokens, access TTL, and the account UUID.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class VerifyEmailUseCase implements UseCaseService {
@@ -30,18 +42,22 @@ public class VerifyEmailUseCase implements UseCaseService {
     public AuthTokenResponse execute(VerifyEmailRequest request, String ipAddress) {
         log.info("Verify email attempt for email={}", request.email() != null ? request.email().replaceAll("(?<=.).(?=.*@)", "*") : "***");
 
+        // Unknown email cannot complete this flow.
         Account account = accountRepository.findByEmail(request.email())
                 .orElseThrow(() -> {
                     log.warn("Verify email failed: account not found");
                     return AccountError.ACCOUNT_NOT_FOUND.exception();
                 });
 
+        // Already verified accounts must not re-run activation or re-issue first-login tokens here.
         if (!account.isPending()) {
             log.warn("Verify email failed: email already verified accountId={}", account.getId());
             throw AccountError.EMAIL_ALREADY_VERIFIED.exception();
         }
 
         Long accountId = account.getId();
+
+        // Latest active registration OTP only; domain mutates OTP state on verify.
         AccountOtp otp = accountOtpRepository
                 .findLatestActiveByAccountIdAndPurpose(account.getId(), OtpPurpose.REGISTRATION)
                 .orElseThrow(() -> {
@@ -56,6 +72,7 @@ public class VerifyEmailUseCase implements UseCaseService {
         account.activate();
         accountRepository.save(account);
 
+        // Inbox proof counts as strong enough to trust this device on first session.
         AccountDevice device = AccountDevice.create(
                 account.getId(),
                 request.deviceInfo().deviceType(),
@@ -65,6 +82,7 @@ public class VerifyEmailUseCase implements UseCaseService {
         device.markTrusted();
         AccountDevice savedDevice = accountDeviceRepository.save(device);
 
+        // Only the hash of the refresh token is stored server-side.
         String refreshToken = tokenProvider.generateRefreshToken();
         AccountSession session = AccountSession.create(
                 account.getId(), savedDevice.getId(),
@@ -72,6 +90,7 @@ public class VerifyEmailUseCase implements UseCaseService {
         );
         accountSessionRepository.save(session);
 
+        // Short-lived JWT; client uses RefreshTokenUseCase when it expires.
         String accessToken = tokenProvider.generateAccessToken(
                 account.getId(), account.getUuid(), account.getEmail()
         );

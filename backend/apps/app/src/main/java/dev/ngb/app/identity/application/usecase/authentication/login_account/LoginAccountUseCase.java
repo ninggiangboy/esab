@@ -24,6 +24,20 @@ import dev.ngb.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/*
+ * Password login with email and credential check. Missing accounts and wrong passwords both map to
+ * the same error so callers cannot infer whether an email is registered.
+ *
+ * After the password matches, account status is validated (pending, suspended, banned, deactivated
+ * each fail with a specific domain error). The device is resolved by fingerprint. A brand-new device
+ * always triggers email OTP plus a short-lived verification token instead of full tokens. The same
+ * happens when two-factor is enabled on an existing device. Otherwise the login is considered
+ * trusted: login timestamps and success history are updated, then a session is created with fresh
+ * access and refresh tokens.
+ *
+ * When OTP is required, a login-purpose OTP is persisted and emailed, and the response uses
+ * verificationRequired so the client can complete the flow with VerifyLoginUseCase.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class LoginAccountUseCase implements UseCaseService {
@@ -41,6 +55,7 @@ public class LoginAccountUseCase implements UseCaseService {
     public LoginAccountResponse execute(LoginAccountRequest request, String ipAddress) {
         log.info("Login attempt for email={}", StringUtils.maskEmail(request.email()));
 
+        // Same error as wrong password to avoid leaking whether the email is registered.
         Account account = accountRepository.findByEmail(request.email())
                 .orElseThrow(() -> {
                     log.warn("Login failed: account not found for email={}", StringUtils.maskEmail(request.email()));
@@ -49,6 +64,7 @@ public class LoginAccountUseCase implements UseCaseService {
 
         if (!passwordEncoder.matches(request.password(), account.getPasswordHash())) {
             log.warn("Login failed: invalid password for accountId={}", account.getId());
+            // Audit trail without a device id yet.
             accountLoginHistoryRepository.save(
                     AccountLoginHistory.createFailure(account.getId(), null, ipAddress, null, "Invalid password")
             );
@@ -58,6 +74,7 @@ public class LoginAccountUseCase implements UseCaseService {
         log.debug("Password verified for accountId={}", account.getId());
         validateAccountStatus(account);
 
+        // Stable client fingerprint ties sessions and OTP verification to one device row.
         String fingerprint = request.deviceInfo().fingerprint();
         AccountDevice existingDevice = accountDeviceRepository
                 .findByAccountIdAndFingerprint(account.getId(), fingerprint)
@@ -67,6 +84,7 @@ public class LoginAccountUseCase implements UseCaseService {
         boolean needs2FA = Boolean.TRUE.equals(account.getTwoFactorEnabled());
         log.debug("accountId={}, isNewDevice={}, needs2FA={}", account.getId(), isNewDevice, needs2FA);
 
+        // Unknown hardware / browser: prove inbox access before issuing tokens.
         if (isNewDevice) {
             AccountDevice newDevice = AccountDevice.create(
                     account.getId(),
@@ -79,6 +97,7 @@ public class LoginAccountUseCase implements UseCaseService {
             return sendVerificationAndRespond(account, savedDevice);
         }
 
+        // Known device still needs a second factor when the account flag is on.
         if (needs2FA) {
             existingDevice.touch();
             AccountDevice savedDevice = accountDeviceRepository.save(existingDevice);
@@ -86,15 +105,18 @@ public class LoginAccountUseCase implements UseCaseService {
             return sendVerificationAndRespond(account, savedDevice);
         }
 
+        // Trusted path: update activity, record success, then mint session + tokens.
         existingDevice.touch();
         account.recordLogin(ipAddress);
         account = accountRepository.save(account);
         AccountDevice savedDevice = accountDeviceRepository.save(existingDevice);
 
+        // Successful password login on a known, non-2FA device.
         accountLoginHistoryRepository.save(
                 AccountLoginHistory.createSuccess(account.getId(), savedDevice.getId(), ipAddress, null)
         );
 
+        // Session row stores hashed refresh; raw value goes only to the client.
         String refreshToken = tokenProvider.generateRefreshToken();
         AccountSession session = AccountSession.create(
                 account.getId(), savedDevice.getId(),
@@ -115,6 +137,7 @@ public class LoginAccountUseCase implements UseCaseService {
     }
 
     private void validateAccountStatus(Account account) {
+        // Only ACTIVE may continue past password verification.
         switch (account.getStatus()) {
             case PENDING -> {
                 log.warn("Login rejected: account pending for accountId={}", account.getId());
@@ -138,12 +161,14 @@ public class LoginAccountUseCase implements UseCaseService {
 
     private LoginAccountResponse sendVerificationAndRespond(Account account, AccountDevice device) {
         log.debug("Sending login OTP for accountId={}", account.getId());
+        // LOGIN purpose distinguishes this from registration or password-reset OTPs.
         String code = otpCodeGenerator.generate();
         AccountOtp otp = AccountOtp.create(account.getId(), code, OtpPurpose.LOGIN, OtpChannel.EMAIL);
         accountOtpRepository.save(otp);
 
         otpSender.send(account.getEmail(), code, OtpPurpose.LOGIN);
 
+        // Binds the email OTP step to this account + device for VerifyLoginUseCase.
         String verificationToken = tokenProvider.generateVerificationToken(account.getId(), device.getId());
         return LoginAccountResponse.verificationRequired(verificationToken);
     }

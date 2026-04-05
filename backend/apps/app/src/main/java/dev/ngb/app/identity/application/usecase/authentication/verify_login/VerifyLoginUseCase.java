@@ -19,6 +19,17 @@ import dev.ngb.domain.identity.repository.AccountSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/*
+ * Finishes password login after the email OTP step (new device or 2FA). The client sends the
+ * verification token from LoginAccountResponse together with the OTP from email.
+ *
+ * The verification token encodes account and device ids; bad or tampered tokens fail with
+ * INVALID_VERIFICATION_TOKEN. The latest active login OTP must match the submitted code. The device
+ * must belong to that account; after a successful OTP it is marked trusted if it was not already.
+ *
+ * Login is recorded, success history is written, a new session stores the hashed refresh token,
+ * and a fresh access token is returned in AuthTokenResponse.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class VerifyLoginUseCase implements UseCaseService {
@@ -33,6 +44,7 @@ public class VerifyLoginUseCase implements UseCaseService {
     public AuthTokenResponse execute(VerifyLoginRequest request, String ipAddress) {
         log.info("Verify login attempt");
 
+        // Opaque token from LoginAccountUseCase; must decode to the same account/device the OTP was sent for.
         TokenProvider.VerificationClaims claims;
         try {
             claims = tokenProvider.parseVerificationToken(request.verificationToken());
@@ -43,6 +55,7 @@ public class VerifyLoginUseCase implements UseCaseService {
 
         log.debug("Verification token parsed accountId={}, deviceId={}", claims.accountId(), claims.deviceId());
 
+        // Account might have been removed after the verification token was minted.
         Account account = accountRepository.findById(claims.accountId())
                 .orElseThrow(() -> {
                     log.warn("Account not found for verify login accountId={}", claims.accountId());
@@ -50,6 +63,7 @@ public class VerifyLoginUseCase implements UseCaseService {
                 });
 
         Long accountId = account.getId();
+        // Pairs with the LOGIN OTP emailed during sendVerificationAndRespond.
         AccountOtp otp = accountOtpRepository
                 .findLatestActiveByAccountIdAndPurpose(accountId, OtpPurpose.LOGIN)
                 .orElseThrow(() -> {
@@ -61,6 +75,7 @@ public class VerifyLoginUseCase implements UseCaseService {
         accountOtpRepository.save(otp);
         log.debug("OTP verified for accountId={}", accountId);
 
+        // Reject tokens that point at another account's device id.
         AccountDevice device = accountDeviceRepository.findById(claims.deviceId())
                 .filter(d -> accountId.equals(d.getAccountId()))
                 .orElseThrow(() -> {
@@ -69,6 +84,7 @@ public class VerifyLoginUseCase implements UseCaseService {
                 });
 
         if (!Boolean.TRUE.equals(device.getIsTrusted())) {
+            // Post-OTP device is allowed to skip future inbox challenges until policy changes.
             log.debug("Marking device as trusted accountId={}, deviceId={}", accountId, device.getId());
             device.markTrusted();
             accountDeviceRepository.save(device);
@@ -77,10 +93,12 @@ public class VerifyLoginUseCase implements UseCaseService {
         account.recordLogin(ipAddress);
         account = accountRepository.save(account);
 
+        // Mirror successful direct login: audit success with a concrete device id.
         accountLoginHistoryRepository.save(
                 AccountLoginHistory.createSuccess(accountId, device.getId(), ipAddress, null)
         );
 
+        // Same session shape as VerifyEmail / trusted LoginAccount path.
         String refreshToken = tokenProvider.generateRefreshToken();
         AccountSession session = AccountSession.create(
                 accountId, device.getId(),

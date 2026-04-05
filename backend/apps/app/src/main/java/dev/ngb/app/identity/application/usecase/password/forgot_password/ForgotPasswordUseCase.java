@@ -15,8 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
-/**
- * Always returns success to prevent email enumeration.
+/*
+ * Starts password reset by emailing a PASSWORD_RESET OTP when an active account exists for the
+ * address. If there is no account or the account is not active, the use case returns without
+ * error or email so callers cannot tell whether the mailbox is registered (enumeration resistance).
+ * The web layer can still respond with a generic success to the client.
+ *
+ * ResetPassword later validates the OTP and applies the new password.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -31,6 +36,7 @@ public class ForgotPasswordUseCase implements UseCaseService {
         log.info("Forgot password request (email masked for enumeration protection)");
 
         Optional<Account> accountOpt = accountRepository.findByEmail(request.email());
+        // Deliberately identical outcome for unknown or inactive emails — do not leak registration state.
         if (accountOpt.isEmpty() || !accountOpt.get().isActive()) {
             log.debug("Forgot password: no active account for email, returning without sending OTP");
             return;
@@ -38,10 +44,12 @@ public class ForgotPasswordUseCase implements UseCaseService {
 
         Account account = accountOpt.get();
         log.debug("Sending password reset OTP for accountId={}", account.getId());
+
         String code = otpCodeGenerator.generate();
         AccountOtp otp = AccountOtp.create(account.getId(), code, OtpPurpose.PASSWORD_RESET, OtpChannel.EMAIL);
         accountOtpRepository.save(otp);
 
+        // ResetPassword will load latest active OTP with this purpose.
         otpSender.send(request.email(), code, OtpPurpose.PASSWORD_RESET);
         log.info("Password reset OTP sent for accountId={}", account.getId());
     }
