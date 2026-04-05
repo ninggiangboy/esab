@@ -1,6 +1,6 @@
-package dev.ngb.app.identity.support;
+package dev.ngb.app.support;
 
-import org.jspecify.annotations.NonNull;
+import dev.ngb.app.identity.support.IdentityIntegrationTestConfig;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
@@ -12,14 +12,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.http.client.ClientHttpResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Testcontainers
 @Import(IdentityIntegrationTestConfig.class)
-public abstract class AbstractIdentityIntegrationTest {
+public abstract class AbstractIntegrationTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(DockerImageName.parse("postgres:16-alpine"))
@@ -30,18 +28,7 @@ public abstract class AbstractIdentityIntegrationTest {
     @LocalServerPort
     protected int port;
 
-    protected final RestTemplate restTemplate = createRestTemplate();
-
-    private static RestTemplate createRestTemplate() {
-        RestTemplate template = new RestTemplate();
-        template.setErrorHandler(new DefaultResponseErrorHandler() {
-            @Override
-            public boolean hasError(@NonNull ClientHttpResponse response) {
-                return false;
-            }
-        });
-        return template;
-    }
+    protected final RestTemplate restTemplate = IntegrationTestHttp.createRestTemplate();
 
     @DynamicPropertySource
     static void configureDatasource(DynamicPropertyRegistry registry) {

@@ -1,6 +1,8 @@
 package dev.ngb.app.identity.support;
 
+import dev.ngb.app.identity.application.port.OAuthProviderVerifier;
 import dev.ngb.app.identity.infrastructure.LoggingOtpSender;
+import dev.ngb.domain.identity.model.auth.AuthProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -18,6 +20,21 @@ public class IdentityIntegrationTestConfig {
     @Primary
     public TestOtpSender testOtpSender() {
         return new TestOtpSender();
+    }
+
+    /**
+     * Overrides production {@link dev.ngb.app.identity.infrastructure.StubOAuthProviderVerifier} so
+     * HTTP integration tests can complete OAuth login with a fixed provider token.
+     */
+    @Bean
+    @Primary
+    public OAuthProviderVerifier integrationOAuthProviderVerifier() {
+        return (AuthProvider provider, String providerToken) -> {
+            if ("integration-oauth-valid".equals(providerToken)) {
+                return new OAuthProviderVerifier.OAuthUserInfo("oauth.integration@test.com", "integration-sub");
+            }
+            throw new IllegalArgumentException("invalid provider token for integration test");
+        };
     }
 
     /** Remove LoggingOtpSender so the application uses TestOtpSender and OTP is captured. */

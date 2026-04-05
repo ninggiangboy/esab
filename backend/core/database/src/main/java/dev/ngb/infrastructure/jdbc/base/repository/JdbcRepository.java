@@ -79,7 +79,9 @@ public abstract class JdbcRepository<D extends DomainEntity<ID>, J extends JdbcE
             if (pageable.getSort().isSorted()) {
                 query = query.sort(pageable.getSort());
             }
-            query = query.offset(pageable.getOffset()).limit(pageable.getPageSize());
+            if (pageable.isPaged()) {
+                query = query.offset(pageable.getOffset()).limit(pageable.getPageSize());
+            }
         }
 
         return query;
