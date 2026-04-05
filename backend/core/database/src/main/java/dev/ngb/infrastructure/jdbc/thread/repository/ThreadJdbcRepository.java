@@ -3,7 +3,6 @@ package dev.ngb.infrastructure.jdbc.thread.repository;
 import dev.ngb.domain.thread.model.thread.Thread;
 import dev.ngb.domain.thread.repository.ThreadRepository;
 import dev.ngb.infrastructure.jdbc.base.repository.JdbcRepository;
-import dev.ngb.infrastructure.jdbc.thread.entity.ThreadHashtagJdbcEntity;
 import dev.ngb.infrastructure.jdbc.thread.entity.ThreadJdbcEntity;
 import dev.ngb.infrastructure.jdbc.thread.mapper.ThreadJdbcMapper;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;

@@ -2,8 +2,6 @@ package dev.ngb.util;
 
 import lombok.experimental.UtilityClass;
 
-import java.util.Objects;
-
 @UtilityClass
 public final class NullUtils {
     public static <T> T getOr(T value, T defaultValue) {

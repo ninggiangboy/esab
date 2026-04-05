@@ -15,8 +15,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.io.IOException;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Testcontainers
@@ -24,7 +22,7 @@ import java.io.IOException;
 public abstract class AbstractIdentityIntegrationTest {
 
     @Container
-    static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse("postgres:16-alpine"))
+    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(DockerImageName.parse("postgres:16-alpine"))
             .withDatabaseName("esab_test")
             .withUsername("postgres")
             .withPassword("postgres");
@@ -47,9 +45,9 @@ public abstract class AbstractIdentityIntegrationTest {
 
     @DynamicPropertySource
     static void configureDatasource(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
     }
 
     protected String baseUrl() {

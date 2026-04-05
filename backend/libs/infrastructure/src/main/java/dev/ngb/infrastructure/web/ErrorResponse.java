@@ -2,7 +2,6 @@ package dev.ngb.infrastructure.web;
 
 import dev.ngb.domain.DomainException;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 
 import java.time.Instant;
 import java.util.Map;
