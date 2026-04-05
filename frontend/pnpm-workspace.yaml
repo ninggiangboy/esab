@@ -1,2 +1,0 @@
-patchedDependencies:
-  '@vue/runtime-core@3.5.32': patches/@vue__runtime-core@3.5.32.patch
