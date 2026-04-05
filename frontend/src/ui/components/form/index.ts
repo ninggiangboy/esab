@@ -10,4 +10,11 @@ export { default as FormVm } from './FormVm.vue'
 export { setSubmitErrors } from './setSubmitErrors'
 export { useFormField } from './useFormField'
 
-export { useForm, type FormActions, type FormContext, type GenericObject } from 'vee-validate'
+export {
+  useForm,
+  useFieldArray,
+  useFormContext,
+  type FormActions,
+  type FormContext,
+  type GenericObject,
+} from 'vee-validate'

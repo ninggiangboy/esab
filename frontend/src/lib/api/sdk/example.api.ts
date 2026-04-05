@@ -8,7 +8,7 @@ export class ExampleApi {
     hello() {
         return queryOptions({
             queryKey: ['hello'],
-            queryFn: () => this.client.get<ExampleResponse>('/hello'),
+            queryFn: ({ signal }) => this.client.get<ExampleResponse>('/hello', { signal }),
         })
     }
 }

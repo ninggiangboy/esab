@@ -1,16 +1,8 @@
-import { z } from 'zod'
+/**
+ * Side-effect: adds `ruleFn()` and `validateFn()` to every Zod schema instance.
+ * Imported from `main.ts` before the app mounts.
+ */
+import './extendZod'
 
-declare module 'zod' {
-    interface ZodType {
-        validateFn(): (value: any) => string | boolean
-    }
-}
-
-z.ZodType.prototype.validateFn = function () {
-    return (value: any): string | boolean => {
-        const result = this.safeParse(value)
-        return result.success || result.error?.errors?.[0]?.message || ''
-    }
-}
-
-export { z }
+export { ruleFn, zodRules } from './fieldRule'
+export { z } from 'zod'

@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { docFormToast } from '@/docs/examples/_internal/docFormSubmit'
-import { toTypedSchema } from '@vee-validate/zod'
-import { z } from 'zod'
 import { Button } from '@/ui/components/button'
 import {
   Form,
@@ -13,14 +11,21 @@ import {
   useForm,
 } from '@/ui/components/form'
 import { Input } from '@/ui/components/textfield'
+import { z } from 'zod'
 
-const schema = toTypedSchema(z.object({ username: z.string().min(2) }))
-const { handleSubmit } = useForm({ validationSchema: schema })
+const { handleSubmit } = useForm({
+  initialValues: { username: '' },
+})
+
 const onSubmit = handleSubmit((v) => docFormToast(v))
 </script>
 <template>
   <Form class="w-full space-y-4" @submit="onSubmit">
-    <FormField v-slot="{ componentField }" name="username">
+    <FormField
+      v-slot="{ componentField }"
+      name="username"
+      :rules="z.string().min(2, 'At least 2 characters').ruleFn()"
+    >
       <FormItem>
         <FormLabel>Username</FormLabel>
         <FormControl v-slot="controlProps">

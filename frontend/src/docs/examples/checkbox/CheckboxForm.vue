@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
 import { docFormToast } from '@/docs/examples/_internal/docFormSubmit'
 import { Button } from '@/ui/components/button'
@@ -17,18 +16,7 @@ import {
 } from '@/ui/components/form'
 import { TextArea } from '@/ui/components/textfield'
 
-const schema = toTypedSchema(
-  z.object({
-    interest: z.array(z.string()),
-    bio: z.string(),
-    acceptTerm: z.boolean().refine((v) => v, {
-      message: 'Please accept the terms and conditions',
-    }),
-  }),
-)
-
 const { handleSubmit } = useForm({
-  validationSchema: schema,
   initialValues: {
     interest: [] as string[],
     bio: '',
@@ -41,7 +29,11 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
 
 <template>
   <Form class="space-y-5" @submit="onSubmit">
-    <FormField v-slot="{ componentField }" name="interest">
+    <FormField
+      v-slot="{ componentField }"
+      name="interest"
+      :rules="z.array(z.string()).min(1, 'Pick at least one').ruleFn()"
+    >
       <FormItem>
         <FormLabel>Select your interests</FormLabel>
         <FormDescription>Pick one or more.</FormDescription>
@@ -56,7 +48,7 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
       </FormItem>
     </FormField>
 
-    <FormField v-slot="{ componentField }" name="bio">
+    <FormField v-slot="{ componentField }" name="bio" :rules="z.string().min(1, 'Required').ruleFn()">
       <FormItem>
         <FormLabel>Bio</FormLabel>
         <FormControl v-slot="controlProps">
@@ -70,7 +62,12 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
       </FormItem>
     </FormField>
 
-    <FormField v-slot="{ componentField }" name="acceptTerm" type="checkbox">
+    <FormField
+      v-slot="{ componentField }"
+      name="acceptTerm"
+      type="checkbox"
+      :rules="z.boolean().refine((v) => v, { message: 'Please accept the terms and conditions' }).ruleFn()"
+    >
       <FormItem>
         <FormVm generic="boolean | 'indeterminate'" v-slot="vm" :component-field="componentField">
           <Checkbox v-bind="vm"> I accept the terms and conditions </Checkbox>

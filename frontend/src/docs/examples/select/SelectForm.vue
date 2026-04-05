@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { z } from 'zod'
 import { docFormToast } from '@/docs/examples/_internal/docFormSubmit'
 import { Button } from '@/ui/components/button'
 import {
@@ -13,6 +11,7 @@ import {
   useForm,
 } from '@/ui/components/form'
 import { BsSelect, type BsSelectOption } from '@/ui/components/select'
+import { z } from 'zod'
 
 const languageOptions: BsSelectOption[] = [
   { id: 'en', name: 'English' },
@@ -27,15 +26,7 @@ const roleOptions: BsSelectOption[] = [
   { id: 'user', name: 'User' },
 ]
 
-const schema = toTypedSchema(
-  z.object({
-    role: z.string().min(1),
-    languages: z.array(z.string()).optional(),
-  }),
-)
-
 const { handleSubmit } = useForm({
-  validationSchema: schema,
   initialValues: {
     role: 'admin',
     languages: [] as string[],
@@ -49,7 +40,7 @@ const onSubmit = handleSubmit((values) => {
 
 <template>
   <Form class="w-full space-y-3" @submit="onSubmit">
-    <FormField v-slot="{ componentField, errors }" name="role">
+    <FormField v-slot="{ componentField, errors }" name="role" :rules="z.string().min(1).ruleFn()">
       <FormItem>
         <FormLabel>Role</FormLabel>
         <FormVm generic="string | undefined" v-slot="vm" :component-field="componentField">
@@ -63,7 +54,7 @@ const onSubmit = handleSubmit((values) => {
         <FormMessage />
       </FormItem>
     </FormField>
-    <FormField v-slot="{ componentField }" name="languages">
+    <FormField v-slot="{ componentField }" name="languages" :rules="z.array(z.string()).optional().ruleFn()">
       <FormItem>
         <FormLabel>Language</FormLabel>
         <FormVm generic="string[]" v-slot="vm" :component-field="componentField">
