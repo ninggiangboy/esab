@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { DateValue } from '@internationalized/date'
 import { docFormToast } from '@/docs/examples/_internal/docFormSubmit'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'

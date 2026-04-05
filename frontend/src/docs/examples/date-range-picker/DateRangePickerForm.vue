@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { DateValue } from '@internationalized/date'
 import { docFormToast } from '@/docs/examples/_internal/docFormSubmit'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
@@ -14,10 +13,6 @@ import {
   FormVm,
   useForm,
 } from '@/ui/components/form'
-
-type DateRangeFormValue =
-  | { start: DateValue | undefined; end: DateValue | undefined }
-  | undefined
 
 const schema = toTypedSchema(z.object({ range: z.any() }))
 const { handleSubmit } = useForm({ validationSchema: schema })
