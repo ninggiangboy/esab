@@ -6,11 +6,11 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/docs/ui/button',
+      redirect: '/docs',
     },
     {
       path: '/docs',
-      redirect: '/docs/ui/button',
+      redirect: '/docs/guide/introduction',
     },
     {
       path: '/docs/:section/:slug',

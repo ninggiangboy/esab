@@ -7,7 +7,8 @@ import { renderDoc, type ParsedDoc } from '@/docs/mdx/renderDoc'
 import { ScrollArea } from '@/ui/components/scroll-area'
 import { Button } from '@/ui/components/button'
 import { ArrowUpRight, Github } from 'lucide-vue-next'
-import { computed, ref, watch } from 'vue'
+import { useQuery } from '@tanstack/vue-query'
+import { computed, unref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -18,64 +19,67 @@ const slug = computed(() => {
   return `${section}/${s}`
 })
 
-const parsed = ref<ParsedDoc | null>(null)
-const notFound = ref(false)
-const loading = ref(true)
+const docQuery = useQuery(
+  computed(() => ({
+    queryKey: ['docs', slug.value] as const,
+    queryFn: async (): Promise<ParsedDoc | null> => {
+      const raw = await loadDocSource(slug.value)
+      if (!raw) return null
+      return renderDoc(raw)
+    },
+  })),
+)
 
-async function load() {
-  loading.value = true
-  notFound.value = false
-  const raw = await loadDocSource(slug.value)
-  if (!raw) {
-    parsed.value = null
-    notFound.value = true
-    loading.value = false
-    return
-  }
-  parsed.value = await renderDoc(raw)
-  loading.value = false
-}
+const doc = computed(() => unref(docQuery.data))
+const isLoading = computed(() => unref(docQuery.isLoading))
+const isError = computed(() => unref(docQuery.isError))
 
-watch(slug, load, { immediate: true })
+const loadErrorMessage = computed(() => {
+  const err = unref(docQuery.error)
+  return err instanceof Error ? err.message : 'Failed to load document.'
+})
 </script>
 
 <template>
   <DocsLayout>
     <template #toc>
       <ScrollArea
-        v-if="parsed?.toc?.length"
+        v-if="doc?.toc?.length"
         class="grid h-[calc(100vh-5rem)] w-full -translate-x-px"
         :show-horizontal-scrollbar="false"
       >
-        <DocToc :toc="parsed.toc" />
+        <DocToc :toc="doc.toc" />
         <div class="h-10" />
       </ScrollArea>
     </template>
 
     <div class="docs-article px-5 py-8 lg:px-10 lg:py-10 min-h-[60vh]">
-      <div v-if="loading" class="text-muted-foreground text-sm">Loading…</div>
-      <div v-else-if="notFound" class="text-destructive text-sm">Document not found.</div>
-      <template v-else-if="parsed">
+      <div v-if="isLoading" class="text-muted-foreground text-sm">Loading…</div>
+      <div v-else-if="isError" class="text-destructive text-sm">
+        {{ loadErrorMessage }}
+      </div>
+      <div v-else-if="doc === null" class="text-destructive text-sm">Document not found.</div>
+      <template v-else-if="doc">
         <div class="mb-10 border-b border-border pb-10">
           <h1 class="mb-0 font-mono text-[40px] text-foreground scroll-mt-24">
-            {{ parsed.frontmatter.title ?? 'Untitled' }}
+            {{ doc.frontmatter.title ?? 'Untitled' }}
           </h1>
           <p
-            v-if="parsed.frontmatter.description"
+            v-if="doc.frontmatter.description"
             class="text-muted-foreground mt-2 mb-2 text-[15px] leading-relaxed max-w-3xl"
           >
-            {{ parsed.frontmatter.description }}
+            {{ doc.frontmatter.description }}
           </p>
           <div
-            v-if="parsed.frontmatter.originalDocs || parsed.frontmatter.sourceCode"
+            v-if="doc.frontmatter.originalDocs || doc.frontmatter.sourceCode"
             class="flex flex-wrap gap-2"
           >
             <Button
-              v-if="parsed.frontmatter.originalDocs"
+              v-if="doc.frontmatter.originalDocs"
               as="a"
               variant="outline"
               size="sm"
-              :href="parsed.frontmatter.originalDocs"
+              :href="doc.frontmatter.originalDocs"
               target="_blank"
               rel="noopener noreferrer"
               class="gap-1"
@@ -84,11 +88,11 @@ watch(slug, load, { immediate: true })
               <ArrowUpRight class="size-4" />
             </Button>
             <Button
-              v-if="parsed.frontmatter.sourceCode"
+              v-if="doc.frontmatter.sourceCode"
               as="a"
               variant="outline"
               size="sm"
-              :href="parsed.frontmatter.sourceCode"
+              :href="doc.frontmatter.sourceCode"
               target="_blank"
               rel="noopener noreferrer"
               class="gap-1"
@@ -99,7 +103,7 @@ watch(slug, load, { immediate: true })
           </div>
         </div>
         <div class="w-full min-w-0">
-          <MdxRenderer :segments="parsed.segments" />
+          <MdxRenderer :segments="doc.segments" />
         </div>
       </template>
     </div>
