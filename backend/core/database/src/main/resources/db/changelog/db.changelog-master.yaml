@@ -11,3 +11,9 @@ databaseChangeLog:
       file: db/changelog/migrations/005-create-chat-tables.sql
   - include:
       file: db/changelog/migrations/006-create-notification-tables.sql
+  - include:
+      file: db/changelog/migrations/007-create-group-tables.sql
+  - include:
+      file: db/changelog/migrations/008-alter-group-tables.sql
+  - include:
+      file: db/changelog/migrations/009-add-e2e-encryption.sql
