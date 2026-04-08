@@ -30,6 +30,7 @@ public final class MessageJdbcMapper implements JdbcMapper<Message, MessageJdbcE
                 entity.getSenderProfileId(),
                 entity.getType(),
                 entity.getContent(),
+                entity.getIv(),
                 entity.getEditedAt(),
                 entity.getDeletedAt(),
                 entity.getMedias() == null ? Set.of() : entity.getMedias().stream().map(MessageJdbcMapper::mapMediaToDomain).collect(Collectors.toSet()),
@@ -50,6 +51,7 @@ public final class MessageJdbcMapper implements JdbcMapper<Message, MessageJdbcE
                 .senderProfileId(domain.getSenderProfileId())
                 .type(domain.getType())
                 .content(domain.getContent())
+                .iv(domain.getIv())
                 .editedAt(domain.getEditedAt())
                 .deletedAt(domain.getDeletedAt())
                 .medias(domain.getMedias() == null ? null : domain.getMedias().stream().map(MessageJdbcMapper::mapMediaToJdbc).collect(Collectors.toSet()))

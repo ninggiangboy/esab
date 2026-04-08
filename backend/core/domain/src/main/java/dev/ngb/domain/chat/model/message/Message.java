@@ -23,6 +23,7 @@ public class Message extends DomainEntity<Long> {
     private Long senderProfileId;
     private MessageType type;
     private String content;
+    private String iv;
     private Instant editedAt;
     private Instant deletedAt;
 
@@ -39,7 +40,7 @@ public class Message extends DomainEntity<Long> {
 
     public static Message reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,
-            Long conversationId, Long senderProfileId, MessageType type, String content,
+            Long conversationId, Long senderProfileId, MessageType type, String content, String iv,
             Instant editedAt, Instant deletedAt, Set<MessageMedia> medias, Set<MessageReaction> reactions) {
         Message obj = new Message();
         obj.id = id;
@@ -52,6 +53,7 @@ public class Message extends DomainEntity<Long> {
         obj.senderProfileId = senderProfileId;
         obj.type = type;
         obj.content = content;
+        obj.iv = iv;
         obj.editedAt = editedAt;
         obj.deletedAt = deletedAt;
         obj.medias = medias == null ? new HashSet<>() : new HashSet<>(medias);

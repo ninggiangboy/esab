@@ -23,6 +23,7 @@ public class MessageJdbcEntity extends SoftDeletableJdbcEntity<Long> {
     private Long senderProfileId;
     private MessageType type;
     private String content;
+    private String iv;
     private Instant editedAt;
 
     @MappedCollection(idColumn = "message_id")

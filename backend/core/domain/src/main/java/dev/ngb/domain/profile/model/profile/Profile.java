@@ -32,11 +32,12 @@ public class Profile extends DomainEntity<Long> {
 
     private ProfileVisibility visibility;
     private Boolean isVerified;
+    private String publicKey;
 
     public static Profile reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,
             Long accountId, String username, String displayName, String bio, String website, String location,
-            String avatarUrl, String bannerUrl, ProfileVisibility visibility, Boolean isVerified) {
+            String avatarUrl, String bannerUrl, ProfileVisibility visibility, Boolean isVerified, String publicKey) {
         Profile obj = new Profile();
         obj.id = id;
         obj.uuid = uuid;
@@ -54,6 +55,7 @@ public class Profile extends DomainEntity<Long> {
         obj.bannerUrl = bannerUrl;
         obj.visibility = visibility;
         obj.isVerified = isVerified;
+        obj.publicKey = publicKey;
         return obj;
     }
 

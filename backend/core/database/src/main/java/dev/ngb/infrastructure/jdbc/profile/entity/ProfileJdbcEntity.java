@@ -25,4 +25,5 @@ public class ProfileJdbcEntity extends JdbcEntity<Long> {
     private String bannerUrl;
     private ProfileVisibility visibility;
     private Boolean isVerified;
+    private String publicKey;
 }
