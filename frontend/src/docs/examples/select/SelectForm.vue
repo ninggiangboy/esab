@@ -7,7 +7,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormVm,
+  FormControl,
   useForm,
 } from '@/ui/components/form'
 import { BsSelect, type BsSelectOption } from '@/ui/components/select'
@@ -43,23 +43,23 @@ const onSubmit = handleSubmit((values) => {
     <FormField v-slot="{ componentField, errors }" name="role" :rules="z.string().min(1).ruleFn()">
       <FormItem>
         <FormLabel>Role</FormLabel>
-        <FormVm generic="string | undefined" v-slot="vm" :component-field="componentField">
+        <FormControl generic="string | undefined" v-slot="vm" :component-field="componentField">
           <BsSelect
             v-bind="vm"
             clearable
             :options="roleOptions"
             :class="errors.length ? 'ring-2 ring-destructive' : ''"
           />
-        </FormVm>
+        </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>
     <FormField v-slot="{ componentField }" name="languages" :rules="z.array(z.string()).optional().ruleFn()">
       <FormItem>
         <FormLabel>Language</FormLabel>
-        <FormVm generic="string[]" v-slot="vm" :component-field="componentField">
+        <FormControl generic="string[]" v-slot="vm" :component-field="componentField">
           <BsSelect v-bind="vm" multiple :options="languageOptions" />
-        </FormVm>
+        </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>

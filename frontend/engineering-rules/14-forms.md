@@ -25,15 +25,14 @@ Import **`useForm` from `@/ui/components/form`** (re-exported from `vee-validate
 | `FormField` | Wraps VeeValidate `Field`; use `v-slot="{ componentField, errors }"` (add `errors` when you need styling, e.g. `BsSelect`) |
 | `FormItem` | Spacing / provider for ids used by label, control, message |
 | `FormLabel` | Accessible label tied to the control |
-| `FormControl` | For **native-style** controls (`Input`, `TextArea`): default slot exposes a11y + safe binds; merge with `componentField` via `v-bind="{ ...componentField, ...controlProps }"` |
-| `FormVm` | For **custom model components** (`BsSelect`, `Switch`, `Checkbox`, `CheckboxGroup`): pass `:component-field="componentField"` and `generic="…"` (field value type), then `v-bind="vm"` on the control |
+| `FormControl` | Unified control wrapper for all fields. Without `componentField`, slot exposes a11y-only binds (native-style controls). With `:component-field="componentField"` and `generic="…"`, slot exposes typed v-model binds for custom model components (`BsSelect`, `Switch`, `Checkbox`, `CheckboxGroup`) |
 | `FormMessage` | Shows field error for the current `FormField` |
 | `FormDescription` | Helper text under the label |
 | `setSubmitErrors` | Thin helper around `setErrors` for API-shaped field error maps |
 
 **`FormField` + `type="checkbox"`** — use for boolean checkbox / switch-style fields (see `SwitchForm.vue`, single `Checkbox` in `CheckboxForm.vue`).
 
-**Do not** pass the full `componentField` into `Switch` / `Checkbox` / `NumberField`-style components via raw spread — `FormControl` strips `onInput` / `onChange` for that reason; use **`FormVm`** instead.
+**Do not** pass the full `componentField` into `Switch` / `Checkbox` / `NumberField`-style components via raw spread — use **`FormControl`** with `:component-field`.
 
 ### Field-level Zod (default)
 
@@ -92,7 +91,7 @@ Or combine Zod + form context in a small `validate` function that calls `z.strin
 ```
 useForm({ initialValues }) only
     ↓
-Form → FormField(name, :rules = z…ruleFn()) → FormItem / FormLabel / FormControl|FormVm → FormMessage
+Form → FormField(name, :rules = z…ruleFn()) → FormItem / FormLabel / FormControl → FormMessage
     ↓  optional: useFieldArray / useFormContext
 handleSubmit
     ↓
@@ -276,7 +275,7 @@ const onSubmit = handleSubmit((values) => {
 - Prefer **`:rules="z…ruleFn()`** (or imported per-field schema) on each `FormField`; omit `validationSchema` on `useForm` unless the form is trivial
 - Call `useForm` with a values generic + **`initialValues`** for every field
 - Use **`Form`** + **`FormField`** + **`FormMessage`** — no hand-rolled error spans
-- **`FormControl`** for `Input` / `TextArea`; **`FormVm`** for `BsSelect`, `Switch`, `Checkbox` / `CheckboxGroup`
+- Use **`FormControl`** for both native controls and custom model controls
 - **`defineField`** is optional and rare
 
 ---
@@ -513,7 +512,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormVm,
+  FormControl,
   useForm,
 } from '@/ui/components/form'
 import { Input } from '@/ui/components/textfield'
@@ -545,14 +544,14 @@ const onSubmit = handleSubmit((formValues) => { /* ... */ })
     <FormField v-slot="{ componentField, errors }" name="role">
       <FormItem>
         <FormLabel>Role</FormLabel>
-        <FormVm generic="string | undefined" v-slot="vm" :component-field="componentField">
+        <FormControl generic="string | undefined" v-slot="vm" :component-field="componentField">
           <BsSelect
             v-bind="vm"
             :options="roleOptions"
             placeholder="Select role"
             :class="errors.length ? 'ring-2 ring-destructive' : ''"
           />
-        </FormVm>
+        </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>
@@ -571,9 +570,9 @@ const onSubmit = handleSubmit((formValues) => { /* ... */ })
       <FormField v-slot="{ componentField }" name="permissions">
         <FormItem>
           <FormLabel>Permissions</FormLabel>
-          <FormVm generic="string[]" v-slot="vm" :component-field="componentField">
+          <FormControl generic="string[]" v-slot="vm" :component-field="componentField">
             <BsSelect v-bind="vm" multiple :options="permissionOptions" />
-          </FormVm>
+          </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
@@ -890,7 +889,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormVm,
+  FormControl,
 } from '@/ui/components/form'
 import { Input } from '@/ui/components/textfield'
 import { TextArea } from '@/ui/components/textfield'
@@ -930,14 +929,14 @@ const genderOptions: BsSelectOption[] = [
     <FormField v-slot="{ componentField, errors }" name="gender">
       <FormItem>
         <FormLabel>Gender</FormLabel>
-        <FormVm generic="string | undefined" v-slot="vm" :component-field="componentField">
+        <FormControl generic="string | undefined" v-slot="vm" :component-field="componentField">
           <BsSelect
             v-bind="vm"
             :options="genderOptions"
             placeholder="Gender"
             :class="errors.length ? 'ring-2 ring-destructive' : ''"
           />
-        </FormVm>
+        </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>

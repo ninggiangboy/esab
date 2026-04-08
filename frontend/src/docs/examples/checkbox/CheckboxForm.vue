@@ -5,13 +5,12 @@ import { Button } from '@/ui/components/button'
 import { Checkbox, CheckboxGroup } from '@/ui/components/checkbox'
 import {
   Form,
-  FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormVm,
+  FormControl,
   useForm,
 } from '@/ui/components/form'
 import { TextArea } from '@/ui/components/textfield'
@@ -37,13 +36,13 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
       <FormItem>
         <FormLabel>Select your interests</FormLabel>
         <FormDescription>Pick one or more.</FormDescription>
-        <FormVm generic="string[]" v-slot="vm" :component-field="componentField">
+        <FormControl generic="string[]" v-slot="vm" :component-field="componentField">
           <CheckboxGroup v-bind="vm" class="grid grid-cols-3 gap-4">
             <Checkbox value="reading"> Reading </Checkbox>
             <Checkbox value="writing"> Writing </Checkbox>
             <Checkbox value="coding"> Coding </Checkbox>
           </CheckboxGroup>
-        </FormVm>
+        </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>
@@ -69,9 +68,9 @@ const onSubmit = handleSubmit((v) => docFormToast(v))
       :rules="z.boolean().refine((v) => v, { message: 'Please accept the terms and conditions' }).ruleFn()"
     >
       <FormItem>
-        <FormVm generic="boolean | 'indeterminate'" v-slot="vm" :component-field="componentField">
+        <FormControl generic="boolean | 'indeterminate'" v-slot="vm" :component-field="componentField">
           <Checkbox v-bind="vm"> I accept the terms and conditions </Checkbox>
-        </FormVm>
+        </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>
