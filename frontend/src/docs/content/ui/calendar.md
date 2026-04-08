@@ -29,3 +29,9 @@ originalDocs: https://react-spectrum.adobe.com/react-aria/Calendar.html
 <ComponentPreview name="CalendarUnstyled" />
 
 ---
+
+### Custom Day Cell
+
+<ComponentPreview name="CalendarCustomDayCell" />
+
+---

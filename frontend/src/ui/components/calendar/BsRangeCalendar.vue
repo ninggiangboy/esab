@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { DateValue } from '@internationalized/date'
 import type { DateRange } from 'reka-ui'
 import { RangeCalendarRoot } from 'reka-ui'
@@ -12,19 +12,25 @@ const props = withDefaults(
     maxValue?: DateValue
     variant?: 'default' | 'unstyled'
     defaultValue?: DateRange | null
+    captionLayout?: 'buttons' | 'dropdown'
   }>(),
-  { variant: 'default' },
+  { variant: 'default', captionLayout: 'buttons' },
 )
 
 const model = defineModel<DateRange | null>({ default: null })
+const placeholder = ref<DateValue>()
+function onPlaceholderChange(next: DateValue) {
+  placeholder.value = next
+}
 
 const isUnstyled = computed(() => props.variant === 'unstyled')
 </script>
 
 <template>
   <RangeCalendarRoot
-    v-slot="{ grid, weekDays }"
+    v-slot="{ date, grid, weekDays, locale }"
     v-model="model"
+    v-model:placeholder="placeholder"
     :default-value="defaultValue ?? undefined"
     :min-value="minValue"
     :max-value="maxValue"
@@ -37,6 +43,22 @@ const isUnstyled = computed(() => props.variant === 'unstyled')
       )
     "
   >
-    <RangeCalendarPanelGrids :grid="grid" :week-days="weekDays" :unstyled="isUnstyled" />
+    <RangeCalendarPanelGrids
+      :grid="grid"
+      :week-days="weekDays"
+      :unstyled="isUnstyled"
+      :placeholder="placeholder ?? date"
+      :on-placeholder-change="onPlaceholderChange"
+      :locale="locale"
+      :caption-layout="props.captionLayout"
+      :min-value="minValue"
+      :max-value="maxValue"
+    >
+      <template #day-cell="slotProps">
+        <slot name="day-cell" v-bind="slotProps">
+          {{ slotProps.dayValue }}
+        </slot>
+      </template>
+    </RangeCalendarPanelGrids>
   </RangeCalendarRoot>
 </template>

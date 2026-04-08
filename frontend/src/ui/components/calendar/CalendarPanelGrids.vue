@@ -23,18 +23,66 @@ const props = withDefaults(
     grid: { value: DateValue; rows: DateValue[][] }[]
     weekDays: string[]
     unstyled?: boolean
+    placeholder?: DateValue
+    onPlaceholderChange?: (date: DateValue) => void
+    locale?: string
+    captionLayout?: 'buttons' | 'dropdown'
+    minValue?: DateValue
+    maxValue?: DateValue
   }>(),
-  { unstyled: false },
+  { unstyled: false, captionLayout: 'buttons' },
 )
 
 const isUnstyled = computed(() => props.unstyled)
+const isDropdownCaption = computed(
+  () => props.captionLayout === 'dropdown' && !!props.placeholder && !!props.locale,
+)
 const weekColIndexes = [0, 1, 2, 3, 4, 5, 6] as const
+
+const monthOptions = computed(() => {
+  if (!props.placeholder || !props.locale) return []
+  const monthsInYear = props.placeholder.calendar.getMonthsInYear(props.placeholder)
+  return Array.from({ length: monthsInYear }, (_, i) => {
+    const month = i + 1
+    const d = props.placeholder!.set({ day: 1, month })
+    const label = d.toDate('UTC').toLocaleString(props.locale, { month: 'short' })
+    return { value: month, label }
+  })
+})
+
+const yearOptions = computed(() => {
+  if (!props.placeholder) return []
+  const currentYear = props.placeholder.year
+  const minYear = props.minValue?.year ?? currentYear - 100
+  const maxYear = props.maxValue?.year ?? currentYear + 100
+  return Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i)
+})
+
+function onMonthChange(event: Event) {
+  if (!props.placeholder) return
+  const selectEl = event.target as HTMLSelectElement
+  const value = Number(selectEl.value)
+  if (!Number.isNaN(value)) {
+    props.onPlaceholderChange?.(props.placeholder.set({ day: 1, month: value }))
+    requestAnimationFrame(() => selectEl.blur())
+  }
+}
+
+function onYearChange(event: Event) {
+  if (!props.placeholder) return
+  const selectEl = event.target as HTMLSelectElement
+  const value = Number(selectEl.value)
+  if (!Number.isNaN(value)) {
+    props.onPlaceholderChange?.(props.placeholder.set({ day: 1, year: value }))
+    requestAnimationFrame(() => selectEl.blur())
+  }
+}
 
 const navBtnClass = computed(() =>
   cn(
     buttonVariants({ variant: 'ghost', size: 'icon' }),
     !isUnstyled.value &&
-      'shrink-0 rounded-full text-primary-foreground hover:bg-muted-foreground/10',
+      'shrink-0 rounded-full hover:bg-muted-foreground/10',
   ),
 )
 
@@ -57,12 +105,36 @@ const triggerClass = computed(() =>
 </script>
 
 <template>
-  <CalendarHeader class="flex w-full items-center gap-0.5 pb-1">
-    <CalendarHeading class="grow pl-2.5 text-sm font-medium" />
+  <CalendarHeader class="grid w-full grid-cols-[auto_1fr_auto] items-center gap-0.5 pb-1">
     <div class="flex shrink-0 items-center gap-0.5">
       <CalendarPrev :class="navBtnClass">
         <ChevronLeft class="size-4" aria-hidden="true" />
       </CalendarPrev>
+    </div>
+    <div class="flex items-center justify-center gap-1">
+      <template v-if="isDropdownCaption">
+        <select
+          :value="placeholder?.month"
+          class="h-8 px-2 text-sm"
+          @change="onMonthChange"
+        >
+          <option v-for="month in monthOptions" :key="month.value" :value="month.value">
+            {{ month.label }}
+          </option>
+        </select>
+        <select
+          :value="placeholder?.year"
+          class="h-8 px-2 text-sm"
+          @change="onYearChange"
+        >
+          <option v-for="year in yearOptions" :key="year" :value="year">
+            {{ year }}
+          </option>
+        </select>
+      </template>
+      <CalendarHeading v-else class="text-center text-sm font-medium" />
+    </div>
+    <div class="flex shrink-0 items-center gap-0.5 justify-self-end">
       <CalendarNext :class="navBtnClass">
         <ChevronRight class="size-4" aria-hidden="true" />
       </CalendarNext>
@@ -110,7 +182,21 @@ const triggerClass = computed(() =>
                 :day="weekDate"
                 :month="month.value"
                 :class="triggerClass"
-              />
+              >
+                <template #default="{ dayValue, disabled, unavailable, selected }">
+                  <slot
+                    name="day-cell"
+                    :date="weekDate"
+                    :month="month.value"
+                    :day-value="dayValue"
+                    :disabled="disabled"
+                    :unavailable="unavailable"
+                    :selected="selected"
+                  >
+                    {{ dayValue }}
+                  </slot>
+                </template>
+              </CalendarCellTrigger>
             </div>
           </CalendarCell>
         </CalendarGridRow>
