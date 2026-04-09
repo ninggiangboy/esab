@@ -2,7 +2,7 @@ package dev.ngb.infrastructure.jdbc.notification.entity;
 
 import dev.ngb.domain.notification.model.notification.NotificationEntityType;
 import dev.ngb.domain.notification.model.notification.NotificationType;
-import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
+import dev.ngb.infrastructure.jdbc.base.entity.SoftDeletableJdbcEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +17,7 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @Table("ntf_notifications")
-public class NotificationJdbcEntity extends JdbcEntity<Long> {
+public class NotificationJdbcEntity extends SoftDeletableJdbcEntity<Long> {
 
     private Long recipientProfileId;
     private Long actorProfileId;

@@ -1,7 +1,7 @@
 package dev.ngb.infrastructure.jdbc.chat.entity;
 
 import dev.ngb.domain.chat.model.conversation.ConversationType;
-import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
+import dev.ngb.infrastructure.jdbc.base.entity.SoftDeletableJdbcEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +17,7 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @Table("chat_conversations")
-public class ConversationJdbcEntity extends JdbcEntity<Long> {
+public class ConversationJdbcEntity extends SoftDeletableJdbcEntity<Long> {
 
     private ConversationType type;
     private Long createdByProfileId;

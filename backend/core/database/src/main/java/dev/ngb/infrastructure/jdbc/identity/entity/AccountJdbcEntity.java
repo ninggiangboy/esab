@@ -1,7 +1,7 @@
 package dev.ngb.infrastructure.jdbc.identity.entity;
 
 import dev.ngb.domain.identity.model.auth.AccountStatus;
-import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
+import dev.ngb.infrastructure.jdbc.base.entity.SoftDeletableJdbcEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import java.time.Instant;
 @SuperBuilder
 @NoArgsConstructor
 @Table("iam_accounts")
-public class AccountJdbcEntity extends JdbcEntity<Long> {
+public class AccountJdbcEntity extends SoftDeletableJdbcEntity<Long> {
 
     private String email;
     private String phoneNumber;

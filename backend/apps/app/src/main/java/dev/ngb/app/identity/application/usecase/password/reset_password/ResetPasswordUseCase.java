@@ -39,8 +39,8 @@ public class ResetPasswordUseCase implements UseCaseService {
         // Unlike forgot-password, invalid email is an error: user is past the enumeration-safe entrypoint.
         Account account = accountRepository.findByEmail(request.email())
                 .orElseThrow(() -> {
-                    log.warn("Reset password failed: account not found");
-                    return AccountError.ACCOUNT_NOT_FOUND.exception();
+                    log.warn("Reset password failed: invalid email or OTP");
+                    return AccountError.INVALID_OTP.exception();
                 });
 
         // Must match a code still valid in domain terms (attempt limits, expiry, etc.).
@@ -51,8 +51,12 @@ public class ResetPasswordUseCase implements UseCaseService {
                     return AccountError.INVALID_OTP.exception();
                 });
 
-        otp.verify(request.otpCode());
-        accountOtpRepository.save(otp);
+        try {
+            otp.verify(request.otpCode());
+        } finally {
+            // Persist attempts even for invalid OTP submissions.
+            accountOtpRepository.save(otp);
+        }
         log.debug("Password reset OTP verified for accountId={}", account.getId());
 
         String newPasswordHash = passwordEncoder.encode(request.newPassword());

@@ -1,7 +1,7 @@
 package dev.ngb.infrastructure.jdbc.identity.entity;
 
 import dev.ngb.domain.identity.model.auth.DeviceType;
-import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
+import dev.ngb.infrastructure.jdbc.base.entity.SoftDeletableJdbcEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import java.time.Instant;
 @SuperBuilder
 @NoArgsConstructor
 @Table("iam_account_devices")
-public class AccountDeviceJdbcEntity extends JdbcEntity<Long> {
+public class AccountDeviceJdbcEntity extends SoftDeletableJdbcEntity<Long> {
 
     private Long accountId;
     private DeviceType deviceType;

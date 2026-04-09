@@ -2,7 +2,7 @@ package dev.ngb.infrastructure.jdbc.group.entity;
 
 import dev.ngb.domain.group.model.group.GroupStatus;
 import dev.ngb.domain.group.model.group.GroupVisibility;
-import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
+import dev.ngb.infrastructure.jdbc.base.entity.SoftDeletableJdbcEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +14,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @SuperBuilder
 @NoArgsConstructor
 @Table("grp_groups")
-public class GroupJdbcEntity extends JdbcEntity<Long> {
+public class GroupJdbcEntity extends SoftDeletableJdbcEntity<Long> {
 
     private Long ownerProfileId;
     private String name;

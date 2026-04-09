@@ -3,7 +3,7 @@ package dev.ngb.infrastructure.jdbc.thread.entity;
 import dev.ngb.domain.thread.model.thread.ReplyRestriction;
 import dev.ngb.domain.thread.model.thread.ThreadStatus;
 import dev.ngb.domain.thread.model.thread.ThreadVisibility;
-import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
+import dev.ngb.infrastructure.jdbc.base.entity.SoftDeletableJdbcEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +19,7 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @Table("thr_threads")
-public class ThreadJdbcEntity extends JdbcEntity<Long> {
+public class ThreadJdbcEntity extends SoftDeletableJdbcEntity<Long> {
 
     private Long authorProfileId;
     private String rawContent;

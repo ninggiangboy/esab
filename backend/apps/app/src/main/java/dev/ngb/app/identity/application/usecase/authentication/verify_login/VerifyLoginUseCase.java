@@ -60,6 +60,7 @@ public class VerifyLoginUseCase implements UseCaseService {
                     log.warn("Account not found for verify login accountId={}", claims.accountId());
                     return AccountError.ACCOUNT_NOT_FOUND.exception();
                 });
+        account.ensureCanLogin();
 
         Long accountId = account.getId();
         // Pairs with the LOGIN OTP emailed during sendVerificationAndRespond.
@@ -70,8 +71,12 @@ public class VerifyLoginUseCase implements UseCaseService {
                     return AccountError.INVALID_OTP.exception();
                 });
 
-        otp.verify(request.otpCode());
-        accountOtpRepository.save(otp);
+        try {
+            otp.verify(request.otpCode());
+        } finally {
+            // Persist attempts even on invalid OTP, so max-attempt protection cannot be bypassed.
+            accountOtpRepository.save(otp);
+        }
         log.debug("OTP verified for accountId={}", accountId);
 
         // Reject tokens that point at another account's device id.
@@ -102,4 +107,5 @@ public class VerifyLoginUseCase implements UseCaseService {
         log.info("Verify login successful accountId={}, accountUuid={}", accountId, account.getUuid());
         return tokens;
     }
+
 }

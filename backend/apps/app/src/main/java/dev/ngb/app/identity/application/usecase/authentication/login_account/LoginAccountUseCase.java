@@ -65,7 +65,7 @@ public class LoginAccountUseCase implements UseCaseService {
         }
 
         log.debug("Password verified for accountId={}", account.getId());
-        validateAccountStatus(account);
+        account.ensureCanLogin();
 
         // Stable client fingerprint ties sessions and OTP verification to one device row.
         String fingerprint = request.deviceInfo().fingerprint();
@@ -118,29 +118,6 @@ public class LoginAccountUseCase implements UseCaseService {
                 tokens.expiresIn(),
                 tokens.accountUuid()
         );
-    }
-
-    private void validateAccountStatus(Account account) {
-        // Only ACTIVE may continue past password verification.
-        switch (account.getStatus()) {
-            case PENDING -> {
-                log.warn("Login rejected: account pending for accountId={}", account.getId());
-                throw AccountError.ACCOUNT_PENDING.exception();
-            }
-            case SUSPENDED -> {
-                log.warn("Login rejected: account suspended for accountId={}", account.getId());
-                throw AccountError.ACCOUNT_SUSPENDED.exception();
-            }
-            case BANNED -> {
-                log.warn("Login rejected: account banned for accountId={}", account.getId());
-                throw AccountError.ACCOUNT_BANNED.exception();
-            }
-            case DEACTIVATED -> {
-                log.warn("Login rejected: account deactivated for accountId={}", account.getId());
-                throw AccountError.ACCOUNT_NOT_ACTIVE.exception();
-            }
-            case ACTIVE -> { }
-        }
     }
 
     private LoginAccountResponse sendVerificationAndRespond(Account account, AccountDevice device) {

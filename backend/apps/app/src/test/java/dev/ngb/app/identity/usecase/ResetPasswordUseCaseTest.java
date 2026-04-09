@@ -49,13 +49,13 @@ class ResetPasswordUseCaseTest {
             new ResetPasswordRequest(IdentityUseCaseTestFixtures.EMAIL, "123456", "new-secret");
 
     @Test
-    @DisplayName("Account missing → ACCOUNT_NOT_FOUND")
+    @DisplayName("Account missing → INVALID_OTP")
     void executeWhenAccountMissingThrows() {
         when(accountRepository.findByEmail(IdentityUseCaseTestFixtures.EMAIL)).thenReturn(Optional.empty());
 
         DomainException ex = assertThrows(DomainException.class, () -> useCase.execute(request));
 
-        assertThat(ex.getError()).isEqualTo(AccountError.ACCOUNT_NOT_FOUND);
+        assertThat(ex.getError()).isEqualTo(AccountError.INVALID_OTP);
     }
 
     @Test

@@ -32,7 +32,7 @@ public class RegisterAccountUseCase implements UseCaseService {
     public RegisterAccountResponse execute(RegisterAccountRequest request) {
         log.info("Register account attempt for email={}", request.email() != null ? request.email().replaceAll("(?<=.).(?=.*@)", "*") : "***");
 
-        // One account per email; duplicates are a hard business rule violation.
+        // Fast path for common duplicates; save-time catch still handles race conditions.
         if (accountRepository.existsByEmail(request.email())) {
             log.warn("Register failed: email already exists");
             throw AccountError.EMAIL_ALREADY_EXISTS.exception();

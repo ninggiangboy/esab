@@ -1,7 +1,7 @@
 package dev.ngb.infrastructure.jdbc.profile.entity;
 
 import dev.ngb.domain.profile.model.profile.ProfileVisibility;
-import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
+import dev.ngb.infrastructure.jdbc.base.entity.SoftDeletableJdbcEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @SuperBuilder
 @NoArgsConstructor
 @Table("prf_profiles")
-public class ProfileJdbcEntity extends JdbcEntity<Long> {
+public class ProfileJdbcEntity extends SoftDeletableJdbcEntity<Long> {
 
     private Long accountId;
     private String username;

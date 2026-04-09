@@ -78,6 +78,17 @@ public class Account extends DomainEntity<Long> {
         return this.status == AccountStatus.PENDING;
     }
 
+    public void ensureCanLogin() {
+        switch (this.status) {
+            case PENDING -> throw AccountError.ACCOUNT_PENDING.exception();
+            case SUSPENDED -> throw AccountError.ACCOUNT_SUSPENDED.exception();
+            case BANNED -> throw AccountError.ACCOUNT_BANNED.exception();
+            case DEACTIVATED -> throw AccountError.ACCOUNT_NOT_ACTIVE.exception();
+            case ACTIVE -> {
+            }
+        }
+    }
+
     public static Account reconstruct(
             Long id, String uuid, Long createdBy, Instant createdAt, Long updatedBy, Instant updatedAt,
             String email, String phoneNumber, String passwordHash, AccountStatus status,

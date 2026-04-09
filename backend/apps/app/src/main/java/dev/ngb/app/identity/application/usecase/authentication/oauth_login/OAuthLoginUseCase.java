@@ -68,7 +68,7 @@ public class OAuthLoginUseCase implements UseCaseService {
             account = accountRepository.save(account);
             AccountCredential credential = AccountCredential.create(
                     account.getId(), request.provider(), userInfo.providerAccountId(),
-                    request.providerToken(), null
+                    null, null
             );
             accountCredentialRepository.save(credential);
         } else {
@@ -83,7 +83,7 @@ public class OAuthLoginUseCase implements UseCaseService {
                 log.debug("Linking OAuth provider to existing account accountId={}", account.getId());
                 AccountCredential credential = AccountCredential.create(
                         account.getId(), request.provider(), userInfo.providerAccountId(),
-                        request.providerToken(), null
+                        null, null
                 );
                 accountCredentialRepository.save(credential);
             }

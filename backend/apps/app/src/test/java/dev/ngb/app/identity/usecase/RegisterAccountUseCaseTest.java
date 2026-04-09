@@ -49,7 +49,7 @@ class RegisterAccountUseCaseTest {
     }
 
     @Test
-    @DisplayName("Email already exists → EMAIL_ALREADY_EXISTS")
+    @DisplayName("Email already exists (pre-check) → EMAIL_ALREADY_EXISTS")
     void executeWhenEmailAlreadyExistsThrowsConflict() {
         when(accountRepository.existsByEmail(IdentityUseCaseTestFixtures.EMAIL)).thenReturn(true);
 
@@ -57,6 +57,19 @@ class RegisterAccountUseCaseTest {
 
         assertThat(ex.getError()).isEqualTo(AccountError.EMAIL_ALREADY_EXISTS);
         verifyNoInteractions(passwordEncoder, accountOtpDeliveryService);
+    }
+
+    @Test
+    @DisplayName("Duplicate email on save race → EMAIL_ALREADY_EXISTS")
+    void executeWhenDuplicateOnSaveThrowsConflict() {
+        when(accountRepository.existsByEmail(IdentityUseCaseTestFixtures.EMAIL)).thenReturn(false);
+        when(passwordEncoder.encode("plain-secret")).thenReturn("hashed-secret");
+        when(accountRepository.save(any(Account.class))).thenThrow(AccountError.EMAIL_ALREADY_EXISTS.exception());
+
+        DomainException ex = assertThrows(DomainException.class, () -> useCase.execute(request));
+
+        assertThat(ex.getError()).isEqualTo(AccountError.EMAIL_ALREADY_EXISTS);
+        verifyNoInteractions(accountOtpDeliveryService);
     }
 
     @Test

@@ -1,6 +1,6 @@
 package dev.ngb.infrastructure.jdbc.hashtag.entity;
 
-import dev.ngb.infrastructure.jdbc.base.entity.JdbcEntity;
+import dev.ngb.infrastructure.jdbc.base.entity.SoftDeletableJdbcEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @SuperBuilder
 @NoArgsConstructor
 @Table("ht_hashtags")
-public class HashtagJdbcEntity extends JdbcEntity<Long> {
+public class HashtagJdbcEntity extends SoftDeletableJdbcEntity<Long> {
 
     private String tag;
     private String normalizedTag;

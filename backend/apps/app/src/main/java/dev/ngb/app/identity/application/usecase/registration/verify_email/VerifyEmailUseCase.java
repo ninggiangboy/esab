@@ -62,8 +62,12 @@ public class VerifyEmailUseCase implements UseCaseService {
                     return AccountError.INVALID_OTP.exception();
                 });
 
-        otp.verify(request.otpCode());
-        accountOtpRepository.save(otp);
+        try {
+            otp.verify(request.otpCode());
+        } finally {
+            // Persist failed-attempt counters even when verification fails.
+            accountOtpRepository.save(otp);
+        }
         log.debug("Registration OTP verified for accountId={}", account.getId());
 
         account.activate();
