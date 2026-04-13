@@ -3,6 +3,9 @@ plugins {
 }
 
 dependencies {
+    implementation platform('software.amazon.awssdk:bom:2.31.77')
+    implementation 'software.amazon.awssdk:s3'
+
     implementation project(':core:domain')
     implementation project(':core:database')
 

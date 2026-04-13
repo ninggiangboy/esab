@@ -17,3 +17,5 @@ databaseChangeLog:
       file: db/changelog/migrations/008-alter-group-tables.sql
   - include:
       file: db/changelog/migrations/009-add-e2e-encryption.sql
+  - include:
+      file: db/changelog/migrations/010-create-attachment-tables.sql

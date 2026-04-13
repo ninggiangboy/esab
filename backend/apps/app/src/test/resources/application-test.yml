@@ -28,6 +28,13 @@ spring:
       - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
 
 app:
+  storage:
+    s3:
+      bucket: test-bucket
+      region: us-east-1
+  attachment:
+    sweep:
+      enabled: false
   security:
     jwt:
       public-key-base64: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1KCuczbC+wBdfXrW5Ao4XcDpmfR3dp4sU/6QOBZzzocHb2JvPk1t8uDvjpBiiprQPKrHgj4K1twImnbx/DlxCQHNzJjBgPZKQ6dhyvC/bdmNjZdq6kPwv6l+BhDiTm8I4GSENuC8P2i6jZXRxFSb8lOfsolpYCtNg3W0+bAFLXUqadfuC67u1I2xybTVfjnDtGK7LQildSjP5KcgYBxymrlj/Wei2QBgMrfpxHIsVAJw2ap9CnHEeA5k/xoJPtTo7vI62vbnDp9t7BkyhHOfbLGG0UEZvD+9j37D/iM7rQiT2RJaQx0DUc6KED5NZylS6o7eXt/p17wtHNeTBLSvfwIDAQAB
